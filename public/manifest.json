@@ -1,0 +1,50 @@
+{
+  "name": "MoneyLeft — Simple Budgeting",
+  "short_name": "MoneyLeft",
+  "description": "Answer one question every day: how much money can I safely spend?",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0ede8",
+  "theme_color": "#1a6b4a",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log a Purchase",
+      "short_name": "Log Spending",
+      "description": "Quickly log money you spent",
+      "url": "/spending",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Scam Checker",
+      "short_name": "Scam Check",
+      "description": "Check if a message is a scam",
+      "url": "/scam-check",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
