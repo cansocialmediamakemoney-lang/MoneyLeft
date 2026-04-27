@@ -6,7 +6,8 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)", fontFamily: "'Georgia',serif" }}>
       <div style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }} className="px-5 pt-16 pb-12 text-center">
         <div className="text-6xl mb-4">💰</div>
-        <h1 className="text-5xl font-bold text-white mb-3">MoneyLeftTEST</h1>
+        <h1 className="text-5xl font-bold text-white mb-3">MoneyLeft
+        </h1>
         <p className="text-green-100 text-xl max-w-md mx-auto leading-relaxed">
           Simple budgeting that answers one question:
         </p>

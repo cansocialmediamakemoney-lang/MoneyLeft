@@ -24,3 +24,27 @@ html {
     font-size: 18px;
   }
 }
+/* ─── iOS safe areas (notch, dynamic island, home indicator) ──────────────── */
+@supports (padding-top: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ─── Tweaks when running as installed PWA ────────────────────────────────── */
+@media (display-mode: standalone) {
+  /* Disable text selection on UI chrome (feels more app-like) */
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior-y: contain;
+  }
+  /* Re-enable selection inside inputs and editable areas */
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
