@@ -51,14 +51,14 @@ export default function BillsPage() {
             <div className="text-center py-6"><p className="text-stone-400 text-xl">No bills added yet.</p></div>
           ) : (
             bills.map((b) => (
-              <div key={b.id} className="bg-stone-50 rounded-2xl px-5 py-4 mb-3 flex items-center justify-between">
-                <div>
-                  <p className="text-xl font-bold text-stone-800">{b.name}</p>
-                  <p className="text-stone-500 text-base">Due {ordinal(b.due_day)} of each month</p>
+              <div key={b.id} className="bg-stone-50 rounded-2xl px-4 sm:px-5 py-4 mb-3 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-lg sm:text-xl font-bold text-stone-800 break-words">{b.name}</p>
+                  <p className="text-stone-500 text-sm sm:text-base break-words">Due {ordinal(b.due_day)} of each month</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-xl font-bold text-stone-800">${fmt(b.amount)}</p>
-                  <button onClick={() => setEditing(b)} className="border-2 border-stone-200 bg-white rounded-xl px-3 py-2 text-base font-semibold text-stone-600">Edit</button>
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <p className="text-lg sm:text-xl font-bold text-stone-800 break-words">${fmt(b.amount)}</p>
+                  <button onClick={() => setEditing(b)} className="border-2 border-stone-200 bg-white rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-semibold text-stone-600">Edit</button>
                   <button onClick={() => handleDelete(b.id)} className="text-stone-300 text-2xl">✕</button>
                 </div>
               </div>
@@ -66,9 +66,9 @@ export default function BillsPage() {
           )}
 
           {bills.length > 0 && (
-            <div className="bg-emerald-50 rounded-2xl px-5 py-3 flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold text-emerald-800">Total each month</span>
-              <span className="text-xl font-bold text-emerald-700">${fmt(totalBills)}</span>
+            <div className="bg-emerald-50 rounded-2xl px-4 sm:px-5 py-3 flex justify-between items-center mb-4 gap-3">
+              <span className="text-base sm:text-lg font-semibold text-emerald-800">Total each month</span>
+              <span className="text-lg sm:text-xl font-bold text-emerald-700 break-words flex-shrink-0">${fmt(totalBills)}</span>
             </div>
           )}
 

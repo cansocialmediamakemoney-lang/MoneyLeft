@@ -16,7 +16,7 @@ export function Btn({ children, onClick, variant = "primary", disabled = false, 
 }
 
 export function Card({ children, className = "" }) {
-  return <div className={`bg-white rounded-3xl shadow-sm border border-stone-100 p-6 ${className}`}>{children}</div>;
+  return <div className={`bg-white rounded-3xl shadow-sm border border-stone-100 p-5 sm:p-6 ${className}`}>{children}</div>;
 }
 
 export function MoneyInput({ value, onChange, label, hint, large = false, autoFocus = false }) {
@@ -72,9 +72,9 @@ export function TextInput({ value, onChange, label, placeholder = "", type = "te
 
 export function Row({ label, val, green = false, red = false, bold = false, large = false }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className={`${large ? "text-xl" : "text-lg"} ${bold ? "font-bold text-stone-800" : "text-stone-600"}`}>{label}</span>
-      <span className={`font-bold ${large ? "text-2xl" : "text-xl"} ${green ? "text-emerald-600" : red ? "text-red-500" : "text-stone-800"}`}>{val}</span>
+    <div className="flex justify-between items-center gap-3">
+      <span className={`${large ? "text-lg sm:text-xl" : "text-base sm:text-lg"} ${bold ? "font-bold text-stone-800" : "text-stone-600"} min-w-0`}>{label}</span>
+      <span className={`font-bold break-words flex-shrink-0 ${large ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"} ${green ? "text-emerald-600" : red ? "text-red-500" : "text-stone-800"}`}>{val}</span>
     </div>
   );
 }

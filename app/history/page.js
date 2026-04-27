@@ -56,12 +56,12 @@ export default function HistoryPage() {
               : <div className="mt-5">
                   <p className="text-lg font-bold text-stone-700 mb-3">All Purchases</p>
                   {entries.map((e) => (
-                    <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0">
-                      <div>
-                        <p className="text-lg font-semibold text-stone-800">{SPEND_ICONS[e.category]} {e.category}</p>
-                        <p className="text-stone-400 text-base">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
+                    <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0 gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-base sm:text-lg font-semibold text-stone-800 break-words">{SPEND_ICONS[e.category]} {e.category}</p>
+                        <p className="text-stone-400 text-sm sm:text-base break-words">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
                       </div>
-                      <span className="text-xl font-bold text-stone-800">${fmt(e.amount)}</span>
+                      <span className="text-lg sm:text-xl font-bold text-stone-800 break-words flex-shrink-0">${fmt(e.amount)}</span>
                     </div>
                   ))}
                 </div>

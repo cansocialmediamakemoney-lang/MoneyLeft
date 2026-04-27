@@ -70,42 +70,41 @@ export default function DashboardPage() {
       {error && <div className="mx-4 mt-4 bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-red-700">{error}</div>}
 
       {/* Big answer */}
-      <div className="mx-4 -mt-2 rounded-3xl p-7 text-center shadow-xl mb-5"
+      <div className="mx-4 -mt-2 rounded-3xl p-5 sm:p-7 text-center shadow-xl mb-5 overflow-hidden"
         style={{ background: pos ? "linear-gradient(135deg,#1a6b4a,#2d9e6b)" : "linear-gradient(135deg,#b91c1c,#ef4444)" }}>
-        <p className="text-green-100 text-xl font-semibold mb-1">Money left this month</p>
-        <p className="text-white font-bold" style={{ fontSize: "4rem", lineHeight: 1 }}>
+        <p className="text-green-100 text-lg sm:text-xl font-semibold mb-1">Money left this month</p>
+        <p className="text-white font-bold leading-none break-words text-[2.5rem] sm:text-5xl md:text-6xl">
           {pos ? "" : "−"}${fmt(c.moneyLeft)}
         </p>
-        <div className="mt-5 pt-4 border-t border-white border-opacity-20 grid grid-cols-3 gap-3">
-          <div>
-            <p className="text-green-200 text-sm mb-1">Safe to spend</p>
-            <p className="text-white text-2xl font-bold">${fmt(c.safePerDay)}</p>
+        <div className="mt-5 pt-4 border-t border-white border-opacity-20 grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="min-w-0">
+            <p className="text-green-200 text-xs sm:text-sm mb-1">Safe to spend</p>
+            <p className="text-white font-bold break-words text-lg sm:text-2xl">${fmt(c.safePerDay)}</p>
             <p className="text-green-300 text-xs">per day</p>
           </div>
-          <div>
-            <p className="text-green-200 text-sm mb-1">Days to pay day</p>
-            <p className="text-white text-2xl font-bold">{c.daysLeft}</p>
+          <div className="min-w-0">
+            <p className="text-green-200 text-xs sm:text-sm mb-1">Days to pay day</p>
+            <p className="text-white font-bold text-lg sm:text-2xl">{c.daysLeft}</p>
             <p className="text-green-300 text-xs">days left</p>
           </div>
-          <div>
-            <p className="text-green-200 text-sm mb-1">Bills coming</p>
-            <p className={`text-2xl font-bold ${c.upcoming.length > 0 ? "text-yellow-200" : "text-white"}`}>${fmt(c.upcomingTotal)}</p>
+          <div className="min-w-0">
+            <p className="text-green-200 text-xs sm:text-sm mb-1">Bills coming</p>
+            <p className={`font-bold break-words text-lg sm:text-2xl ${c.upcoming.length > 0 ? "text-yellow-200" : "text-white"}`}>${fmt(c.upcomingTotal)}</p>
             <p className="text-green-300 text-xs">next 7 days</p>
           </div>
         </div>
       </div>
-
       {/* Bill warnings */}
       {c.upcoming.map((b) => (
-        <div key={b.id} className="mx-4 mb-3 bg-yellow-50 border-2 border-yellow-300 rounded-2xl px-5 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">⚠️</span>
-            <div>
-              <p className="text-lg font-bold text-yellow-800">{b.name} due soon</p>
-              <p className="text-yellow-700 text-base">Due on the {ordinal(b.due_day)}</p>
+        <div key={b.id} className="mx-4 mb-3 bg-yellow-50 border-2 border-yellow-300 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className="text-2xl flex-shrink-0">⚠️</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-base sm:text-lg font-bold text-yellow-800 break-words">{b.name} due soon</p>
+              <p className="text-yellow-700 text-sm sm:text-base">Due on the {ordinal(b.due_day)}</p>
             </div>
           </div>
-          <p className="text-xl font-bold text-yellow-800">${fmt(b.amount)}</p>
+          <p className="text-lg sm:text-xl font-bold text-yellow-800 break-words flex-shrink-0">${fmt(b.amount)}</p>
         </div>
       ))}
 
@@ -137,9 +136,9 @@ export default function DashboardPage() {
             const amt = c.byCategory[cat];
             if (!amt) return null;
             return (
-              <div key={cat} className="flex justify-between items-center mb-3 last:mb-0">
-                <span className="text-lg text-stone-600">{SPEND_ICONS[cat]} {cat}</span>
-                <span className="text-xl font-bold text-stone-800">${fmt(amt)}</span>
+              <div key={cat} className="flex justify-between items-center mb-3 last:mb-0 gap-3">
+                <span className="text-base sm:text-lg text-stone-600 min-w-0 break-words">{SPEND_ICONS[cat]} {cat}</span>
+                <span className="text-lg sm:text-xl font-bold text-stone-800 flex-shrink-0 break-words">${fmt(amt)}</span>
               </div>
             );
           })}
@@ -153,13 +152,13 @@ export default function DashboardPage() {
             <Link href="/history" className="text-emerald-700 text-base font-semibold">See all →</Link>
           </div>
           {entries.slice(0,4).map((e) => (
-            <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0">
-              <div>
-                <p className="text-lg font-semibold text-stone-800">{SPEND_ICONS[e.category]} {e.category}</p>
-                <p className="text-stone-400 text-base">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
+            <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0 gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-base sm:text-lg font-semibold text-stone-800 break-words">{SPEND_ICONS[e.category]} {e.category}</p>
+                <p className="text-stone-400 text-sm sm:text-base break-words">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold text-stone-800">${fmt(e.amount)}</span>
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <span className="text-lg sm:text-xl font-bold text-stone-800 break-words">${fmt(e.amount)}</span>
                 <button onClick={() => deleteEntry(e.id)} className="text-stone-300 text-2xl">✕</button>
               </div>
             </div>
