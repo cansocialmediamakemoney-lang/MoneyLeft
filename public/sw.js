@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Bump this version any time you change this file or want to invalidate caches.
-const CACHE_VERSION = "moneyleft-v1";
+const CACHE_VERSION = "moneyleft-v4";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
