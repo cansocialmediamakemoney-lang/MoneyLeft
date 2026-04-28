@@ -26,8 +26,20 @@ const TABS = [
     ),
   },
   {
+    href: "/plan",
+    label: "Plan",
+    icon: () => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+        <line x1="8" y1="3" x2="8" y2="7" />
+        <line x1="16" y1="3" x2="16" y2="7" />
+      </svg>
+    ),
+  },
+  {
     href: "/scam-check",
-    label: "Scam Check",
+    label: "Scam",
     icon: () => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" />
@@ -77,7 +89,7 @@ export default function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
-              className="flex-1 flex flex-col items-center justify-center py-2.5 px-1 transition-colors"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 px-0.5 transition-colors min-w-0"
               style={{
                 color: active ? "var(--accent-text)" : "var(--text-tertiary)",
               }}
@@ -86,14 +98,14 @@ export default function BottomNav() {
               <div
                 className="rounded-full transition-all"
                 style={{
-                  width: active ? "1.5rem" : "0",
+                  width: active ? "1.25rem" : "0",
                   height: "3px",
                   background: active ? "var(--accent)" : "transparent",
                   marginBottom: active ? "0.4rem" : "calc(0.4rem + 3px)",
                 }}
               />
               {tab.icon()}
-              <span className="text-[0.65rem] sm:text-xs font-semibold mt-1 tracking-wide whitespace-nowrap">{tab.label}</span>
+              <span className="text-[0.6rem] sm:text-xs font-semibold mt-1 tracking-tight whitespace-nowrap">{tab.label}</span>
             </Link>
           );
         })}

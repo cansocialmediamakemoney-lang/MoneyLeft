@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const PROTECTED_ROUTES = [
   "/dashboard", "/bills", "/spending", "/history",
-  "/settings", "/scam-check", "/what-if", "/budget-edit",
+  "/settings", "/scam-check", "/what-if", "/budget-edit", "/plan",
 ];
 const AUTH_ROUTES = ["/login", "/signup"];
 
