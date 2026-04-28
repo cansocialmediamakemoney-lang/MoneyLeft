@@ -7,7 +7,7 @@ const TABS = [
   {
     href: "/dashboard",
     label: "Budget",
-    icon: (active) => (
+    icon: () => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M3 3v18h18" />
         <path d="M7 14l4-4 4 4 5-5" />
@@ -17,7 +17,7 @@ const TABS = [
   {
     href: "/what-if",
     label: "What If",
-    icon: (active) => (
+    icon: () => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <circle cx="12" cy="12" r="9" />
         <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-1 1.7" />
@@ -28,7 +28,7 @@ const TABS = [
   {
     href: "/scam-check",
     label: "Scam Check",
-    icon: (active) => (
+    icon: () => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" />
         <path d="M9 12l2 2 4-4" />
@@ -38,10 +38,20 @@ const TABS = [
   {
     href: "/history",
     label: "History",
-    icon: (active) => (
+    icon: () => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
         <circle cx="12" cy="12" r="9" />
         <polyline points="12 7 12 12 15 14" />
+      </svg>
+    ),
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: () => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </svg>
     ),
   },
@@ -56,14 +66,12 @@ export default function BottomNav() {
       style={{
         background: "var(--bg-elevated)",
         borderTop: "1px solid var(--border-subtle)",
-        // respect iOS home indicator
         paddingBottom: "env(safe-area-inset-bottom, 0)",
       }}
       aria-label="Main navigation"
     >
       <div className="max-w-md mx-auto flex items-stretch justify-around">
         {TABS.map((tab) => {
-          // /dashboard matches /dashboard, /dashboard/anything etc.
           const active = pathname === tab.href || pathname.startsWith(tab.href + "/");
           return (
             <Link
@@ -75,7 +83,6 @@ export default function BottomNav() {
               }}
               aria-current={active ? "page" : undefined}
             >
-              {/* Active indicator pill above icon */}
               <div
                 className="rounded-full transition-all"
                 style={{
@@ -85,8 +92,8 @@ export default function BottomNav() {
                   marginBottom: active ? "0.4rem" : "calc(0.4rem + 3px)",
                 }}
               />
-              {tab.icon(active)}
-              <span className="text-xs font-semibold mt-1 tracking-wide">{tab.label}</span>
+              {tab.icon()}
+              <span className="text-[0.65rem] sm:text-xs font-semibold mt-1 tracking-wide whitespace-nowrap">{tab.label}</span>
             </Link>
           );
         })}

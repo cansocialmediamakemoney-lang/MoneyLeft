@@ -53,7 +53,7 @@ export default function DashboardPage() {
             <div className="text-6xl mb-4">👋</div>
             <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
             <p className="text-lg mb-6" style={{ color: "var(--text-secondary)" }}>Tell MoneyLeft about your income, bills, and savings goal so we can show you exactly how much you can safely spend.</p>
-            <Link href="/settings"><Btn>Set Up My Budget →</Btn></Link>
+            <Link href="/budget-edit"><Btn>Set Up My Budget →</Btn></Link>
           </Card>
         </div>
       </AppShell>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Action buttons — Log Purchase and My Bills live under the Budget tab */}
+      {/* Quick actions */}
       <div className="mx-4 grid grid-cols-2 gap-3 mb-5">
         <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
         <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
@@ -198,6 +198,21 @@ export default function DashboardPage() {
           ))}
         </Card>
       )}
+
+      {/* ── Edit My Budget — at the bottom of the Budget tab ── */}
+      <Link href="/budget-edit" className="block mx-4 mb-4">
+        <div
+          className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
+          style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
+        >
+          <span className="text-3xl flex-shrink-0">⚙️</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Edit My Budget</p>
+            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Income, savings goal, pay date</p>
+          </div>
+          <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
+        </div>
+      </Link>
 
       <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
     </AppShell>

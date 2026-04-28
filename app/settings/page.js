@@ -1,54 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, MoneyInput, PickerInput, Row, ErrorMsg } from "@/components/UI";
+import { Btn, Card, ErrorMsg } from "@/components/UI";
 import { createClient } from "@/lib/supabase-browser";
 import { useBudgetData } from "@/lib/useBudgetData";
-import { fmt, ordinal } from "@/lib/constants";
 
 export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
-  const { loading, user, profile, bills, updateProfile } = useBudgetData();
+  const { loading, user, profile, updateProfile } = useBudgetData();
 
-  const [income, setIncome] = useState("");
-  const [savings, setSavings] = useState("");
-  const [payDate, setPayDate] = useState("1");
-  const [currency, setCurrency] = useState("USD");
   const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [savedMsg, setSavedMsg] = useState("");
 
-  useEffect(() => {
-    if (profile) {
-      setIncome(profile.income?.toString() || "");
-      setSavings(profile.savings_goal?.toString() || "");
-      setPayDate(String(profile.pay_date || 1));
-      setCurrency(profile.currency || "USD");
-    }
-  }, [profile]);
-
-  const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
-
-  const handleSave = async () => {
-    setError(""); setSavedMsg(""); setSaving(true);
-    try {
-      await updateProfile({
-        income: parseFloat(income) || 0,
-        savings_goal: parseFloat(savings) || 0,
-        pay_date: parseInt(payDate),
-        currency,
-      });
-      setSavedMsg("✓ Saved!");
-      setTimeout(() => setSavedMsg(""), 2500);
-    } catch (e) {
-      setError(e.message || "Couldn't save your changes.");
-    } finally {
-      setSaving(false);
-    }
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
   };
 
   const handleDeleteAllData = async () => {
@@ -84,81 +54,152 @@ export default function SettingsPage() {
 
   if (loading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
-  const available = (parseFloat(income) || 0) - (parseFloat(savings) || 0) - totalBills;
-
   return (
     <AppShell subtitle="Settings" showSettings={false}>
       <div className="px-5 pt-6 pb-10">
-        <Card>
-          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>Your Budget</h2>
 
-          {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
-          {savedMsg && (
-            <div
-              className="mb-4 rounded-2xl px-4 py-3 font-bold text-base"
-              style={{ background: "var(--accent-muted)", border: "1px solid var(--accent)", color: "var(--accent-text)" }}
-            >{savedMsg}</div>
-          )}
+        {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
 
-          <div className="space-y-5">
-            <MoneyInput value={income} onChange={setIncome} label="Monthly Income (after taxes)" />
-            <MoneyInput value={savings} onChange={setSavings} label="Monthly Savings Goal" hint="Enter $0 if you're not saving right now." />
-            <PickerInput value={payDate} onChange={setPayDate}
-              label="Monthly Reset Date"
-              hint="The day of the month your budget restarts (usually the day you get paid or receive Social Security)."
-              options={Array.from({ length: 28 }, (_, i) => ({ value: String(i + 1), label: `The ${ordinal(i + 1)} of each month` }))} />
-            <PickerInput value={currency} onChange={setCurrency} label="Currency"
-              options={[
-                { value: "USD", label: "$ US Dollar (USD)" },
-                { value: "CAD", label: "$ Canadian Dollar (CAD)" },
-                { value: "GBP", label: "£ British Pound (GBP)" },
-                { value: "EUR", label: "€ Euro (EUR)" },
-              ]} />
-          </div>
-
-          <div
-            className="mt-6 rounded-2xl p-4 space-y-2"
-            style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
-          >
-            <Row label="Income" val={`$${fmt(income)}`} />
-            <Row label="− Savings" val={`$${fmt(savings)}`} red />
-            <Row label="− Bills" val={`$${fmt(totalBills)}`} red />
-            <div className="pt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-              <Row label="Available to Spend" val={`$${fmt(available)}`} bold green={available >= 0} red={available < 0} large />
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Btn onClick={handleSave} disabled={saving}>{saving ? "Saving…" : "Save Changes ✓"}</Btn>
-          </div>
-
-          <div className="mt-3">
-            <Link href="/bills"><Btn variant="secondary" small>✏️ Edit My Bills</Btn></Link>
-          </div>
+        {/* ── ACCOUNT ───────────────────────────────────────────────────── */}
+        <SectionLabel>Account</SectionLabel>
+        <Card className="mb-6 p-0 overflow-hidden">
+          <Item
+            icon="👤"
+            label="Signed in as"
+            value={user?.email || "—"}
+            readonly
+          />
+          <Divider />
+          <Item
+            icon="💰"
+            label="Currency"
+            value={profile?.currency || "USD"}
+            readonly
+          />
+          <Divider />
+          <ItemButton icon="↪️" label="Sign Out" onClick={signOut} danger={false} accent />
         </Card>
 
-        <Card className="mt-4">
-          <h3 className="text-xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>🔒 Your Privacy</h3>
-          <div className="space-y-2 text-base" style={{ color: "var(--text-secondary)" }}>
-            <p>✓ We <strong>never</strong> ask for your bank login or account numbers.</p>
-            <p>✓ We <strong>do not sell</strong> your financial information.</p>
-            <p>✓ Your data is encrypted and stored securely.</p>
-            <p>✓ <strong>You control your data.</strong> Delete it anytime below.</p>
-          </div>
+        {/* ── APP PREFERENCES ───────────────────────────────────────────── */}
+        <SectionLabel>App Preferences</SectionLabel>
+        <Card className="mb-6 p-0 overflow-hidden">
+          <ItemLink href="/dashboard" icon="📊" label="Edit My Budget" hint="Income, bills, savings goal" />
+          <Divider />
+          <ItemReadonly icon="🌙" label="Theme" value="Dark (default)" />
+          <Divider />
+          <ItemReadonly icon="📅" label="Monthly Reset Date" value={profile?.pay_date ? `Day ${profile.pay_date}` : "—"} />
         </Card>
 
-        <Card className="mt-4">
-          <h3 className="text-xl font-bold mb-3" style={{ color: "var(--danger)" }}>Danger Zone</h3>
-          <div className="space-y-3">
-            <Btn variant="danger" small onClick={handleDeleteAllData}>🗑️ Erase My Budget Data</Btn>
-            <Btn variant="danger" small onClick={handleDeleteAccount}>❌ Delete My Account &amp; All Data</Btn>
-          </div>
+        {/* ── PRIVACY & SECURITY ────────────────────────────────────────── */}
+        <SectionLabel>Privacy & Security</SectionLabel>
+        <Card className="mb-3">
+          <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>🔒 How we protect you</h3>
+          <ul className="space-y-2 text-base" style={{ color: "var(--text-secondary)" }}>
+            <li>✓ We <strong>never</strong> ask for your bank login or account numbers.</li>
+            <li>✓ We <strong>do not sell</strong> your financial information.</li>
+            <li>✓ Your data is encrypted and stored securely.</li>
+            <li>✓ <strong>You control your data</strong> — delete it anytime.</li>
+          </ul>
         </Card>
 
-        <Link href="/dashboard" className="block mt-4"><Btn variant="secondary">← Back to Dashboard</Btn></Link>
+        <Card className="mb-6 p-0 overflow-hidden">
+          <ItemButton icon="🗑️" label="Erase My Budget Data" onClick={handleDeleteAllData} danger />
+          <Divider />
+          <ItemButton icon="❌" label="Delete My Account" onClick={handleDeleteAccount} danger />
+        </Card>
 
-        {user && <p className="text-base text-center mt-4" style={{ color: "var(--text-tertiary)" }}>Signed in as {user.email}</p>}
+        {/* ── SUPPORT ───────────────────────────────────────────────────── */}
+        <SectionLabel>Support</SectionLabel>
+        <Card className="mb-6 p-0 overflow-hidden">
+          <ItemLink href="/scam-check" icon="🛡️" label="Scam Checker" hint="Check suspicious messages" />
+          <Divider />
+          <ItemExternal href="mailto:[email protected]" icon="✉️" label="Contact Support" hint="[email protected]" />
+          <Divider />
+          <ItemReadonly icon="ℹ️" label="App Version" value="1.0" />
+        </Card>
+
+        <p className="text-center text-sm mt-8" style={{ color: "var(--text-tertiary)" }}>
+          MoneyLeft · Made with care
+        </p>
       </div>
     </AppShell>
+  );
+}
+
+// ─── Sub-components for the settings list style ─────────────────────────────
+
+function SectionLabel({ children }) {
+  return (
+    <p
+      className="text-xs font-bold uppercase tracking-widest px-2 mb-2"
+      style={{ color: "var(--text-tertiary)" }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function Divider() {
+  return <div style={{ height: "1px", background: "var(--border-subtle)" }} />;
+}
+
+function Item({ icon, label, value }) {
+  return (
+    <div className="px-5 py-4 flex items-center gap-4">
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>{label}</p>
+        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function ItemReadonly({ icon, label, value }) {
+  return (
+    <div className="px-5 py-4 flex items-center gap-4">
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <span className="text-base flex-1 min-w-0 break-words" style={{ color: "var(--text-primary)" }}>{label}</span>
+      <span className="text-base font-semibold flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>{value}</span>
+    </div>
+  );
+}
+
+function ItemLink({ href, icon, label, hint }) {
+  return (
+    <Link href={href} className="px-5 py-4 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90">
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
+        {hint && <p className="text-sm break-words" style={{ color: "var(--text-tertiary)" }}>{hint}</p>}
+      </div>
+      <span className="text-xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
+    </Link>
+  );
+}
+
+function ItemExternal({ href, icon, label, hint }) {
+  return (
+    <a href={href} className="px-5 py-4 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90">
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
+        {hint && <p className="text-sm break-words" style={{ color: "var(--text-tertiary)" }}>{hint}</p>}
+      </div>
+      <span className="text-xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
+    </a>
+  );
+}
+
+function ItemButton({ icon, label, onClick, danger = false, accent = false }) {
+  const color = danger ? "var(--danger)" : accent ? "var(--accent-text)" : "var(--text-primary)";
+  return (
+    <button
+      onClick={onClick}
+      className="w-full px-5 py-4 flex items-center gap-4 text-left transition-colors hover:brightness-125 active:brightness-90"
+    >
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <span className="text-base font-semibold flex-1 min-w-0 break-words" style={{ color }}>{label}</span>
+    </button>
   );
 }
