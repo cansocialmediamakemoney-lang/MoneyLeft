@@ -42,13 +42,13 @@ export default function DashboardPage() {
   }, [profile, bills, entries, dayOfMonth, dim]);
 
   if (loading) return (
-    <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
+    <AppShell hideHeader><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
   if (!profile || !parseFloat(profile.income)) {
     return (
-      <AppShell subtitle="Welcome!">
-        <div className="px-5 pt-6">
+      <AppShell hideHeader>
+        <div className="px-5 pt-12">
           <Card className="text-center">
             <div className="text-6xl mb-4">👋</div>
             <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
@@ -65,32 +65,43 @@ export default function DashboardPage() {
   const nearLimit = c.moneyLeft > 0 && c.moneyLeft < c.income * 0.1;
 
   return (
-    <AppShell subtitle={`${MONTHS[today.getMonth()]} ${today.getFullYear()}`}>
+    <AppShell hideHeader>
+      {/* Subtle month/year label, top-left */}
+      <p
+        className="px-5 pt-10 sm:pt-12 text-sm font-semibold tracking-wide uppercase"
+        style={{ color: "var(--text-tertiary)" }}
+      >
+        {MONTHS[today.getMonth()]} {today.getFullYear()}
+      </p>
+
       {error && (
-        <div className="mx-4 mt-4 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
+        <div className="mx-4 mt-3 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
           {error}
         </div>
       )}
 
-      {/* Big answer */}
+      {/* Money Left — the main focus */}
       <div
-        className="mx-4 mt-4 rounded-2xl p-6 sm:p-8 text-center mb-5 overflow-hidden"
+        className="mx-4 mt-3 rounded-2xl p-7 sm:p-9 text-center mb-5 overflow-hidden"
         style={{
           background: "var(--bg-elevated)",
           border: `1px solid ${pos ? "var(--accent)" : "var(--danger)"}`,
         }}
       >
-        <p className="text-base sm:text-lg font-semibold mb-2 uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>
-          Money left this month
+        <p
+          className="text-xs sm:text-sm font-medium mb-3 uppercase tracking-widest"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          Money Left
         </p>
         <p
-          className="font-bold leading-none break-words text-[2.75rem] sm:text-6xl"
+          className="font-bold leading-none break-words text-[3rem] sm:text-7xl"
           style={{ color: pos ? "var(--accent-text)" : "var(--danger)" }}
         >
           {pos ? "" : "−"}${fmt(c.moneyLeft)}
         </p>
         <div
-          className="mt-6 pt-5 grid grid-cols-3 gap-3"
+          className="mt-7 pt-5 grid grid-cols-3 gap-3"
           style={{ borderTop: "1px solid var(--border-subtle)" }}
         >
           <div className="min-w-0">
@@ -199,7 +210,7 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* ── Edit My Budget — at the bottom of the Budget tab ── */}
+      {/* Edit My Budget */}
       <Link href="/budget-edit" className="block mx-4 mb-4">
         <div
           className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
