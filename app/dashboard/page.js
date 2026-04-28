@@ -170,11 +170,13 @@ export default function DashboardPage() {
         <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
         <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
       </div>
-      <div className="mx-4 grid grid-cols-2 gap-3 mb-5">
+     <div className="mx-4 grid grid-cols-2 gap-3 mb-3">
         <Link href="/history"><Btn variant="secondary">📅 History</Btn></Link>
         <Link href="/scam-check"><Btn variant="secondary">🛡️ Scam Check</Btn></Link>
       </div>
-
+      <div className="mx-4 mb-5">
+        <Link href="/what-if"><Btn variant="secondary">🔮 What If Mode</Btn></Link>
+      </div>
       <p className="text-center text-stone-400 text-base px-4 pb-2">🔒 Your data is private. We never sell it.</p>
     </AppShell>
   );
