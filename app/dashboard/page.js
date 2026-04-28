@@ -66,12 +66,11 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <p
-        className="px-5 pt-10 sm:pt-12 text-sm font-semibold tracking-wide uppercase"
-        style={{ color: "var(--text-tertiary)" }}
-      >
-        {MONTHS[today.getMonth()]} {today.getFullYear()}
-      </p>
+      <div className="px-5 pt-10 sm:pt-12 pb-2">
+        <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: "var(--text-primary)" }}>
+          {MONTHS[today.getMonth()]} {today.getFullYear()}
+        </h1>
+      </div>
 
       {error && (
         <div className="mx-4 mt-3 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
@@ -80,7 +79,7 @@ export default function DashboardPage() {
       )}
 
       <div
-        className="mx-4 mt-3 rounded-2xl p-7 sm:p-9 text-center mb-5 overflow-hidden"
+        className="mx-4 mt-4 rounded-2xl p-7 sm:p-9 text-center mb-5 overflow-hidden"
         style={{
           background: "var(--bg-elevated)",
           border: `1px solid ${pos ? "var(--accent)" : "var(--danger)"}`,
