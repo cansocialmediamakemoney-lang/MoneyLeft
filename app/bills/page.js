@@ -36,39 +36,50 @@ export default function BillsPage() {
 
   const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
 
-  if (loading) return <AppShell><div className="p-10 text-center text-stone-400 text-xl">Loading…</div></AppShell>;
+  if (loading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
   return (
     <AppShell subtitle="My Monthly Bills">
       <div className="px-5 pt-6 pb-10">
         <Card>
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Monthly Bills</h2>
-          <p className="text-stone-500 text-lg mb-5">MoneyLeft warns you 7 days before each bill is due.</p>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>Monthly Bills</h2>
+          <p className="text-lg mb-5" style={{ color: "var(--text-secondary)" }}>MoneyLeft warns you 7 days before each bill is due.</p>
 
           {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
 
           {bills.length === 0 ? (
-            <div className="text-center py-6"><p className="text-stone-400 text-xl">No bills added yet.</p></div>
+            <div className="text-center py-6"><p className="text-xl" style={{ color: "var(--text-tertiary)" }}>No bills added yet.</p></div>
           ) : (
             bills.map((b) => (
-              <div key={b.id} className="bg-stone-50 rounded-2xl px-4 sm:px-5 py-4 mb-3 flex items-center justify-between gap-3">
+              <div
+                key={b.id}
+                className="rounded-2xl px-4 sm:px-5 py-4 mb-3 flex items-center justify-between gap-3"
+                style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
+              >
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg sm:text-xl font-bold text-stone-800 break-words">{b.name}</p>
-                  <p className="text-stone-500 text-sm sm:text-base break-words">Due {ordinal(b.due_day)} of each month</p>
+                  <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>{b.name}</p>
+                  <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-secondary)" }}>Due {ordinal(b.due_day)} of each month</p>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <p className="text-lg sm:text-xl font-bold text-stone-800 break-words">${fmt(b.amount)}</p>
-                  <button onClick={() => setEditing(b)} className="border-2 border-stone-200 bg-white rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-semibold text-stone-600">Edit</button>
-                  <button onClick={() => handleDelete(b.id)} className="text-stone-300 text-2xl">✕</button>
+                  <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(b.amount)}</p>
+                  <button
+                    onClick={() => setEditing(b)}
+                    className="rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-semibold transition-colors"
+                    style={{ border: "1px solid var(--border-strong)", color: "var(--text-primary)", background: "transparent" }}
+                  >Edit</button>
+                  <button onClick={() => handleDelete(b.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
                 </div>
               </div>
             ))
           )}
 
           {bills.length > 0 && (
-            <div className="bg-emerald-50 rounded-2xl px-4 sm:px-5 py-3 flex justify-between items-center mb-4 gap-3">
-              <span className="text-base sm:text-lg font-semibold text-emerald-800">Total each month</span>
-              <span className="text-lg sm:text-xl font-bold text-emerald-700 break-words flex-shrink-0">${fmt(totalBills)}</span>
+            <div
+              className="rounded-2xl px-4 sm:px-5 py-3 flex justify-between items-center mb-4 gap-3"
+              style={{ background: "var(--accent-muted)", border: "1px solid var(--accent)" }}
+            >
+              <span className="text-base sm:text-lg font-semibold" style={{ color: "var(--accent-text)" }}>Total each month</span>
+              <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--accent-text)" }}>${fmt(totalBills)}</span>
             </div>
           )}
 
@@ -101,9 +112,13 @@ function BillEditor({ bill, onSave, onCancel }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-end z-50" onClick={onCancel}>
-      <div className="bg-white w-full rounded-t-3xl p-6 pb-10 max-h-screen overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-2xl font-bold text-stone-800 mb-5">{bill.id ? "Edit Bill" : "Add a Bill"}</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end z-50" onClick={onCancel}>
+      <div
+        className="w-full rounded-t-3xl p-6 pb-10 max-h-screen overflow-y-auto"
+        style={{ background: "var(--bg-elevated)", borderTop: "1px solid var(--border-subtle)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>{bill.id ? "Edit Bill" : "Add a Bill"}</h3>
         <div className="space-y-5">
           <PickerInput value={category} onChange={setCategory} label="Bill Type"
             options={BILL_CATS.map((c) => ({ value: c, label: c }))} />

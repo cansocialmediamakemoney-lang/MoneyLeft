@@ -40,16 +40,20 @@ export default function SpendingPage() {
     <AppShell subtitle="Log a Purchase">
       <div className="px-5 pt-6 pb-10">
         <Card>
-          <h2 className="text-2xl font-bold text-stone-800 mb-5">What did you spend?</h2>
+          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>What did you spend?</h2>
           <form onSubmit={submit} className="space-y-5">
             <MoneyInput value={amount} onChange={setAmount} label="Amount" large autoFocus />
             <PickerInput value={category} onChange={setCategory} label="Category"
               options={SPEND_CATS.map((c) => ({ value: c, label: `${SPEND_ICONS[c]}  ${c}` }))} />
             <TextInput value={note} onChange={setNote} label="Note (optional)" placeholder="e.g. Walmart, Doctor visit…" />
             <div>
-              <p className="text-lg font-semibold text-stone-700 mb-2">Date</p>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-white border-2 border-stone-200 rounded-2xl px-4 py-3 text-xl text-stone-800 focus:outline-none focus:border-emerald-600" />
+              <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Date</p>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full rounded-2xl border-2 px-4 py-3 text-xl"
+              />
             </div>
             <ErrorMsg>{error}</ErrorMsg>
             <div className="flex gap-3 pt-2">

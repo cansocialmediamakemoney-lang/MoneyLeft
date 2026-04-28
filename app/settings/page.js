@@ -71,12 +71,9 @@ export default function SettingsPage() {
     if (conf !== "DELETE") { alert("Cancelled."); return; }
 
     try {
-      // Delete user data first (the auth.users row deletion will cascade, but we delete profile explicitly so the cascade is clean)
       await supabase.from("bills").delete().eq("user_id", user.id);
       await supabase.from("spending_entries").delete().eq("user_id", user.id);
       await supabase.from("profiles").delete().eq("id", user.id);
-      // Sign out — the actual auth.users deletion requires server-side admin API,
-      // which we'll add later. For now their data is gone.
       await supabase.auth.signOut();
       alert("Your data has been deleted. To fully remove your account login, please contact support.");
       router.push("/");
@@ -85,7 +82,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <AppShell><div className="p-10 text-center text-stone-400 text-xl">Loading…</div></AppShell>;
+  if (loading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
   const available = (parseFloat(income) || 0) - (parseFloat(savings) || 0) - totalBills;
 
@@ -93,10 +90,15 @@ export default function SettingsPage() {
     <AppShell subtitle="Settings" showSettings={false}>
       <div className="px-5 pt-6 pb-10">
         <Card>
-          <h2 className="text-2xl font-bold text-stone-800 mb-5">Your Budget</h2>
+          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>Your Budget</h2>
 
           {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
-          {savedMsg && <div className="mb-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl px-4 py-3 text-emerald-700 font-bold text-base">{savedMsg}</div>}
+          {savedMsg && (
+            <div
+              className="mb-4 rounded-2xl px-4 py-3 font-bold text-base"
+              style={{ background: "var(--accent-muted)", border: "1px solid var(--accent)", color: "var(--accent-text)" }}
+            >{savedMsg}</div>
+          )}
 
           <div className="space-y-5">
             <MoneyInput value={income} onChange={setIncome} label="Monthly Income (after taxes)" />
@@ -114,11 +116,14 @@ export default function SettingsPage() {
               ]} />
           </div>
 
-          <div className="mt-6 bg-stone-50 rounded-2xl p-4 space-y-2">
+          <div
+            className="mt-6 rounded-2xl p-4 space-y-2"
+            style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
+          >
             <Row label="Income" val={`$${fmt(income)}`} />
             <Row label="− Savings" val={`$${fmt(savings)}`} red />
             <Row label="− Bills" val={`$${fmt(totalBills)}`} red />
-            <div className="border-t border-stone-200 pt-2">
+            <div className="pt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
               <Row label="Available to Spend" val={`$${fmt(available)}`} bold green={available >= 0} red={available < 0} large />
             </div>
           </div>
@@ -133,8 +138,8 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="mt-4">
-          <h3 className="text-xl font-bold text-stone-800 mb-3">🔒 Your Privacy</h3>
-          <div className="space-y-2 text-stone-600 text-base">
+          <h3 className="text-xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>🔒 Your Privacy</h3>
+          <div className="space-y-2 text-base" style={{ color: "var(--text-secondary)" }}>
             <p>✓ We <strong>never</strong> ask for your bank login or account numbers.</p>
             <p>✓ We <strong>do not sell</strong> your financial information.</p>
             <p>✓ Your data is encrypted and stored securely.</p>
@@ -143,7 +148,7 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="mt-4">
-          <h3 className="text-xl font-bold text-red-600 mb-3">Danger Zone</h3>
+          <h3 className="text-xl font-bold mb-3" style={{ color: "var(--danger)" }}>Danger Zone</h3>
           <div className="space-y-3">
             <Btn variant="danger" small onClick={handleDeleteAllData}>🗑️ Erase My Budget Data</Btn>
             <Btn variant="danger" small onClick={handleDeleteAccount}>❌ Delete My Account &amp; All Data</Btn>
@@ -152,7 +157,7 @@ export default function SettingsPage() {
 
         <Link href="/dashboard" className="block mt-4"><Btn variant="secondary">← Back to Dashboard</Btn></Link>
 
-        {user && <p className="text-stone-400 text-base text-center mt-4">Signed in as {user.email}</p>}
+        {user && <p className="text-base text-center mt-4" style={{ color: "var(--text-tertiary)" }}>Signed in as {user.email}</p>}
       </div>
     </AppShell>
   );

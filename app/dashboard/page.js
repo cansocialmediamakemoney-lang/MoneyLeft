@@ -42,18 +42,17 @@ export default function DashboardPage() {
   }, [profile, bills, entries, dayOfMonth, dim]);
 
   if (loading) return (
-    <AppShell><div className="p-10 text-center text-stone-400 text-xl">Loading your dashboard…</div></AppShell>
+    <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
-  // No profile setup yet — guide them
   if (!profile || !parseFloat(profile.income)) {
     return (
       <AppShell subtitle="Welcome!">
         <div className="px-5 pt-6">
           <Card className="text-center">
             <div className="text-6xl mb-4">👋</div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-3">Let's set up your budget</h2>
-            <p className="text-stone-600 text-lg mb-6">Tell MoneyLeft about your income, bills, and savings goal so we can show you exactly how much you can safely spend.</p>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
+            <p className="text-lg mb-6" style={{ color: "var(--text-secondary)" }}>Tell MoneyLeft about your income, bills, and savings goal so we can show you exactly how much you can safely spend.</p>
             <Link href="/settings"><Btn>Set Up My Budget →</Btn></Link>
           </Card>
         </div>
@@ -67,7 +66,11 @@ export default function DashboardPage() {
 
   return (
     <AppShell subtitle={`${MONTHS[today.getMonth()]} ${today.getFullYear()}`}>
-      {error && <div className="mx-4 mt-4 bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-red-700">{error}</div>}
+      {error && (
+        <div className="mx-4 mt-4 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
+          {error}
+        </div>
+      )}
 
       {/* Big answer */}
       <div
@@ -107,9 +110,10 @@ export default function DashboardPage() {
               style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)" }}
             >${fmt(c.upcomingTotal)}</p>
             <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>next 7 days</p>
-           </div>
+          </div>
         </div>
       </div>
+
       {/* Bill warnings */}
       {c.upcoming.map((b) => (
         <div
@@ -146,7 +150,7 @@ export default function DashboardPage() {
           <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
           <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} red />
           <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
-          <div className="border-t border-stone-100 pt-3">
+          <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
             <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(c.moneyLeft)}`} bold large green={pos} red={!pos} />
           </div>
         </div>
@@ -154,14 +158,14 @@ export default function DashboardPage() {
 
       {c.totalSpent > 0 && (
         <Card className="mx-4 mb-4">
-         <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
+          <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
           {SPEND_CATS.map((cat) => {
             const amt = c.byCategory[cat];
             if (!amt) return null;
             return (
               <div key={cat} className="flex justify-between items-center mb-3 last:mb-0 gap-3">
-                <span className="text-base sm:text-lg text-stone-600 min-w-0 break-words">{SPEND_ICONS[cat]} {cat}</span>
-                <span className="text-lg sm:text-xl font-bold text-stone-800 flex-shrink-0 break-words">${fmt(amt)}</span>
+                <span className="text-base sm:text-lg min-w-0 break-words" style={{ color: "var(--text-secondary)" }}>{SPEND_ICONS[cat]} {cat}</span>
+                <span className="text-lg sm:text-xl font-bold flex-shrink-0 break-words" style={{ color: "var(--text-primary)" }}>${fmt(amt)}</span>
               </div>
             );
           })}
@@ -172,17 +176,17 @@ export default function DashboardPage() {
         <Card className="mx-4 mb-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
-            <Link href="/history" className="text-emerald-700 text-base font-semibold">See all →</Link>
+            <Link href="/history" className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>See all →</Link>
           </div>
           {entries.slice(0,4).map((e) => (
-            <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0 gap-3">
+            <div key={e.id} className="flex items-center justify-between py-3 last:border-0 gap-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
               <div className="min-w-0 flex-1">
-                <p className="text-base sm:text-lg font-semibold text-stone-800 break-words">{SPEND_ICONS[e.category]} {e.category}</p>
-                <p className="text-stone-400 text-sm sm:text-base break-words">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
+                <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
+                <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                <span className="text-lg sm:text-xl font-bold text-stone-800 break-words">${fmt(e.amount)}</span>
-                <button onClick={() => deleteEntry(e.id)} className="text-stone-300 text-2xl">✕</button>
+                <span className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
+                <button onClick={() => deleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
               </div>
             </div>
           ))}
@@ -193,14 +197,15 @@ export default function DashboardPage() {
         <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
         <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
       </div>
-     <div className="mx-4 grid grid-cols-2 gap-3 mb-3">
+      <div className="mx-4 grid grid-cols-2 gap-3 mb-3">
         <Link href="/history"><Btn variant="secondary">📅 History</Btn></Link>
         <Link href="/scam-check"><Btn variant="secondary">🛡️ Scam Check</Btn></Link>
       </div>
       <div className="mx-4 mb-5">
         <Link href="/what-if"><Btn variant="secondary">🔮 What If Mode</Btn></Link>
       </div>
-      <p className="text-center text-stone-400 text-base px-4 pb-2">🔒 Your data is private. We never sell it.</p>
+
+      <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
     </AppShell>
   );
 }

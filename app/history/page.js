@@ -38,30 +38,37 @@ export default function HistoryPage() {
     return { value: key, label: `${MONTHS[d.getMonth()]} ${d.getFullYear()}` };
   });
 
-  if (profileLoading) return <AppShell><div className="p-10 text-center text-stone-400 text-xl">Loading…</div></AppShell>;
+  if (profileLoading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
   return (
     <AppShell subtitle="Spending History">
       <div className="px-5 pt-6 pb-10">
         <Card>
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
-          <div className="mt-5 bg-stone-50 rounded-2xl p-4 space-y-2">
+          <div
+            className="mt-5 rounded-2xl p-4 space-y-2"
+            style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
+          >
             <Row label="Spent this month" val={`$${fmt(total)}`} />
             <Row label="Money left" val={`${left >= 0 ? "" : "−"}$${fmt(left)}`} bold green={left >= 0} red={left < 0} />
           </div>
           {loading
-            ? <p className="text-stone-400 text-lg text-center py-6">Loading…</p>
+            ? <p className="text-lg text-center py-6" style={{ color: "var(--text-tertiary)" }}>Loading…</p>
             : entries.length === 0
-              ? <p className="text-stone-400 text-lg text-center py-6">No spending logged for this month.</p>
+              ? <p className="text-lg text-center py-6" style={{ color: "var(--text-tertiary)" }}>No spending logged for this month.</p>
               : <div className="mt-5">
-                  <p className="text-lg font-bold text-stone-700 mb-3">All Purchases</p>
+                  <p className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
                   {entries.map((e) => (
-                    <div key={e.id} className="flex items-center justify-between border-b border-stone-100 py-3 last:border-0 gap-3">
+                    <div
+                      key={e.id}
+                      className="flex items-center justify-between py-3 last:border-0 gap-3"
+                      style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                    >
                       <div className="min-w-0 flex-1">
-                        <p className="text-base sm:text-lg font-semibold text-stone-800 break-words">{SPEND_ICONS[e.category]} {e.category}</p>
-                        <p className="text-stone-400 text-sm sm:text-base break-words">{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
+                        <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
+                        <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
                       </div>
-                      <span className="text-lg sm:text-xl font-bold text-stone-800 break-words flex-shrink-0">${fmt(e.amount)}</span>
+                      <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
                     </div>
                   ))}
                 </div>
