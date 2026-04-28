@@ -89,15 +89,22 @@ input::placeholder, textarea::placeholder {
   color: var(--text-tertiary);
 }
 
-/* Native date input — fix overflow + icon visibility on dark backgrounds */
+/* Native date inputs — force them to behave on mobile */
 input[type="date"] {
   box-sizing: border-box;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
   cursor: pointer;
+  margin-left: auto;
 }
 /* Native select dropdown arrow */
 select {
