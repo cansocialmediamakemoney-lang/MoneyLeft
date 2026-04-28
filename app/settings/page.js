@@ -89,13 +89,11 @@ export default function SettingsPage() {
 
         <SectionLabel>Support</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
-          <ItemLink href="/scam-check" icon="🛡️" label="Scam Checker" hint="Check suspicious messages" />
-          <Divider />
           <ItemExternal href="mailto:[email protected]" icon="✉️" label="Contact Support" hint="[email protected]" />
           <Divider />
           <ItemReadonly icon="ℹ️" label="App Version" value="1.0" />
         </Card>
-
+        
         <p className="text-center text-sm mt-8" style={{ color: "var(--text-tertiary)" }}>
           MoneyLeft · Made with care
         </p>
