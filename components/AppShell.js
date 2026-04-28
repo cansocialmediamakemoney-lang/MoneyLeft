@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
-import { LogoMark } from "@/components/Logo";
+import BottomNav from "@/components/BottomNav";
 
-export default function AppShell({ children, subtitle, showSettings = true }) {
+export default function AppShell({ children, subtitle, showSettings = true, showBottomNav = true }) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -17,10 +17,13 @@ export default function AppShell({ children, subtitle, showSettings = true }) {
 
   return (
     <div
-      className="min-h-screen pb-16"
+      className="min-h-screen"
       style={{
         background: "var(--bg-base)",
         fontFamily: "'Georgia','Times New Roman',serif",
+        // Reserve space at the bottom so the nav never covers content.
+        // 5rem covers nav (~64px) + iOS safe area + a bit of breathing room.
+        paddingBottom: showBottomNav ? "calc(5rem + env(safe-area-inset-bottom, 0))" : 0,
       }}
     >
       <div
@@ -30,9 +33,8 @@ export default function AppShell({ children, subtitle, showSettings = true }) {
         }}
       >
         <div className="flex items-center justify-between px-4 sm:px-5 pt-8 pb-3 gap-2">
-          <Link href="/dashboard" className="flex items-center gap-3 min-w-0 flex-shrink">
-            <LogoMark size={36} className="flex-shrink-0 sm:hidden" />
-            <LogoMark size={42} className="hidden sm:block flex-shrink-0" />
+          <Link href="/dashboard" className="flex items-center gap-2 min-w-0 flex-shrink">
+            <img src="/icons/icon-192.png" alt="" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0" />
             <span className="text-2xl sm:text-3xl font-bold truncate" style={{ color: "var(--text-primary)" }}>
               MoneyLeft
             </span>
@@ -59,7 +61,10 @@ export default function AppShell({ children, subtitle, showSettings = true }) {
           >{subtitle}</p>
         )}
       </div>
+
       {children}
+
+      {showBottomNav && <BottomNav />}
     </div>
   );
 }

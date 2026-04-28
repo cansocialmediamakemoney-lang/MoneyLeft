@@ -142,6 +142,12 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Action buttons — Log Purchase and My Bills live under the Budget tab */}
+      <div className="mx-4 grid grid-cols-2 gap-3 mb-5">
+        <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
+        <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
+      </div>
+
       {/* Breakdown */}
       <Card className="mx-4 mb-4">
         <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
@@ -192,18 +198,6 @@ export default function DashboardPage() {
           ))}
         </Card>
       )}
-
-      <div className="mx-4 grid grid-cols-2 gap-3 mb-3">
-        <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
-        <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
-      </div>
-      <div className="mx-4 grid grid-cols-2 gap-3 mb-3">
-        <Link href="/history"><Btn variant="secondary">📅 History</Btn></Link>
-        <Link href="/scam-check"><Btn variant="secondary">🛡️ Scam Check</Btn></Link>
-      </div>
-      <div className="mx-4 mb-5">
-        <Link href="/what-if"><Btn variant="secondary">🔮 What If Mode</Btn></Link>
-      </div>
 
       <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
     </AppShell>
