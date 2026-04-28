@@ -68,21 +68,25 @@ export default function InstallPrompt() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 z-40 bg-white rounded-2xl shadow-2xl border-2 border-emerald-100 p-4 max-w-md mx-auto"
-      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+      className="fixed bottom-4 left-4 right-4 z-40 rounded-2xl shadow-2xl p-4 max-w-md mx-auto"
+      style={{
+        fontFamily: "'Georgia', 'Times New Roman', serif",
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--accent)",
+      }}
     >
       <div className="flex items-start gap-3">
         <div className="text-3xl">📱</div>
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold text-stone-800 mb-1">Add MoneyLeft to your phone</p>
+          <p className="text-lg font-bold mb-1" style={{ color: "var(--text-primary)" }}>Add MoneyLeft to your phone</p>
 
           {installEvent ? (
-            <p className="text-stone-600 text-base mb-3">
+            <p className="text-base mb-3" style={{ color: "var(--text-secondary)" }}>
               Get a real app icon on your home screen — opens full-screen, just like a real app.
             </p>
           ) : showIosHint ? (
-            <p className="text-stone-600 text-base mb-3">
-              Tap the Share button <span className="inline-block px-2 bg-stone-100 rounded">⎙</span> at the bottom of Safari, then choose <strong>"Add to Home Screen"</strong>.
+            <p className="text-base mb-3" style={{ color: "var(--text-secondary)" }}>
+              Tap the Share button <span className="inline-block px-2 rounded" style={{ background: "var(--bg-elevated-2)" }}>⎙</span> at the bottom of Safari, then choose <strong>"Add to Home Screen"</strong>.
             </p>
           ) : null}
 
@@ -90,15 +94,16 @@ export default function InstallPrompt() {
             {installEvent && (
               <button
                 onClick={install}
-                className="flex-1 py-2 px-4 rounded-xl font-bold text-white text-base"
-                style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }}
+                className="flex-1 py-2 px-4 rounded-xl font-bold text-base transition-colors"
+                style={{ background: "var(--accent)", color: "var(--text-on-accent)" }}
               >
                 Install
               </button>
             )}
             <button
               onClick={dismiss}
-              className="px-4 py-2 rounded-xl font-semibold text-stone-500 text-base border-2 border-stone-200"
+              className="px-4 py-2 rounded-xl font-semibold text-base"
+              style={{ border: "1px solid var(--border-strong)", color: "var(--text-secondary)", background: "transparent" }}
             >
               {installEvent ? "Not Now" : "Got It"}
             </button>

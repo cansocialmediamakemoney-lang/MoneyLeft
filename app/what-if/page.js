@@ -22,8 +22,8 @@ export default function WhatIfPage() {
     <AppShell subtitle="What If Mode">
       <div className="px-5 pt-6 pb-10 max-w-md mx-auto">
         <Card>
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">What If Mode</h2>
-          <p className="text-stone-500 text-base sm:text-lg mb-6">
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>What If Mode</h2>
+          <p className="text-base sm:text-lg mb-6" style={{ color: "var(--text-secondary)" }}>
             See how small changes to your monthly spending could grow your savings.
           </p>
 
@@ -36,18 +36,18 @@ export default function WhatIfPage() {
             />
 
             <div>
-              <p className="text-lg font-semibold text-stone-700 mb-1">
+              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
                 Reduce spending by:
               </p>
-              <p className="text-stone-400 text-base mb-4">
+              <p className="text-base mb-4" style={{ color: "var(--text-secondary)" }}>
                 Drag the slider to see the impact.
               </p>
 
               <div className="text-center mb-3">
-                <span className="text-4xl font-bold text-emerald-700 break-words">
+                <span className="text-4xl font-bold break-words" style={{ color: "var(--accent-text)" }}>
                   ${fmt(reduction)}
                 </span>
-                <span className="text-stone-500 text-lg"> / month</span>
+                <span className="text-lg" style={{ color: "var(--text-tertiary)" }}> / month</span>
               </div>
 
               <input
@@ -57,37 +57,39 @@ export default function WhatIfPage() {
                 step="5"
                 value={reduction}
                 onChange={(e) => setReduction(parseFloat(e.target.value))}
-                className="w-full h-3 bg-stone-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
+                className="w-full h-3 rounded-full appearance-none cursor-pointer"
+                style={{ accentColor: "var(--accent)", background: "var(--bg-elevated-2)" }}
               />
 
-              <div className="flex justify-between text-stone-400 text-sm mt-2">
+              <div className="flex justify-between text-sm mt-2" style={{ color: "var(--text-tertiary)" }}>
                 <span>$0</span>
                 <span>${fmt(sliderMax)}</span>
               </div>
             </div>
-          </div>
+         
+        
         </Card>
 
         {/* Result */}
         <div
-          className="mt-5 rounded-3xl p-6 text-center shadow-xl text-white overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }}
+          className="mt-5 rounded-2xl p-6 text-center overflow-hidden"
+          style={{ background: "var(--bg-elevated)", border: "1px solid var(--accent)" }}
         >
-          <p className="text-green-100 text-base sm:text-lg mb-3">
+          <p className="text-base sm:text-lg mb-3" style={{ color: "var(--text-secondary)" }}>
             If you reduce spending by{" "}
-            <span className="font-bold text-white">${fmt(reduction)}/month</span>…
+            <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(reduction)}/month</span>…
           </p>
-          <p className="text-green-100 text-base sm:text-lg mb-2">
+          <p className="text-base sm:text-lg mb-2" style={{ color: "var(--text-secondary)" }}>
             You would save
           </p>
-          <p className="text-white font-bold leading-none break-words text-[2.5rem] sm:text-5xl">
+          <p className="font-bold leading-none break-words text-[2.5rem] sm:text-5xl" style={{ color: "var(--accent-text)" }}>
             ${fmt(yearlyProjection)}
           </p>
-          <p className="text-green-100 text-base sm:text-lg mt-2">in 12 months</p>
+          <p className="text-base sm:text-lg mt-2" style={{ color: "var(--text-secondary)" }}>in 12 months</p>
 
-          <div className="mt-4 pt-4 border-t border-white border-opacity-20">
-            <p className="text-green-200 text-sm">
-              That's <span className="text-white font-bold">${fmt(newMonthlySavings)}</span> saved each month
+          <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+              That's <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(newMonthlySavings)}</span> saved each month
             </p>
           </div>
         </div>
