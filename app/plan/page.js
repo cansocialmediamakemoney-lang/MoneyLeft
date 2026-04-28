@@ -2,16 +2,14 @@
 
 import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
-import { Card, MoneyInput } from "@/components/UI";
+import { Card, MoneyInput, MoneyDisplay } from "@/components/UI";
 import { fmt } from "@/lib/constants";
 
-// Helper: today's date in YYYY-MM-DD format (local time)
 function todayLocal() {
   const d = new Date();
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
 }
 
-// Helper: a date N days from today in YYYY-MM-DD format
 function daysFromToday(n) {
   const d = new Date();
   d.setDate(d.getDate() + n);
@@ -27,7 +25,6 @@ export default function PlanPage() {
     const total = parseFloat(amount) || 0;
     if (!startDate || !endDate || total <= 0) return null;
 
-    // Parse as local dates, not UTC, so DST doesn't shift the count
     const start = new Date(startDate + "T00:00:00");
     const end = new Date(endDate + "T00:00:00");
 
@@ -35,7 +32,7 @@ export default function PlanPage() {
     if (end < start) return { error: "End date must be after start date." };
 
     const ms = end - start;
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1; // inclusive of both days
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
     if (days < 1) return { error: "Pick at least one day." };
 
     const perDay = total / days;
@@ -63,7 +60,7 @@ export default function PlanPage() {
               large
             />
 
-            <div>
+            <div className="min-w-0">
               <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Start date</p>
               <input
                 type="date"
@@ -73,7 +70,7 @@ export default function PlanPage() {
               />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>End date</p>
               <input
                 type="date"
@@ -85,7 +82,6 @@ export default function PlanPage() {
           </div>
         </Card>
 
-        {/* ── Result ────────────────────────────────────────────────────── */}
         {calc?.error && (
           <div
             className="rounded-2xl p-4 mb-5 text-center"
@@ -100,41 +96,22 @@ export default function PlanPage() {
             className="rounded-2xl p-7 sm:p-8 text-center mb-5 overflow-hidden"
             style={{ background: "var(--bg-elevated)", border: "1px solid var(--accent)" }}
           >
-            <p
-              className="text-xs sm:text-sm font-medium mb-2 uppercase tracking-widest"
-              style={{ color: "var(--text-tertiary)" }}
-            >
+            <p className="text-xs sm:text-sm font-medium mb-2 uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
               You can spend
             </p>
-            <p
-              className="font-bold leading-none break-words text-[3rem] sm:text-6xl"
-              style={{ color: "var(--accent-text)" }}
-            >
-              ${fmt(calc.perDay)}
-            </p>
+            <MoneyDisplay value={calc.perDay} color="var(--accent-text)" size="hero" />
             <p className="text-base sm:text-lg mt-2" style={{ color: "var(--text-secondary)" }}>
               per day for {calc.days} {calc.days === 1 ? "day" : "days"}
             </p>
 
-            <div
-              className="mt-6 pt-4 grid grid-cols-2 gap-4"
-              style={{ borderTop: "1px solid var(--border-subtle)" }}
-            >
-              <div>
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                  Total
-                </p>
-                <p className="text-xl sm:text-2xl font-bold break-words" style={{ color: "var(--text-primary)" }}>
-                  ${fmt(calc.total)}
-                </p>
+            <div className="mt-6 pt-4 grid grid-cols-2 gap-4" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
+                <MoneyDisplay value={calc.total} size="medium" />
               </div>
-              <div>
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                  Days
-                </p>
-                <p className="text-xl sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-                  {calc.days}
-                </p>
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
+                <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{calc.days}</p>
               </div>
             </div>
           </div>
