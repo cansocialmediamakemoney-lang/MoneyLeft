@@ -14,8 +14,6 @@ export default function WhatIfPage() {
   const newMonthlySavings = currentSavings + reduction;
   const yearlyProjection = newMonthlySavings * 12;
 
-  // Slider range adapts to what they entered. Floor of $500 max so the slider
-  // is always useful even for someone who entered $0.
   const sliderMax = Math.max(500, Math.round(currentSavings * 0.5));
 
   return (
@@ -66,8 +64,7 @@ export default function WhatIfPage() {
                 <span>${fmt(sliderMax)}</span>
               </div>
             </div>
-         
-        
+          </div>
         </Card>
 
         {/* Result */}
