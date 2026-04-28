@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, MoneyInput } from "@/components/UI";
+import { Card, MoneyInput } from "@/components/UI";
 import { fmt } from "@/lib/constants";
 
 export default function WhatIfPage() {
@@ -17,10 +16,13 @@ export default function WhatIfPage() {
   const sliderMax = Math.max(500, Math.round(currentSavings * 0.5));
 
   return (
-    <AppShell subtitle="What If Mode">
-      <div className="px-5 pt-6 pb-10 max-w-md mx-auto">
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          What If
+        </h1>
+
         <Card>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>What If Mode</h2>
           <p className="text-base sm:text-lg mb-6" style={{ color: "var(--text-secondary)" }}>
             See how small changes to your monthly spending could grow your savings.
           </p>
@@ -67,7 +69,6 @@ export default function WhatIfPage() {
           </div>
         </Card>
 
-        {/* Result */}
         <div
           className="mt-5 rounded-2xl p-6 text-center overflow-hidden"
           style={{ background: "var(--bg-elevated)", border: "1px solid var(--accent)" }}
@@ -90,10 +91,6 @@ export default function WhatIfPage() {
             </p>
           </div>
         </div>
-
-        <Link href="/dashboard" className="block mt-4">
-          <Btn variant="secondary">← Back to Dashboard</Btn>
-        </Link>
       </div>
     </AppShell>
   );

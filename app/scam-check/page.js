@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, ErrorMsg } from "@/components/UI";
 
@@ -40,8 +39,12 @@ export default function ScamCheckPage() {
   const v = result && (verdictColor[result.verdict?.toLowerCase()] || verdictColor.suspicious);
 
   return (
-    <AppShell subtitle="Scam Checker">
-      <div className="px-5 pt-6 pb-10">
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          Scam Check
+        </h1>
+
         <Card>
           <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>Check a Suspicious Message</h2>
           <p className="text-lg mb-5" style={{ color: "var(--text-secondary)" }}>Paste a text, email, or message you received and we'll tell you if it looks like a scam.</p>
@@ -106,8 +109,6 @@ export default function ScamCheckPage() {
             )}
           </Card>
         )}
-
-        <Link href="/dashboard" className="block mt-4"><Btn variant="secondary">← Back to Dashboard</Btn></Link>
       </div>
     </AppShell>
   );

@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, PickerInput, Row } from "@/components/UI";
+import { Card, PickerInput, Row } from "@/components/UI";
 import { createClient } from "@/lib/supabase-browser";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, fmtDate, MONTHS, monthRange, currentMonthKey, SPEND_ICONS } from "@/lib/constants";
@@ -41,8 +40,12 @@ export default function HistoryPage() {
   if (profileLoading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
   return (
-    <AppShell subtitle="Spending History">
-      <div className="px-5 pt-6 pb-10">
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          History
+        </h1>
+
         <Card>
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
           <div
@@ -74,7 +77,6 @@ export default function HistoryPage() {
                 </div>
           }
         </Card>
-        <Link href="/dashboard" className="block mt-4"><Btn variant="secondary">← Back to Dashboard</Btn></Link>
       </div>
     </AppShell>
   );

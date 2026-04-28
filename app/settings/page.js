@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, ErrorMsg } from "@/components/UI";
+import { Card, ErrorMsg } from "@/components/UI";
 import { createClient } from "@/lib/supabase-browser";
 import { useBudgetData } from "@/lib/useBudgetData";
 
@@ -14,12 +14,6 @@ export default function SettingsPage() {
   const { loading, user, profile, updateProfile } = useBudgetData();
 
   const [error, setError] = useState("");
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  };
 
   const handleDeleteAllData = async () => {
     if (!window.confirm("This will erase ALL your bills and spending history but keep your account. Continue?")) return;
@@ -52,45 +46,30 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
+  if (loading) return <AppShell showHeader><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
 
   return (
-    <AppShell subtitle="Settings" showSettings={false}>
+    <AppShell showHeader>
       <div className="px-5 pt-6 pb-10">
 
         {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
 
-        {/* ── ACCOUNT ───────────────────────────────────────────────────── */}
         <SectionLabel>Account</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
-          <Item
-            icon="👤"
-            label="Signed in as"
-            value={user?.email || "—"}
-            readonly
-          />
+          <Item icon="👤" label="Signed in as" value={user?.email || "—"} />
           <Divider />
-          <Item
-            icon="💰"
-            label="Currency"
-            value={profile?.currency || "USD"}
-            readonly
-          />
-          <Divider />
-          <ItemButton icon="↪️" label="Sign Out" onClick={signOut} danger={false} accent />
+          <Item icon="💰" label="Currency" value={profile?.currency || "USD"} />
         </Card>
 
-        {/* ── APP PREFERENCES ───────────────────────────────────────────── */}
         <SectionLabel>App Preferences</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
-          <ItemLink href="/dashboard" icon="📊" label="Edit My Budget" hint="Income, bills, savings goal" />
+          <ItemLink href="/budget-edit" icon="📊" label="Edit My Budget" hint="Income, bills, savings goal" />
           <Divider />
           <ItemReadonly icon="🌙" label="Theme" value="Dark (default)" />
           <Divider />
           <ItemReadonly icon="📅" label="Monthly Reset Date" value={profile?.pay_date ? `Day ${profile.pay_date}` : "—"} />
         </Card>
 
-        {/* ── PRIVACY & SECURITY ────────────────────────────────────────── */}
         <SectionLabel>Privacy & Security</SectionLabel>
         <Card className="mb-3">
           <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>🔒 How we protect you</h3>
@@ -108,7 +87,6 @@ export default function SettingsPage() {
           <ItemButton icon="❌" label="Delete My Account" onClick={handleDeleteAccount} danger />
         </Card>
 
-        {/* ── SUPPORT ───────────────────────────────────────────────────── */}
         <SectionLabel>Support</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
           <ItemLink href="/scam-check" icon="🛡️" label="Scam Checker" hint="Check suspicious messages" />
@@ -125,8 +103,6 @@ export default function SettingsPage() {
     </AppShell>
   );
 }
-
-// ─── Sub-components for the settings list style ─────────────────────────────
 
 function SectionLabel({ children }) {
   return (
@@ -191,8 +167,8 @@ function ItemExternal({ href, icon, label, hint }) {
   );
 }
 
-function ItemButton({ icon, label, onClick, danger = false, accent = false }) {
-  const color = danger ? "var(--danger)" : accent ? "var(--accent-text)" : "var(--text-primary)";
+function ItemButton({ icon, label, onClick, danger = false }) {
+  const color = danger ? "var(--danger)" : "var(--text-primary)";
   return (
     <button
       onClick={onClick}

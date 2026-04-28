@@ -42,12 +42,12 @@ export default function DashboardPage() {
   }, [profile, bills, entries, dayOfMonth, dim]);
 
   if (loading) return (
-    <AppShell hideHeader><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
+    <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
   if (!profile || !parseFloat(profile.income)) {
     return (
-      <AppShell hideHeader>
+      <AppShell>
         <div className="px-5 pt-12">
           <Card className="text-center">
             <div className="text-6xl mb-4">👋</div>
@@ -65,8 +65,7 @@ export default function DashboardPage() {
   const nearLimit = c.moneyLeft > 0 && c.moneyLeft < c.income * 0.1;
 
   return (
-    <AppShell hideHeader>
-      {/* Subtle month/year label, top-left */}
+    <AppShell>
       <p
         className="px-5 pt-10 sm:pt-12 text-sm font-semibold tracking-wide uppercase"
         style={{ color: "var(--text-tertiary)" }}
@@ -80,7 +79,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Money Left — the main focus */}
       <div
         className="mx-4 mt-3 rounded-2xl p-7 sm:p-9 text-center mb-5 overflow-hidden"
         style={{
@@ -125,7 +123,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Bill warnings */}
       {c.upcoming.map((b) => (
         <div
           key={b.id}
@@ -153,13 +150,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Quick actions */}
       <div className="mx-4 grid grid-cols-2 gap-3 mb-5">
         <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
         <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
       </div>
 
-      {/* Breakdown */}
       <Card className="mx-4 mb-4">
         <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
         <div className="space-y-3">
@@ -210,7 +205,6 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* Edit My Budget */}
       <Link href="/budget-edit" className="block mx-4 mb-4">
         <div
           className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
