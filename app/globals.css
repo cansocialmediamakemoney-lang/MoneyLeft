@@ -2,11 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme tokens ────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-base:        #0a0e0c;   /* near-black, slight green tint */
+  --bg-elevated:    #141a17;   /* card background */
+  --bg-elevated-2:  #1c2420;   /* nested / hover */
+  --bg-input:       #0f1411;
+
+  /* Borders */
+  --border-subtle:  #1f2a25;
+  --border-strong:  #2a3833;
+
+  /* Forest green accents */
+  --accent:         #1f6f4a;
+  --accent-hover:   #2a8a5d;
+  --accent-muted:   #163d2c;
+  --accent-text:    #4ea87e;   /* readable green text on dark bg */
+
+  /* Text */
+  --text-primary:   #e8ece9;   /* near-white, slightly warm */
+  --text-secondary: #8a9690;   /* muted gray-green */
+  --text-tertiary:  #5a6661;
+  --text-on-accent: #ffffff;
+
+  /* Semantic */
+  --danger:         #c44848;
+  --danger-bg:      #2a1414;
+  --warn:           #c4944a;
+  --warn-bg:        #2a2014;
+}
+
 html, body {
   margin: 0;
   padding: 0;
+  background: var(--bg-base);
+  color: var(--text-primary);
   font-family: 'Georgia', 'Times New Roman', serif;
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
 
 /* Mobile-friendly tap targets */
@@ -15,16 +49,10 @@ button, a {
 }
 
 /* Larger system font for older users */
-html {
-  font-size: 17px;
-}
+html { font-size: 17px; }
+@media (min-width: 768px) { html { font-size: 18px; } }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 18px;
-  }
-}
-/* ─── iOS safe areas (notch, dynamic island, home indicator) ──────────────── */
+/* ─── iOS safe areas ──────────────────────────────────────────────────────── */
 @supports (padding-top: env(safe-area-inset-top)) {
   body {
     padding-top: env(safe-area-inset-top);
@@ -34,17 +62,49 @@ html {
   }
 }
 
-/* ─── Tweaks when running as installed PWA ────────────────────────────────── */
+/* ─── PWA standalone tweaks ───────────────────────────────────────────────── */
 @media (display-mode: standalone) {
-  /* Disable text selection on UI chrome (feels more app-like) */
   body {
     -webkit-user-select: none;
     user-select: none;
     overscroll-behavior-y: contain;
   }
-  /* Re-enable selection inside inputs and editable areas */
   input, textarea, [contenteditable="true"] {
     -webkit-user-select: text;
     user-select: text;
   }
+}
+
+/* ─── Form input dark styling ─────────────────────────────────────────────── */
+input, select, textarea {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent) !important;
+  outline: none;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Native date input icon visibility on dark backgrounds */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+}
+
+/* Native select dropdown arrow */
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a9690' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2rem;
+  padding-right: 3rem;
+}
+
+/* Range slider track styling for dark mode */
+input[type="range"] {
+  background: var(--bg-elevated-2);
 }

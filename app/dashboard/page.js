@@ -70,54 +70,77 @@ export default function DashboardPage() {
       {error && <div className="mx-4 mt-4 bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-red-700">{error}</div>}
 
       {/* Big answer */}
-      <div className="mx-4 -mt-2 rounded-3xl p-5 sm:p-7 text-center shadow-xl mb-5 overflow-hidden"
-        style={{ background: pos ? "linear-gradient(135deg,#1a6b4a,#2d9e6b)" : "linear-gradient(135deg,#b91c1c,#ef4444)" }}>
-        <p className="text-green-100 text-lg sm:text-xl font-semibold mb-1">Money left this month</p>
-        <p className="text-white font-bold leading-none break-words text-[2.5rem] sm:text-5xl md:text-6xl">
+      <div
+        className="mx-4 mt-4 rounded-2xl p-6 sm:p-8 text-center mb-5 overflow-hidden"
+        style={{
+          background: "var(--bg-elevated)",
+          border: `1px solid ${pos ? "var(--accent)" : "var(--danger)"}`,
+        }}
+      >
+        <p className="text-base sm:text-lg font-semibold mb-2 uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>
+          Money left this month
+        </p>
+        <p
+          className="font-bold leading-none break-words text-[2.75rem] sm:text-6xl"
+          style={{ color: pos ? "var(--accent-text)" : "var(--danger)" }}
+        >
           {pos ? "" : "−"}${fmt(c.moneyLeft)}
         </p>
-        <div className="mt-5 pt-4 border-t border-white border-opacity-20 grid grid-cols-3 gap-2 sm:gap-3">
+        <div
+          className="mt-6 pt-5 grid grid-cols-3 gap-3"
+          style={{ borderTop: "1px solid var(--border-subtle)" }}
+        >
           <div className="min-w-0">
-            <p className="text-green-200 text-xs sm:text-sm mb-1">Safe to spend</p>
-            <p className="text-white font-bold break-words text-lg sm:text-2xl">${fmt(c.safePerDay)}</p>
-            <p className="text-green-300 text-xs">per day</p>
+            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Safe to spend</p>
+            <p className="font-bold break-words text-lg sm:text-2xl" style={{ color: "var(--text-primary)" }}>${fmt(c.safePerDay)}</p>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>per day</p>
           </div>
           <div className="min-w-0">
-            <p className="text-green-200 text-xs sm:text-sm mb-1">Days to pay day</p>
-            <p className="text-white font-bold text-lg sm:text-2xl">{c.daysLeft}</p>
-            <p className="text-green-300 text-xs">days left</p>
+            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Days to pay day</p>
+            <p className="font-bold text-lg sm:text-2xl" style={{ color: "var(--text-primary)" }}>{c.daysLeft}</p>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>days left</p>
           </div>
           <div className="min-w-0">
-            <p className="text-green-200 text-xs sm:text-sm mb-1">Bills coming</p>
-            <p className={`font-bold break-words text-lg sm:text-2xl ${c.upcoming.length > 0 ? "text-yellow-200" : "text-white"}`}>${fmt(c.upcomingTotal)}</p>
-            <p className="text-green-300 text-xs">next 7 days</p>
-          </div>
+            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Bills coming</p>
+            <p
+              className="font-bold break-words text-lg sm:text-2xl"
+              style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)" }}
+            >${fmt(c.upcomingTotal)}</p>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>next 7 days</p>
+           </div>
         </div>
       </div>
       {/* Bill warnings */}
       {c.upcoming.map((b) => (
-        <div key={b.id} className="mx-4 mb-3 bg-yellow-50 border-2 border-yellow-300 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3">
+        <div
+          key={b.id}
+          className="mx-4 mb-3 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
+          style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+        >
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <span className="text-2xl flex-shrink-0">⚠️</span>
             <div className="min-w-0 flex-1">
-              <p className="text-base sm:text-lg font-bold text-yellow-800 break-words">{b.name} due soon</p>
-              <p className="text-yellow-700 text-sm sm:text-base">Due on the {ordinal(b.due_day)}</p>
+              <p className="text-base sm:text-lg font-bold break-words" style={{ color: "var(--warn)" }}>{b.name} due soon</p>
+              <p className="text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>Due on the {ordinal(b.due_day)}</p>
             </div>
           </div>
-          <p className="text-lg sm:text-xl font-bold text-yellow-800 break-words flex-shrink-0">${fmt(b.amount)}</p>
+          <p className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--warn)" }}>${fmt(b.amount)}</p>
         </div>
       ))}
 
       {nearLimit && (
-        <div className="mx-4 mb-3 bg-orange-50 border-2 border-orange-300 rounded-2xl px-5 py-4 text-center">
-          <p className="text-xl font-bold text-orange-700">⚠️ You're close to your limit!</p>
-          <p className="text-orange-600 text-lg mt-1">Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
+        <div
+          className="mx-4 mb-3 rounded-2xl px-5 py-4 text-center"
+          style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+        >
+          <p className="text-xl font-bold" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
+          <p className="text-lg mt-1" style={{ color: "var(--text-secondary)" }}>Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
         </div>
       )}
 
       {/* Breakdown */}
       <Card className="mx-4 mb-4">
-        <h3 className="text-xl font-bold text-stone-700 mb-4">How It's Calculated</h3>
+        <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
         <div className="space-y-3">
           <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
           <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
@@ -131,7 +154,7 @@ export default function DashboardPage() {
 
       {c.totalSpent > 0 && (
         <Card className="mx-4 mb-4">
-          <h3 className="text-xl font-bold text-stone-700 mb-4">Spending This Month</h3>
+         <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
           {SPEND_CATS.map((cat) => {
             const amt = c.byCategory[cat];
             if (!amt) return null;
@@ -148,7 +171,7 @@ export default function DashboardPage() {
       {entries.length > 0 && (
         <Card className="mx-4 mb-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-stone-700">Recent Purchases</h3>
+            <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
             <Link href="/history" className="text-emerald-700 text-base font-semibold">See all →</Link>
           </div>
           {entries.slice(0,4).map((e) => (
