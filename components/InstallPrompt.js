@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LogoMark } from "@/components/Logo";
 
 const DISMISSED_KEY = "ml-install-dismissed";
 const DISMISS_DAYS = 14;
@@ -76,7 +77,7 @@ export default function InstallPrompt() {
       }}
     >
       <div className="flex items-start gap-3">
-        <div className="text-3xl">📱</div>
+        <div className="flex-shrink-0"><LogoMark size={40} /></div>
         <div className="flex-1 min-w-0">
           <p className="text-lg font-bold mb-1" style={{ color: "var(--text-primary)" }}>Add MoneyLeft to your phone</p>
 

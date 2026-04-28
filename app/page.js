@@ -1,12 +1,18 @@
 import Link from "next/link";
 import { Btn, Card } from "@/components/UI";
+import { LogoMark } from "@/components/Logo";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-base)", fontFamily: "'Georgia',serif" }}>
-      <div style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-subtle)" }} className="px-5 pt-16 pb-12 text-center">
-        <img src="/icons/icon-192.png" alt="MoneyLeft logo" className="w-24 h-24 rounded-2xl mx-auto mb-4 shadow-lg" />
-        <h1 className="text-5xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>MoneyLeft</h1>
+      <div style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-subtle)" }} className="px-5 pt-16 pb-12 text-center" style={{ color: "var(--text-primary)" }}>
+        <div className="flex justify-center mb-5">
+          <LogoMark size={120} />
+        </div>
+        <h1 className="text-5xl font-bold mb-1 tracking-tight" style={{ color: "var(--text-primary)" }}>
+          MONEY<span style={{ color: "var(--accent-text)" }}>LEFT</span>
+        </h1>
+        <p className="text-base mb-6" style={{ color: "var(--text-tertiary)", letterSpacing: "0.15em" }}>MAKE EVERY DOLLAR COUNT</p>
         <p className="text-xl max-w-md mx-auto leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           Simple budgeting that answers one question:
         </p>

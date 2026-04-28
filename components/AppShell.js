@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import { LogoMark } from "@/components/Logo";
 
 export default function AppShell({ children, subtitle, showSettings = true }) {
   const router = useRouter();
@@ -29,8 +30,9 @@ export default function AppShell({ children, subtitle, showSettings = true }) {
         }}
       >
         <div className="flex items-center justify-between px-4 sm:px-5 pt-8 pb-3 gap-2">
-          <Link href="/dashboard" className="flex items-center gap-2 min-w-0 flex-shrink">
-            <img src="/icons/icon-192.png" alt="" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex-shrink-0" />
+          <Link href="/dashboard" className="flex items-center gap-3 min-w-0 flex-shrink">
+            <LogoMark size={36} className="flex-shrink-0 sm:hidden" />
+            <LogoMark size={42} className="hidden sm:block flex-shrink-0" />
             <span className="text-2xl sm:text-3xl font-bold truncate" style={{ color: "var(--text-primary)" }}>
               MoneyLeft
             </span>
