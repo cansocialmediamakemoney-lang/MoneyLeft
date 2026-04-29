@@ -144,11 +144,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="mx-4 grid grid-cols-2 gap-3 mb-5">
-        <Link href="/spending"><Btn>➕ Log a Purchase</Btn></Link>
-        <Link href="/bills"><Btn variant="secondary">📋 My Bills</Btn></Link>
+      <div className="mx-4 space-y-3 mb-5">
+        <Link href="/spending" className="block"><Btn>➕ Log a Purchase</Btn></Link>
+        <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
       </div>
-
+      
       <Card className="mx-4 mb-4">
         <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
         <div className="space-y-3">
