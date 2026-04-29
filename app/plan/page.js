@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
-import { Card, MoneyInput, MoneyDisplay, Hero } from "@/components/UI";
+import { Btn, Card, MoneyInput, TextInput, PickerInput, ErrorMsg, MoneyDisplay, Hero } from "@/components/UI";
+import { usePlans } from "@/lib/usePlans";
 import { fmt, fmtDate } from "@/lib/constants";
+
+const PLAN_TYPES = [
+  { value: "trip",    label: "✈️  Trip"        },
+  { value: "weekend", label: "🌴  Weekend"     },
+  { value: "saving",  label: "🎯  Saving Goal" },
+  { value: "custom",  label: "📋  Custom"      },
+];
 
 function todayLocal() {
   const d = new Date();
@@ -16,92 +25,248 @@ function daysFromToday(n) {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
 }
 
+// Inclusive day count between two YYYY-MM-DD dates
+function daysBetween(start, end) {
+  const s = new Date(start + "T00:00:00");
+  const e = new Date(end + "T00:00:00");
+  if (isNaN(s) || isNaN(e) || e < s) return 0;
+  return Math.floor((e - s) / 86400000) + 1;
+}
+
+function planTypeIcon(type) {
+  return ({ trip: "✈️", weekend: "🌴", saving: "🎯", custom: "📋" })[type] || "📋";
+}
+
+// ─── Page export with Suspense for useSearchParams ──────────────────────────
 export default function PlanPage() {
+  return (
+    <Suspense fallback={
+      <AppShell>
+        <div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div>
+      </AppShell>
+    }>
+      <PlanPageContent />
+    </Suspense>
+  );
+}
+
+function PlanPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view") || "list";
+  const planId = searchParams.get("id");
+
+  const { loading, plans, addPlan, deletePlan, getPlan, error: loadError } = usePlans();
+
+  // ── Routing helpers ──
+  const goList   = () => router.push("/plan");
+  const goCreate = () => router.push("/plan?view=create");
+  const goDetail = (id) => router.push(`/plan?view=detail&id=${id}`);
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>
+          Loading your plans…
+        </div>
+      </AppShell>
+    );
+  }
+
+  // ─── DETAIL VIEW ────────────────────────────────────────────────────────
+  if (view === "detail" && planId) {
+    const plan = getPlan(planId);
+    if (!plan) {
+      // Plan not found — redirect to list
+      return (
+        <AppShell>
+          <div className="px-5 pt-10 pb-10">
+            <Card className="text-center">
+              <p className="text-lg mb-4" style={{ color: "var(--text-secondary)" }}>That plan no longer exists.</p>
+              <Btn onClick={goList}>Back to Plans</Btn>
+            </Card>
+          </div>
+        </AppShell>
+      );
+    }
+    return <PlanDetail plan={plan} onBack={goList} onDelete={async () => {
+      if (!window.confirm(`Delete "${plan.name}"? This can't be undone.`)) return;
+      await deletePlan(plan.id);
+      goList();
+    }} />;
+  }
+
+  // ─── CREATE VIEW ────────────────────────────────────────────────────────
+  if (view === "create") {
+    return <PlanCreate onCancel={goList} onCreated={(p) => goDetail(p.id)} addPlan={addPlan} />;
+  }
+
+  // ─── LIST VIEW (default) ────────────────────────────────────────────────
+  return (
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          Plan
+        </h1>
+
+        {loadError && <div className="mb-5"><ErrorMsg>{loadError}</ErrorMsg></div>}
+
+        {/* Hero */}
+        <div className="-mx-1 mb-5">
+          <Hero
+            label="Your plans"
+            accent={plans.length > 0 ? "green" : "muted"}
+            support={
+              plans.length > 0
+                ? "Tap a plan to see your daily allowance"
+                : "Create a plan for your next trip, weekend, or savings goal"
+            }
+          >
+            <p className="text-3xl sm:text-5xl font-bold" style={{ color: "var(--text-primary)" }}>
+              {plans.length === 0 ? "No plans yet" : `${plans.length} ${plans.length === 1 ? "plan" : "plans"}`}
+            </p>
+          </Hero>
+        </div>
+
+        {/* Create button */}
+        <div className="mb-5">
+          <Btn onClick={goCreate}>+ Create Plan</Btn>
+        </div>
+
+        {/* Plan list */}
+        {plans.length === 0 ? (
+          <Card className="text-center">
+            <div className="text-5xl mb-3">🗺️</div>
+            <p className="text-lg mb-2 font-bold" style={{ color: "var(--text-primary)" }}>Plan ahead with confidence</p>
+            <p className="text-base" style={{ color: "var(--text-secondary)" }}>
+              Plans help you spread a fixed amount of money across a stretch of days — perfect for a vacation, project, or gift fund.
+            </p>
+          </Card>
+        ) : (
+          <div className="space-y-3 mb-5">
+            {plans.map((p) => <PlanListItem key={p.id} plan={p} onClick={() => goDetail(p.id)} />)}
+          </div>
+        )}
+
+        <p className="text-center text-sm mt-2" style={{ color: "var(--text-tertiary)" }}>
+          Plans are for one-time budgets — separate from your monthly Money Left.
+        </p>
+      </div>
+    </AppShell>
+  );
+}
+
+// ─── Plan list item ─────────────────────────────────────────────────────────
+function PlanListItem({ plan, onClick }) {
+  const days = daysBetween(plan.start_date, plan.end_date);
+  const perDay = days > 0 ? (parseFloat(plan.amount) || 0) / days : 0;
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
+      style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
+    >
+      <span className="text-3xl flex-shrink-0">{planTypeIcon(plan.plan_type)}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-lg font-bold break-words mb-0.5" style={{ color: "var(--text-primary)" }}>
+          {plan.name}
+        </p>
+        <div className="flex items-baseline gap-2">
+          <MoneyDisplay value={perDay} size="medium" color="var(--accent-text)" />
+          <span className="text-sm" style={{ color: "var(--text-tertiary)" }}>/day</span>
+        </div>
+        <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>
+          {fmtDate(plan.start_date)} – {fmtDate(plan.end_date)} · {days} {days === 1 ? "day" : "days"}
+        </p>
+      </div>
+      <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
+    </button>
+  );
+}
+
+// ─── Create form ────────────────────────────────────────────────────────────
+function PlanCreate({ onCancel, onCreated, addPlan }) {
+  const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [startDate, setStartDate] = useState(todayLocal());
-  const [endDate, setEndDate] = useState(daysFromToday(14));
+  const [endDate, setEndDate] = useState(daysFromToday(6));
+  const [planType, setPlanType] = useState("trip");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const calc = useMemo(() => {
-    const total = parseFloat(amount) || 0;
-    if (!startDate || !endDate || total <= 0) return null;
+  const days = useMemo(() => daysBetween(startDate, endDate), [startDate, endDate]);
+  const total = parseFloat(amount) || 0;
+  const perDay = days > 0 && total > 0 ? total / days : 0;
 
-    const start = new Date(startDate + "T00:00:00");
-    const end = new Date(endDate + "T00:00:00");
+  const valid = name.trim() && total > 0 && days > 0;
 
-    if (isNaN(start) || isNaN(end)) return null;
-    if (end < start) return { error: "End date must be after start date." };
-
-    const ms = end - start;
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
-    if (days < 1) return { error: "Pick at least one day." };
-
-    const perDay = total / days;
-    return { days, perDay, total };
-  }, [amount, startDate, endDate]);
+  const submit = async (e) => {
+    e?.preventDefault();
+    if (!valid) return;
+    setSaving(true); setError("");
+    try {
+      const created = await addPlan({
+        name: name.trim(),
+        amount: total,
+        start_date: startDate,
+        end_date: endDate,
+        plan_type: planType,
+      });
+      onCreated(created);
+    } catch (e) {
+      setError(e.message || "Couldn't save your plan.");
+      setSaving(false);
+    }
+  };
 
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
-          Plan
+          New Plan
         </h1>
 
-        {/* Hero — daily allowance */}
+        {/* Live preview hero */}
         <div className="-mx-1 mb-5">
-          {calc?.error ? (
-            <Hero
-              label="Plan your money"
-              accent="warn"
-              support={calc.error}
-            >
-              <p className="text-3xl sm:text-4xl font-bold" style={{ color: "var(--warn)" }}>—</p>
-            </Hero>
-          ) : calc ? (
-            <Hero
-              label="Plan your money"
-              accent="green"
-              support={
-                <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(calc.total)}</span> from {fmtDate(startDate)} to {fmtDate(endDate)}</>
-              }
-              footer={
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
-                    <MoneyDisplay value={calc.total} size="medium" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
-                    <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{calc.days}</p>
-                  </div>
-                </div>
-              }
-            >
-              <MoneyDisplay value={calc.perDay} color="var(--accent-text)" size="hero" />
-              <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/day</span>
-            </Hero>
-          ) : (
-            <Hero
-              label="Plan your money"
-              accent="muted"
-              support="Enter an amount and dates below to see your daily allowance"
-            >
-              <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
-            </Hero>
-          )}
+          <Hero
+            label="Daily allowance"
+            accent={perDay > 0 ? "green" : "muted"}
+            support={
+              perDay > 0
+                ? <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(total)}</span> over {days} {days === 1 ? "day" : "days"}</>
+                : "Fill in the form to see your daily allowance"
+            }
+          >
+            {perDay > 0
+              ? <MoneyDisplay value={perDay} color="var(--accent-text)" size="hero" />
+              : <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+            }
+          </Hero>
         </div>
 
-        {/* Inputs below */}
         <Card className="mb-5">
-          <p className="text-base sm:text-lg mb-5" style={{ color: "var(--text-secondary)" }}>
-            Got a fixed amount of money for a trip, project, or stretch of time? Plan Mode tells you exactly what you can spend each day to make it last.
-          </p>
+          <form onSubmit={submit} className="space-y-5">
+            <TextInput
+              value={name}
+              onChange={setName}
+              label="Plan name"
+              placeholder="e.g. Spring Break"
+              autoFocus
+            />
 
-          <div className="space-y-5">
+            <PickerInput
+              value={planType}
+              onChange={setPlanType}
+              label="What are you planning for?"
+              options={PLAN_TYPES}
+            />
+
             <MoneyInput
               value={amount}
               onChange={setAmount}
               label="Total amount of money"
-              hint="The full amount you have to spend during this period."
+              hint="The full amount you have for this plan."
               large
             />
 
@@ -124,12 +289,96 @@ export default function PlanPage() {
                 className="w-full rounded-2xl border-2 px-4 py-3 text-xl"
               />
             </div>
-          </div>
+
+            {days === 0 && startDate && endDate && (
+              <ErrorMsg>End date must be on or after start date.</ErrorMsg>
+            )}
+
+            {error && <ErrorMsg>{error}</ErrorMsg>}
+
+            <div className="flex gap-3 pt-2">
+              <Btn variant="secondary" onClick={onCancel} className="flex-1">← Cancel</Btn>
+              <Btn type="submit" disabled={!valid || saving} className="flex-1">
+                {saving ? "Saving…" : "Save Plan ✓"}
+              </Btn>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </AppShell>
+  );
+}
+
+// ─── Detail view ────────────────────────────────────────────────────────────
+function PlanDetail({ plan, onBack, onDelete }) {
+  const days = daysBetween(plan.start_date, plan.end_date);
+  const total = parseFloat(plan.amount) || 0;
+  const perDay = days > 0 ? total / days : 0;
+
+  // Days elapsed relative to today (for context)
+  const today = todayLocal();
+  const daysIn = daysBetween(plan.start_date, today);
+  const isFuture = today < plan.start_date;
+  const isPast = today > plan.end_date;
+  const isActive = !isFuture && !isPast;
+
+  let statusLabel = "Upcoming";
+  if (isActive) statusLabel = `Day ${Math.min(daysIn, days)} of ${days}`;
+  if (isPast) statusLabel = "Completed";
+
+  return (
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
+        <button
+          onClick={onBack}
+          className="text-base font-semibold mb-4 flex items-center gap-1"
+          style={{ color: "var(--accent-text)" }}
+        >
+          ← Back to Plans
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-4xl">{planTypeIcon(plan.plan_type)}</span>
+          <h1 className="text-3xl sm:text-4xl font-bold break-words" style={{ color: "var(--text-primary)" }}>
+            {plan.name}
+          </h1>
+        </div>
+
+        <div className="-mx-1 mb-5">
+          <Hero
+            label={`Daily allowance · ${statusLabel}`}
+            accent="green"
+            support={
+              <>From <span className="font-bold" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.start_date)}</span> to <span className="font-bold" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.end_date)}</span></>
+            }
+            footer={
+              <div className="grid grid-cols-2 gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
+                  <MoneyDisplay value={total} size="medium" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
+                  <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{days}</p>
+                </div>
+              </div>
+            }
+          >
+            <MoneyDisplay value={perDay} color="var(--accent-text)" size="hero" />
+            <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/day</span>
+          </Hero>
+        </div>
+
+        <Card className="mb-5">
+          <p className="text-base sm:text-lg mb-3" style={{ color: "var(--text-secondary)" }}>
+            Spend up to <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(perDay)}/day</span> to make ${fmt(total)} last from {fmtDate(plan.start_date)} through {fmtDate(plan.end_date)}.
+          </p>
+          <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+            Plans are calculated locally and don't subtract from your monthly Money Left.
+          </p>
         </Card>
 
-        <p className="text-center text-sm mt-2" style={{ color: "var(--text-tertiary)" }}>
-          Plan Mode is for one-time budgets — trips, projects, or any fixed spending window.
-        </p>
+        <Btn variant="danger" small onClick={onDelete}>🗑️ Delete Plan</Btn>
       </div>
     </AppShell>
   );
