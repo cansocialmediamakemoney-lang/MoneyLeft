@@ -27,26 +27,22 @@ export default function DashboardPage() {
     if (daysLeft < 1) daysLeft = 1;
     const safePerDay = moneyLeft > 0 ? moneyLeft / daysLeft : 0;
 
-    // ── Spending pace ─────────────────────────────────────────────────────
-    // Total length of the budget period (in days), and how many days have passed.
-    // The "spendable" pool is income minus savings minus bills — what's actually
-    // available for day-to-day spending.
+    // Spending pace
     const spendable = income - savingsGoal - totalBills;
-    const periodDays = dim;                                  // days in this billing month
-    const daysPassed = Math.max(1, dayOfMonth);              // never divide by 0
+    const periodDays = dim;
+    const daysPassed = Math.max(1, dayOfMonth);
     const expectedPerDay = spendable > 0 ? spendable / periodDays : 0;
     const actualPerDay = totalSpent > 0 ? totalSpent / daysPassed : 0;
 
-    let paceLevel = "neutral"; // "neutral" | "good" | "warn" | "bad"
+    let paceLevel = "neutral";
     let paceTitle = "";
     let paceDetail = "";
 
     if (totalSpent === 0) {
       paceLevel = "neutral";
-      paceTitle = "No spending logged yet";
-      paceDetail = "Log your first purchase to track your pace.";
+      paceTitle = "No spending yet";
+      paceDetail = "Start tracking to see your spending pace.";
     } else if (expectedPerDay <= 0) {
-      // Edge case: no spendable budget configured
       paceLevel = "neutral";
       paceTitle = "Set a budget to see your pace";
       paceDetail = "Add income and bills in your Budget to compare.";
@@ -110,17 +106,17 @@ export default function DashboardPage() {
   const pos = c.moneyLeft >= 0;
   const nearLimit = c.moneyLeft > 0 && c.moneyLeft < c.income * 0.1;
 
-  // ── Pace pill colors ──
   const paceStyles = {
-    good:    { color: "var(--accent-text)", dot: "var(--accent)" },
-    warn:    { color: "var(--warn)",        dot: "var(--warn)"   },
-    bad:     { color: "var(--danger)",      dot: "var(--danger)" },
+    good:    { color: "var(--accent-text)",   dot: "var(--accent)" },
+    warn:    { color: "var(--warn)",          dot: "var(--warn)"   },
+    bad:     { color: "var(--danger)",        dot: "var(--danger)" },
     neutral: { color: "var(--text-secondary)", dot: "var(--text-tertiary)" },
   };
   const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
 
   return (
     <AppShell>
+      {/* ── Hero card: just the money number + pace insight ── */}
       <div className="px-4 pt-10 sm:pt-12 pb-2">
         <Hero
           label={`${MONTHS[today.getMonth()]} ${today.getFullYear()} · Money Left`}
@@ -139,26 +135,6 @@ export default function DashboardPage() {
               </span>
             </span>
           }
-          footer={
-            <div className="grid grid-cols-3 gap-3">
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
-                <MoneyDisplay value={c.safePerDay} size="medium" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Days left</p>
-                <p className="font-bold text-lg sm:text-2xl" style={{ color: "var(--text-primary)" }}>{c.daysLeft}</p>
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Bills due</p>
-                <MoneyDisplay
-                  value={c.upcomingTotal}
-                  size="medium"
-                  color={c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)"}
-                />
-              </div>
-            </div>
-          }
         >
           <MoneyDisplay
             value={c.moneyLeft}
@@ -169,13 +145,35 @@ export default function DashboardPage() {
         </Hero>
       </div>
 
+      {/* ── Secondary stats row (outside the hero card) ── */}
+      <div className="mx-4 mt-4 grid grid-cols-3 gap-3">
+        <div className="min-w-0 text-center">
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
+          <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-secondary)" }}>${fmt(c.safePerDay)}</p>
+        </div>
+        <div className="min-w-0 text-center" style={{ borderLeft: "1px solid var(--border-subtle)", borderRight: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days left</p>
+          <p className="text-lg sm:text-xl font-bold" style={{ color: "var(--text-secondary)" }}>{c.daysLeft}</p>
+        </div>
+        <div className="min-w-0 text-center">
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Bills due</p>
+          <p
+            className="text-lg sm:text-xl font-bold break-words"
+            style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-secondary)" }}
+          >
+            ${fmt(c.upcomingTotal)}
+          </p>
+        </div>
+      </div>
+
       {error && (
-        <div className="mx-4 mt-3 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
+        <div className="mx-4 mt-5 rounded-2xl p-4" style={{ background: "var(--danger-bg)", border: "1px solid var(--danger)", color: "var(--danger)" }}>
           {error}
         </div>
       )}
 
-      <div className="mt-5">
+      <div className="mt-6">
+        {/* Bill warnings */}
         {c.upcoming.map((b) => (
           <div
             key={b.id}
@@ -203,11 +201,17 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mx-4 space-y-3 mb-5">
-          <Link href="/spending?from=dashboard" className="block"><Btn>➕ Log a Purchase</Btn></Link>
-          <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
+        {/* Stacked action buttons with consistent spacing */}
+        <div className="mx-4 space-y-3 mb-6">
+          <Link href="/spending?from=dashboard" className="block">
+            <Btn>➕ Log a Purchase</Btn>
+          </Link>
+          <Link href="/bills" className="block">
+            <Btn variant="secondary">📋 My Bills</Btn>
+          </Link>
         </div>
 
+        {/* Secondary content cards */}
         <Card className="mx-4 mb-4">
           <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
