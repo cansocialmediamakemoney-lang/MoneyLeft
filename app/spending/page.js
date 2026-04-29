@@ -1,14 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyInput, PickerInput, TextInput, ErrorMsg } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { todayStr, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
+// Allowed return paths. Whitelist so a malicious link can't redirect anywhere.
+const RETURN_PATHS = {
+  history:   "/history",
+  dashboard: "/dashboard",
+};
+
 export default function SpendingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const returnTo = RETURN_PATHS[from] || "/dashboard";
+
   const { addEntry } = useBudgetData();
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Groceries");
@@ -28,7 +38,8 @@ export default function SpendingPage() {
         amount: parseFloat(amount),
         note: note.trim() || null,
       });
-      router.push("/dashboard");
+      // Route back to where they came from, with a flag so that page can show a toast.
+      router.push(`${returnTo}?logged=1`);
       router.refresh();
     } catch (e) {
       setError(e.message || "Couldn't save your purchase. Please try again.");
@@ -37,10 +48,13 @@ export default function SpendingPage() {
   };
 
   return (
-    <AppShell subtitle="Log a Purchase">
-      <div className="px-5 pt-6 pb-10">
+    <AppShell>
+      <div className="px-5 pt-10 sm:pt-12 pb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          Log a Purchase
+        </h1>
+
         <Card>
-          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>What did you spend?</h2>
           <form onSubmit={submit} className="space-y-5">
             <MoneyInput value={amount} onChange={setAmount} label="Amount" large autoFocus />
             <PickerInput value={category} onChange={setCategory} label="Category"
@@ -57,7 +71,7 @@ export default function SpendingPage() {
             </div>
             <ErrorMsg>{error}</ErrorMsg>
             <div className="flex gap-3 pt-2">
-              <Btn variant="secondary" onClick={() => router.push("/dashboard")} className="flex-1">← Cancel</Btn>
+              <Btn variant="secondary" onClick={() => router.push(returnTo)} className="flex-1">← Cancel</Btn>
               <Btn type="submit" disabled={!parseFloat(amount) || saving} className="flex-1">
                 {saving ? "Saving…" : "Save ✓"}
               </Btn>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, PickerInput, MoneyDisplay, Hero } from "@/components/UI";
 import { createClient } from "@/lib/supabase-browser";
@@ -11,19 +12,43 @@ import { fmt, fmtDate, MONTHS, monthRange, currentMonthKey, SPEND_ICONS } from "
 export default function HistoryPage() {
   const { user, loading: profileLoading } = useBudgetData();
   const supabase = createClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const justLogged = searchParams.get("logged") === "1";
+
   const [selectedMonth, setSelectedMonth] = useState(currentMonthKey());
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
+  // When we arrive with ?logged=1, show a toast and clean the URL.
+  useEffect(() => {
+    if (!justLogged) return;
+    setShowToast(true);
+    setRefreshKey((k) => k + 1); // force a refetch
+    // Strip the query param so toast doesn't reappear on back/forward navigation
+    router.replace("/history", { scroll: false });
+    const t = setTimeout(() => setShowToast(false), 2500);
+    return () => clearTimeout(t);
+  }, [justLogged, router]);
+
+  // Fetch entries — re-runs when month changes or refreshKey bumps.
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     setLoading(true);
     const { start, end } = monthRange(selectedMonth);
     supabase.from("spending_entries").select("*")
       .eq("user_id", user.id).gte("spent_on", start).lte("spent_on", end)
       .order("spent_on", { ascending: false })
-      .then(({ data }) => { setEntries(data || []); setLoading(false); });
-  }, [user, selectedMonth, supabase]);
+      .then(({ data }) => {
+        if (cancelled) return;
+        setEntries(data || []);
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [user, selectedMonth, supabase, refreshKey]);
 
   const total = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
   const isCurrentMonth = selectedMonth === currentMonthKey();
@@ -48,30 +73,18 @@ export default function HistoryPage() {
           History
         </h1>
 
-        {/* Hero — total spent */}
         <div className="-mx-1 mb-5">
           {loading ? (
-            <Hero
-              label="Spending history"
-              accent="muted"
-              support="Loading…"
-            >
+            <Hero label="Spending history" accent="muted" support="Loading…">
               <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
             </Hero>
           ) : entries.length === 0 ? (
             <Hero
               label="Spending history"
               accent="muted"
-              support={
-                isCurrentMonth
-                  ? "Start by logging your first purchase"
-                  : `No purchases logged in ${selectedLabel}`
-              }
+              support={isCurrentMonth ? "Start by logging your first purchase" : `No purchases logged in ${selectedLabel}`}
             >
-              <p
-                className="text-3xl sm:text-5xl font-bold"
-                style={{ color: "var(--text-primary)" }}
-              >
+              <p className="text-3xl sm:text-5xl font-bold" style={{ color: "var(--text-primary)" }}>
                 No activity yet
               </p>
             </Hero>
@@ -98,26 +111,22 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {/* Empty state action */}
         {!loading && entries.length === 0 && isCurrentMonth && (
           <div className="mb-5">
-            <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
+            <Link href="/spending?from=history"><Btn>+ Log a Purchase</Btn></Link>
           </div>
         )}
 
-        {/* Month picker */}
         <Card className="mb-5">
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
         </Card>
 
-        {/* Action button when there's data + current month */}
         {!loading && entries.length > 0 && isCurrentMonth && (
           <div className="mb-5">
-            <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
+            <Link href="/spending?from=history"><Btn>+ Log a Purchase</Btn></Link>
           </div>
         )}
 
-        {/* Transaction list */}
         {!loading && entries.length > 0 && (
           <Card>
             <p className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
@@ -143,6 +152,29 @@ export default function HistoryPage() {
           </Card>
         )}
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-40 rounded-full px-5 py-3 shadow-lg flex items-center gap-2 text-base font-semibold"
+          style={{
+            bottom: "calc(5.5rem + env(safe-area-inset-bottom, 0))",
+            background: "var(--accent)",
+            color: "var(--text-on-accent)",
+            animation: "ml-toast-in 0.3s ease-out",
+          }}
+        >
+          <span>✓</span>
+          <span>Purchase logged</span>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes ml-toast-in {
+          from { opacity: 0; transform: translate(-50%, 0.5rem); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
     </AppShell>
   );
 }
