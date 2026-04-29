@@ -89,7 +89,14 @@ export default function SettingsPage() {
 
         <SectionLabel>Support</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
-          <ItemExternal href="mailto:[email protected]" icon="✉️" label="Contact Support" hint="[email protected]" />
+          <ItemLink href="/privacy" icon="🔏" label="Privacy Policy" hint="How we protect your data" />
+          <Divider />
+          <ItemExternal
+            href="mailto:moneyleft.support@gmail.com?subject=MoneyLeft%20Support%20Request"
+            icon="✉️"
+            label="Email Support"
+            hint="moneyleft.support@gmail.com"
+          />
           <Divider />
           <ItemReadonly icon="ℹ️" label="App Version" value="1.0" />
         </Card>
