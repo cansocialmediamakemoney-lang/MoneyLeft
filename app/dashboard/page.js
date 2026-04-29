@@ -27,6 +27,47 @@ export default function DashboardPage() {
     if (daysLeft < 1) daysLeft = 1;
     const safePerDay = moneyLeft > 0 ? moneyLeft / daysLeft : 0;
 
+    // ── Spending pace ─────────────────────────────────────────────────────
+    // Total length of the budget period (in days), and how many days have passed.
+    // The "spendable" pool is income minus savings minus bills — what's actually
+    // available for day-to-day spending.
+    const spendable = income - savingsGoal - totalBills;
+    const periodDays = dim;                                  // days in this billing month
+    const daysPassed = Math.max(1, dayOfMonth);              // never divide by 0
+    const expectedPerDay = spendable > 0 ? spendable / periodDays : 0;
+    const actualPerDay = totalSpent > 0 ? totalSpent / daysPassed : 0;
+
+    let paceLevel = "neutral"; // "neutral" | "good" | "warn" | "bad"
+    let paceTitle = "";
+    let paceDetail = "";
+
+    if (totalSpent === 0) {
+      paceLevel = "neutral";
+      paceTitle = "No spending logged yet";
+      paceDetail = "Log your first purchase to track your pace.";
+    } else if (expectedPerDay <= 0) {
+      // Edge case: no spendable budget configured
+      paceLevel = "neutral";
+      paceTitle = "Set a budget to see your pace";
+      paceDetail = "Add income and bills in your Budget to compare.";
+    } else if (actualPerDay <= expectedPerDay) {
+      paceLevel = "good";
+      paceTitle = "On track";
+      paceDetail = `Spending $${fmt(actualPerDay)}/day vs your $${fmt(expectedPerDay)}/day pace.`;
+    } else {
+      const overBy = actualPerDay - expectedPerDay;
+      const overPct = overBy / expectedPerDay;
+      if (overPct <= 0.15) {
+        paceLevel = "warn";
+        paceTitle = "Slightly ahead of pace";
+        paceDetail = `Slow down by about $${fmt(overBy)}/day to stay on track.`;
+      } else {
+        paceLevel = "bad";
+        paceTitle = "Spending too fast";
+        paceDetail = `Cut back by $${fmt(overBy)}/day or you may run short.`;
+      }
+    }
+
     const upcoming = bills.filter((b) => {
       const d = parseInt(b.due_day) || 1;
       return d >= dayOfMonth && d <= dayOfMonth + 7;
@@ -38,7 +79,12 @@ export default function DashboardPage() {
       return acc;
     }, {});
 
-    return { income, savingsGoal, totalBills, totalSpent, moneyLeft, daysLeft, safePerDay, upcoming, upcomingTotal, byCategory };
+    return {
+      income, savingsGoal, totalBills, totalSpent, moneyLeft,
+      daysLeft, safePerDay,
+      paceLevel, paceTitle, paceDetail,
+      upcoming, upcomingTotal, byCategory,
+    };
   }, [profile, bills, entries, dayOfMonth, dim]);
 
   if (loading) return (
@@ -64,6 +110,15 @@ export default function DashboardPage() {
   const pos = c.moneyLeft >= 0;
   const nearLimit = c.moneyLeft > 0 && c.moneyLeft < c.income * 0.1;
 
+  // ── Pace pill colors ──
+  const paceStyles = {
+    good:    { color: "var(--accent-text)", dot: "var(--accent)" },
+    warn:    { color: "var(--warn)",        dot: "var(--warn)"   },
+    bad:     { color: "var(--danger)",      dot: "var(--danger)" },
+    neutral: { color: "var(--text-secondary)", dot: "var(--text-tertiary)" },
+  };
+  const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
+
   return (
     <AppShell>
       <div className="px-4 pt-10 sm:pt-12 pb-2">
@@ -71,9 +126,18 @@ export default function DashboardPage() {
           label={`${MONTHS[today.getMonth()]} ${today.getFullYear()} · Money Left`}
           accent={pos ? "green" : "danger"}
           support={
-            pos
-              ? <>You can spend <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(c.safePerDay)}/day</span> for the rest of the month</>
-              : "You're over budget this month"
+            <span className="inline-flex flex-col items-center gap-1">
+              <span className="inline-flex items-center gap-2 text-base sm:text-lg font-semibold" style={{ color: paceStyle.color }}>
+                <span
+                  className="inline-block rounded-full"
+                  style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }}
+                />
+                {c.paceTitle}
+              </span>
+              <span className="text-sm sm:text-base" style={{ color: "var(--text-tertiary)" }}>
+                {c.paceDetail}
+              </span>
+            </span>
           }
           footer={
             <div className="grid grid-cols-3 gap-3">
@@ -139,7 +203,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-<div className="mx-4 space-y-3 mb-5">
+        <div className="mx-4 space-y-3 mb-5">
           <Link href="/spending?from=dashboard" className="block"><Btn>➕ Log a Purchase</Btn></Link>
           <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
         </div>
