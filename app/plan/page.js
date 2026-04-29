@@ -159,7 +159,10 @@ function PlanPageContent() {
 // ─── Plan list item ─────────────────────────────────────────────────────────
 function PlanListItem({ plan, onClick }) {
   const days = daysBetween(plan.start_date, plan.end_date);
-  const perDay = days > 0 ? (parseFloat(plan.amount) || 0) / days : 0;
+  const total = parseFloat(plan.amount) || 0;
+  const reserve = parseFloat(plan.reserve_amount) || 0;
+  const spendable = Math.max(0, total - reserve);
+  const perDay = days > 0 ? spendable / days : 0;
 
   return (
     <button
@@ -192,12 +195,16 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
   const [startDate, setStartDate] = useState(todayLocal());
   const [endDate, setEndDate] = useState(daysFromToday(6));
   const [planType, setPlanType] = useState("trip");
+  const [reserveAmount, setReserveAmount] = useState("");
+  const [reserveLabel, setReserveLabel] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const days = useMemo(() => daysBetween(startDate, endDate), [startDate, endDate]);
   const total = parseFloat(amount) || 0;
-  const perDay = days > 0 && total > 0 ? total / days : 0;
+  const reserve = parseFloat(reserveAmount) || 0;
+  const spendable = Math.max(0, total - reserve);
+  const perDay = days > 0 && spendable > 0 ? spendable / days : 0;
 
   const valid = name.trim() && total > 0 && days > 0;
 
@@ -212,12 +219,26 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
         start_date: startDate,
         end_date: endDate,
         plan_type: planType,
+        reserve_amount: reserve > 0 ? reserve : null,
+        reserve_label: reserve > 0 && reserveLabel.trim() ? reserveLabel.trim() : null,
       });
       onCreated(created);
     } catch (e) {
       setError(e.message || "Couldn't save your plan.");
       setSaving(false);
     }
+  };
+
+  const heroSupport = () => {
+    if (perDay <= 0) return "Fill in the form to see your daily allowance";
+    if (reserve > 0) {
+      const label = reserveLabel.trim() || "later";
+      return <>
+        <span className="font-bold" style={{ color: "var(--warn)" }}>${fmt(reserve)} set aside for {label}</span>
+        {" · "}${fmt(spendable)} to spend over {days} {days === 1 ? "day" : "days"}
+      </>;
+    }
+    return <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(total)}</span> over {days} {days === 1 ? "day" : "days"}</>;
   };
 
   return (
@@ -232,11 +253,7 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
           <Hero
             label="Daily allowance"
             accent={perDay > 0 ? "green" : "muted"}
-            support={
-              perDay > 0
-                ? <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(total)}</span> over {days} {days === 1 ? "day" : "days"}</>
-                : "Fill in the form to see your daily allowance"
-            }
+            support={heroSupport()}
           >
             {perDay > 0
               ? <MoneyDisplay value={perDay} color="var(--accent-text)" size="hero" />
@@ -294,6 +311,32 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
               <ErrorMsg>End date must be on or after start date.</ErrorMsg>
             )}
 
+            {/* Optional: set aside section */}
+            <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "1.25rem" }}>
+              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+                Set aside for later{" "}
+                <span className="text-base font-normal" style={{ color: "var(--text-tertiary)" }}>(optional)</span>
+              </p>
+              <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
+                Reserve part of your total — the rest becomes your daily spending budget.
+              </p>
+              <div className="space-y-4">
+                <MoneyInput
+                  value={reserveAmount}
+                  onChange={setReserveAmount}
+                  label="Amount to set aside"
+                />
+                {reserve > 0 && (
+                  <TextInput
+                    value={reserveLabel}
+                    onChange={setReserveLabel}
+                    label="What's it for?"
+                    placeholder="e.g. hotel deposit"
+                  />
+                )}
+              </div>
+            </div>
+
             {error && <ErrorMsg>{error}</ErrorMsg>}
 
             <div className="flex gap-3 pt-2">
@@ -313,7 +356,10 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
 function PlanDetail({ plan, onBack, onDelete }) {
   const days = daysBetween(plan.start_date, plan.end_date);
   const total = parseFloat(plan.amount) || 0;
-  const perDay = days > 0 ? total / days : 0;
+  const reserve = parseFloat(plan.reserve_amount) || 0;
+  const reserveLabel = plan.reserve_label || "later";
+  const spendable = Math.max(0, total - reserve);
+  const perDay = days > 0 ? spendable / days : 0;
 
   // Days elapsed relative to today (for context)
   const today = todayLocal();
@@ -354,8 +400,10 @@ function PlanDetail({ plan, onBack, onDelete }) {
             footer={
               <div className="grid grid-cols-2 gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
-                  <MoneyDisplay value={total} size="medium" />
+                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
+                    {reserve > 0 ? "Spendable" : "Total"}
+                  </p>
+                  <MoneyDisplay value={reserve > 0 ? spendable : total} size="medium" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
@@ -371,8 +419,13 @@ function PlanDetail({ plan, onBack, onDelete }) {
 
         <Card className="mb-5">
           <p className="text-base sm:text-lg mb-3" style={{ color: "var(--text-secondary)" }}>
-            Spend up to <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(perDay)}/day</span> to make ${fmt(total)} last from {fmtDate(plan.start_date)} through {fmtDate(plan.end_date)}.
+            Spend up to <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(perDay)}/day</span> to make ${fmt(reserve > 0 ? spendable : total)} last from {fmtDate(plan.start_date)} through {fmtDate(plan.end_date)}.
           </p>
+          {reserve > 0 && (
+            <p className="text-base sm:text-lg mb-3" style={{ color: "var(--warn)" }}>
+              🔒 <span className="font-bold">${fmt(reserve)}</span> is set aside for {reserveLabel}.
+            </p>
+          )}
           <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
             Plans are calculated locally and don't subtract from your monthly Money Left.
           </p>
