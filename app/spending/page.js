@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyInput, PickerInput, TextInput, ErrorMsg } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { todayStr, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
-// Allowed return paths. Whitelist so a malicious link can't redirect anywhere.
 const RETURN_PATHS = {
   history:   "/history",
   dashboard: "/dashboard",
 };
 
 export default function SpendingPage() {
+  return (
+    <Suspense fallback={
+      <AppShell>
+        <div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div>
+      </AppShell>
+    }>
+      <SpendingContent />
+    </Suspense>
+  );
+}
+
+function SpendingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
@@ -38,7 +49,6 @@ export default function SpendingPage() {
         amount: parseFloat(amount),
         note: note.trim() || null,
       });
-      // Route back to where they came from, with a flag so that page can show a toast.
       router.push(`${returnTo}?logged=1`);
       router.refresh();
     } catch (e) {

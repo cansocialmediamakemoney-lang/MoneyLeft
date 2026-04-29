@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
@@ -10,6 +10,18 @@ import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, fmtDate, MONTHS, monthRange, currentMonthKey, SPEND_ICONS } from "@/lib/constants";
 
 export default function HistoryPage() {
+  return (
+    <Suspense fallback={
+      <AppShell>
+        <div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div>
+      </AppShell>
+    }>
+      <HistoryContent />
+    </Suspense>
+  );
+}
+
+function HistoryContent() {
   const { user, loading: profileLoading } = useBudgetData();
   const supabase = createClient();
   const router = useRouter();
@@ -22,18 +34,15 @@ export default function HistoryPage() {
   const [showToast, setShowToast] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // When we arrive with ?logged=1, show a toast and clean the URL.
   useEffect(() => {
     if (!justLogged) return;
     setShowToast(true);
-    setRefreshKey((k) => k + 1); // force a refetch
-    // Strip the query param so toast doesn't reappear on back/forward navigation
+    setRefreshKey((k) => k + 1);
     router.replace("/history", { scroll: false });
     const t = setTimeout(() => setShowToast(false), 2500);
     return () => clearTimeout(t);
   }, [justLogged, router]);
 
-  // Fetch entries — re-runs when month changes or refreshKey bumps.
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -153,7 +162,6 @@ export default function HistoryPage() {
         )}
       </div>
 
-      {/* Toast */}
       {showToast && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-40 rounded-full px-5 py-3 shadow-lg flex items-center gap-2 text-base font-semibold"

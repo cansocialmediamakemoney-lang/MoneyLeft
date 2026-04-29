@@ -139,7 +139,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mx-4 space-y-3 mb-5">
+<div className="mx-4 space-y-3 mb-5">
           <Link href="/spending?from=dashboard" className="block"><Btn>➕ Log a Purchase</Btn></Link>
           <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
         </div>
