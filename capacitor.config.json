@@ -1,0 +1,9 @@
+{
+  "appId": "com.moneyleft.app",
+  "appName": "MoneyLeft",
+  "webDir": "public",
+  "server": {
+    "url": "https://project-lw506.vercel.app",
+    "cleartext": true
+  }
+}
