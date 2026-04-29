@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
-import { Card, MoneyInput, MoneyDisplay } from "@/components/UI";
-import { fmt } from "@/lib/constants";
+import { Card, MoneyInput, MoneyDisplay, Hero } from "@/components/UI";
+import { fmt, fmtDate } from "@/lib/constants";
 
 function todayLocal() {
   const d = new Date();
@@ -46,6 +46,51 @@ export default function PlanPage() {
           Plan
         </h1>
 
+        {/* Hero — daily allowance */}
+        <div className="-mx-1 mb-5">
+          {calc?.error ? (
+            <Hero
+              label="Plan your money"
+              accent="warn"
+              support={calc.error}
+            >
+              <p className="text-3xl sm:text-4xl font-bold" style={{ color: "var(--warn)" }}>—</p>
+            </Hero>
+          ) : calc ? (
+            <Hero
+              label="Plan your money"
+              accent="green"
+              support={
+                <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(calc.total)}</span> from {fmtDate(startDate)} to {fmtDate(endDate)}</>
+              }
+              footer={
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
+                    <MoneyDisplay value={calc.total} size="medium" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
+                    <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{calc.days}</p>
+                  </div>
+                </div>
+              }
+            >
+              <MoneyDisplay value={calc.perDay} color="var(--accent-text)" size="hero" />
+              <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/day</span>
+            </Hero>
+          ) : (
+            <Hero
+              label="Plan your money"
+              accent="muted"
+              support="Enter an amount and dates below to see your daily allowance"
+            >
+              <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+            </Hero>
+          )}
+        </div>
+
+        {/* Inputs below */}
         <Card className="mb-5">
           <p className="text-base sm:text-lg mb-5" style={{ color: "var(--text-secondary)" }}>
             Got a fixed amount of money for a trip, project, or stretch of time? Plan Mode tells you exactly what you can spend each day to make it last.
@@ -82,48 +127,7 @@ export default function PlanPage() {
           </div>
         </Card>
 
-        {calc?.error && (
-          <div
-            className="rounded-2xl p-4 mb-5 text-center"
-            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)", color: "var(--warn)" }}
-          >
-            ⚠️ {calc.error}
-          </div>
-        )}
-
-        {calc && !calc.error && (
-          <div
-            className="rounded-2xl p-7 sm:p-8 text-center mb-5 overflow-hidden"
-            style={{ background: "var(--bg-elevated)", border: "1px solid var(--accent)" }}
-          >
-            <p className="text-xs sm:text-sm font-medium mb-2 uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-              You can spend
-            </p>
-            <MoneyDisplay value={calc.perDay} color="var(--accent-text)" size="hero" />
-            <p className="text-base sm:text-lg mt-2" style={{ color: "var(--text-secondary)" }}>
-              per day for {calc.days} {calc.days === 1 ? "day" : "days"}
-            </p>
-
-            <div className="mt-6 pt-4 grid grid-cols-2 gap-4" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-              <div className="min-w-0">
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Total</p>
-                <MoneyDisplay value={calc.total} size="medium" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
-                <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{calc.days}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!calc && (
-          <p className="text-center text-base" style={{ color: "var(--text-tertiary)" }}>
-            Enter an amount and dates to see your daily allowance.
-          </p>
-        )}
-
-        <p className="text-center text-sm mt-6" style={{ color: "var(--text-tertiary)" }}>
+        <p className="text-center text-sm mt-2" style={{ color: "var(--text-tertiary)" }}>
           Plan Mode is for one-time budgets — trips, projects, or any fixed spending window.
         </p>
       </div>

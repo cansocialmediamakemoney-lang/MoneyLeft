@@ -92,29 +92,10 @@ export function ErrorMsg({ children }) {
   );
 }
 
-/**
- * MoneyDisplay — the big hero money number used across the app.
- *
- * - Auto-abbreviates large numbers ($1.2M, $10.5K, etc.)
- * - Drops .00 from whole numbers
- * - Dynamically shrinks font size when the rendered string is long
- * - Renders the $ slightly smaller than the number
- * - Renders K/M suffix slightly lighter and smaller
- *
- * Props:
- *   value        — the dollar amount (number or string)
- *   negative     — show a minus sign before the $
- *   color        — CSS color for the main number (defaults to text-primary)
- *   size         — "hero" | "large" | "medium"
- *   className    — pass-through classes for container
- */
 export function MoneyDisplay({ value, negative = false, color, size = "hero", className = "" }) {
   const { value: num, suffix } = fmtCompact(value);
-
-  // Total visible character count (including $, minus, suffix)
   const charCount = num.length + (suffix ? 1 : 0) + 1 + (negative ? 1 : 0);
 
-  // Dynamic font sizing — shorter values get the full impact, longer ones shrink
   const sizeMap = {
     hero: charCount > 9 ? "text-[2rem] sm:text-4xl"
         : charCount > 7 ? "text-[2.5rem] sm:text-5xl"
@@ -128,7 +109,6 @@ export function MoneyDisplay({ value, negative = false, color, size = "hero", cl
           :                 "text-3xl sm:text-4xl",
   };
 
-  // The $ and suffix are sized relative to the main number using em
   const dollarStyle = { fontSize: "0.6em", verticalAlign: "0.15em", fontWeight: 700, opacity: 0.7 };
   const suffixStyle = { fontSize: "0.55em", fontWeight: 700, opacity: 0.7, marginLeft: "0.05em" };
 
@@ -142,5 +122,64 @@ export function MoneyDisplay({ value, negative = false, color, size = "hero", cl
       {num}
       {suffix && <span style={suffixStyle}>{suffix}</span>}
     </span>
+  );
+}
+
+/**
+ * Hero — the standard hero block used on every main tab.
+ *
+ * Structure:
+ *   [tiny uppercase label]      ← context
+ *   [BIG HERO NUMBER/TEXT]      ← the answer
+ *   [supporting text below]     ← short explanation
+ *   [optional footer slot]      ← extra stats, divider footer, etc.
+ *
+ * Props:
+ *   label       — small uppercase context label (top)
+ *   children    — the dominant hero element (use <MoneyDisplay> or plain text/JSX)
+ *   support     — short supporting text below the hero
+ *   footer      — optional JSX rendered below a divider
+ *   accent      — "green" (default) | "danger" | "warn" | "muted" — controls the border + glow
+ *   className   — extra classes
+ */
+export function Hero({ label, children, support, footer, accent = "green", className = "" }) {
+  const accentColors = {
+    green:  "var(--accent)",
+    danger: "var(--danger)",
+    warn:   "var(--warn)",
+    muted:  "var(--border-subtle)",
+  };
+  const borderColor = accentColors[accent] || accentColors.green;
+
+  return (
+    <div
+      className={`rounded-2xl p-7 sm:p-9 text-center overflow-hidden ${className}`}
+      style={{
+        background: "var(--bg-elevated)",
+        border: `1px solid ${borderColor}`,
+      }}
+    >
+      {label && (
+        <p className="text-xs sm:text-sm font-medium mb-3 uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
+          {label}
+        </p>
+      )}
+
+      <div className="leading-none">
+        {children}
+      </div>
+
+      {support && (
+        <p className="text-base sm:text-lg mt-3" style={{ color: "var(--text-secondary)" }}>
+          {support}
+        </p>
+      )}
+
+      {footer && (
+        <div className="mt-6 pt-5" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+          {footer}
+        </div>
+      )}
+    </div>
   );
 }

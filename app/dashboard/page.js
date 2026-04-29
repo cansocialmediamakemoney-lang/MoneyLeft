@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, Row, MoneyDisplay } from "@/components/UI";
+import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
@@ -66,10 +66,44 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="px-5 pt-10 sm:pt-12 pb-2">
-        <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: "var(--text-primary)" }}>
-          {MONTHS[today.getMonth()]} {today.getFullYear()}
-        </h1>
+      {/* Hero — Money Left */}
+      <div className="px-4 pt-10 sm:pt-12 pb-2">
+        <Hero
+          label={`${MONTHS[today.getMonth()]} ${today.getFullYear()} · Money Left`}
+          accent={pos ? "green" : "danger"}
+          support={
+            pos
+              ? <>You can spend <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(c.safePerDay)}/day</span> for the rest of the month</>
+              : "You're over budget this month"
+          }
+          footer={
+            <div className="grid grid-cols-3 gap-3">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
+                <MoneyDisplay value={c.safePerDay} size="medium" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Days left</p>
+                <p className="font-bold text-lg sm:text-2xl" style={{ color: "var(--text-primary)" }}>{c.daysLeft}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Bills due</p>
+                <MoneyDisplay
+                  value={c.upcomingTotal}
+                  size="medium"
+                  color={c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)"}
+                />
+              </div>
+            </div>
+          }
+        >
+          <MoneyDisplay
+            value={c.moneyLeft}
+            negative={!pos}
+            color={pos ? "var(--accent-text)" : "var(--danger)"}
+            size="hero"
+          />
+        </Hero>
       </div>
 
       {error && (
@@ -78,142 +112,76 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div
-        className="mx-4 mt-4 rounded-2xl p-7 sm:p-9 text-center mb-5 overflow-hidden"
-        style={{
-          background: "var(--bg-elevated)",
-          border: `1px solid ${pos ? "var(--accent)" : "var(--danger)"}`,
-        }}
-      >
-        <p className="text-xs sm:text-sm font-medium mb-3 uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-          Money Left
-        </p>
-        <MoneyDisplay
-          value={c.moneyLeft}
-          negative={!pos}
-          color={pos ? "var(--accent-text)" : "var(--danger)"}
-          size="hero"
-        />
-        <div className="mt-7 pt-5 grid grid-cols-3 gap-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Safe to spend</p>
-            <MoneyDisplay value={c.safePerDay} size="medium" />
-            <p className="text-xs mt-1" style={{ color: "var(--text-tertiary)" }}>per day</p>
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Days to pay day</p>
-            <p className="font-bold text-lg sm:text-2xl" style={{ color: "var(--text-primary)" }}>{c.daysLeft}</p>
-            <p className="text-xs mt-1" style={{ color: "var(--text-tertiary)" }}>days left</p>
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm mb-1" style={{ color: "var(--text-tertiary)" }}>Bills coming</p>
-            <MoneyDisplay
-              value={c.upcomingTotal}
-              size="medium"
-              color={c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)"}
-            />
-            <p className="text-xs mt-1" style={{ color: "var(--text-tertiary)" }}>next 7 days</p>
-          </div>
-        </div>
-      </div>
-
-      {c.upcoming.map((b) => (
-        <div
-          key={b.id}
-          className="mx-4 mb-3 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
-          style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
-        >
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className="text-2xl flex-shrink-0">⚠️</span>
-            <div className="min-w-0 flex-1">
-              <p className="text-base sm:text-lg font-bold break-words" style={{ color: "var(--warn)" }}>{b.name} due soon</p>
-              <p className="text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>Due on the {ordinal(b.due_day)}</p>
-            </div>
-          </div>
-          <p className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--warn)" }}>${fmt(b.amount)}</p>
-        </div>
-      ))}
-
-      {nearLimit && (
-        <div
-          className="mx-4 mb-3 rounded-2xl px-5 py-4 text-center"
-          style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
-        >
-          <p className="text-xl font-bold" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
-          <p className="text-lg mt-1" style={{ color: "var(--text-secondary)" }}>Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
-        </div>
-      )}
-
-      <div className="mx-4 space-y-3 mb-5">
-        <Link href="/spending" className="block"><Btn>➕ Log a Purchase</Btn></Link>
-        <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
-      </div>
-      
-      <Card className="mx-4 mb-4">
-        <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
-        <div className="space-y-3">
-          <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
-          <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
-          <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} red />
-          <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
-          <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-            <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(c.moneyLeft)}`} bold large green={pos} red={!pos} />
-          </div>
-        </div>
-      </Card>
-
-      {c.totalSpent > 0 && (
-        <Card className="mx-4 mb-4">
-          <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
-          {SPEND_CATS.map((cat) => {
-            const amt = c.byCategory[cat];
-            if (!amt) return null;
-            return (
-              <div key={cat} className="flex justify-between items-center mb-3 last:mb-0 gap-3">
-                <span className="text-base sm:text-lg min-w-0 break-words" style={{ color: "var(--text-secondary)" }}>{SPEND_ICONS[cat]} {cat}</span>
-                <span className="text-lg sm:text-xl font-bold flex-shrink-0 break-words" style={{ color: "var(--text-primary)" }}>${fmt(amt)}</span>
-              </div>
-            );
-          })}
-        </Card>
-      )}
-
-      {entries.length > 0 && (
-        <Card className="mx-4 mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
-            <Link href="/history" className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>See all →</Link>
-          </div>
-          {entries.slice(0,4).map((e) => (
-            <div key={e.id} className="flex items-center justify-between py-3 last:border-0 gap-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+      <div className="mt-5">
+        {/* Bill warnings */}
+        {c.upcoming.map((b) => (
+          <div
+            key={b.id}
+            className="mx-4 mb-3 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+          >
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <span className="text-2xl flex-shrink-0">⚠️</span>
               <div className="min-w-0 flex-1">
-                <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
-                <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
-              </div>
-              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                <span className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
-                <button onClick={() => deleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
+                <p className="text-base sm:text-lg font-bold break-words" style={{ color: "var(--warn)" }}>{b.name} due soon</p>
+                <p className="text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>Due on the {ordinal(b.due_day)}</p>
               </div>
             </div>
-          ))}
-        </Card>
-      )}
-
-      <Link href="/budget-edit" className="block mx-4 mb-4">
-        <div
-          className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
-          style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
-        >
-          <span className="text-3xl flex-shrink-0">⚙️</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Edit My Budget</p>
-            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Income, savings goal, pay date</p>
+            <p className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--warn)" }}>${fmt(b.amount)}</p>
           </div>
-          <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
-        </div>
-      </Link>
+        ))}
 
-      <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
-    </AppShell>
-  );
-}
+        {nearLimit && (
+          <div
+            className="mx-4 mb-3 rounded-2xl px-5 py-4 text-center"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+          >
+            <p className="text-xl font-bold" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
+            <p className="text-lg mt-1" style={{ color: "var(--text-secondary)" }}>Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
+          </div>
+        )}
+
+        {/* Primary action */}
+        <div className="mx-4 space-y-3 mb-5">
+          <Link href="/spending" className="block"><Btn>➕ Log a Purchase</Btn></Link>
+          <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
+        </div>
+
+        {/* Secondary content */}
+        <Card className="mx-4 mb-4">
+          <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
+          <div className="space-y-3">
+            <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
+            <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
+            <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} red />
+            <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
+            <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+              <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(c.moneyLeft)}`} bold large green={pos} red={!pos} />
+            </div>
+          </div>
+        </Card>
+
+        {c.totalSpent > 0 && (
+          <Card className="mx-4 mb-4">
+            <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
+            {SPEND_CATS.map((cat) => {
+              const amt = c.byCategory[cat];
+              if (!amt) return null;
+              return (
+                <div key={cat} className="flex justify-between items-center mb-3 last:mb-0 gap-3">
+                  <span className="text-base sm:text-lg min-w-0 break-words" style={{ color: "var(--text-secondary)" }}>{SPEND_ICONS[cat]} {cat}</span>
+                  <span className="text-lg sm:text-xl font-bold flex-shrink-0 break-words" style={{ color: "var(--text-primary)" }}>${fmt(amt)}</span>
+                </div>
+              );
+            })}
+          </Card>
+        )}
+
+        {entries.length > 0 && (
+          <Card className="mx-4 mb-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
+              <Link href="/history" className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>See all →</Link>
+            </div>
+            {entries.slice(0,4).map((e) => (
+              <div key={e.id} className="flex items-center justify-between py

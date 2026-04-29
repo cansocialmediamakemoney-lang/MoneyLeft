@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, PickerInput, MoneyDisplay } from "@/components/UI";
+import { Btn, Card, PickerInput, MoneyDisplay, Hero } from "@/components/UI";
 import { createClient } from "@/lib/supabase-browser";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, fmtDate, MONTHS, monthRange, currentMonthKey, SPEND_ICONS } from "@/lib/constants";
@@ -39,6 +39,8 @@ export default function HistoryPage() {
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>
   );
 
+  const selectedLabel = monthOptions.find(m => m.value === selectedMonth)?.label || "";
+
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10">
@@ -46,104 +48,99 @@ export default function HistoryPage() {
           History
         </h1>
 
+        {/* Hero — total spent */}
+        <div className="-mx-1 mb-5">
+          {loading ? (
+            <Hero
+              label="Spending history"
+              accent="muted"
+              support="Loading…"
+            >
+              <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+            </Hero>
+          ) : entries.length === 0 ? (
+            <Hero
+              label="Spending history"
+              accent="muted"
+              support={
+                isCurrentMonth
+                  ? "Start by logging your first purchase"
+                  : `No purchases logged in ${selectedLabel}`
+              }
+            >
+              <p
+                className="text-3xl sm:text-5xl font-bold"
+                style={{ color: "var(--text-primary)" }}
+              >
+                No activity yet
+              </p>
+            </Hero>
+          ) : (
+            <Hero
+              label={`Spending history · ${selectedLabel}`}
+              accent="green"
+              support="Based on your logged purchases"
+              footer={
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Purchases</p>
+                    <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{entries.length}</p>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Avg / purchase</p>
+                    <MoneyDisplay value={total / entries.length} size="medium" />
+                  </div>
+                </div>
+              }
+            >
+              <MoneyDisplay value={total} color="var(--accent-text)" size="hero" />
+            </Hero>
+          )}
+        </div>
+
+        {/* Empty state action */}
+        {!loading && entries.length === 0 && isCurrentMonth && (
+          <div className="mb-5">
+            <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
+          </div>
+        )}
+
         {/* Month picker */}
         <Card className="mb-5">
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
         </Card>
 
-        {/* ── Loading ── */}
-        {loading && (
-          <p className="text-lg text-center py-10" style={{ color: "var(--text-tertiary)" }}>Loading…</p>
+        {/* Action button when there's data + current month */}
+        {!loading && entries.length > 0 && isCurrentMonth && (
+          <div className="mb-5">
+            <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
+          </div>
         )}
 
-        {/* ── Empty state ── */}
-        {!loading && entries.length === 0 && (
-          <Card className="text-center">
-            <div className="text-6xl mb-4">📭</div>
-            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
-              No activity yet
-            </h2>
-            <p className="text-lg mb-6" style={{ color: "var(--text-secondary)" }}>
-              {isCurrentMonth
-                ? "Start by logging your first purchase. Your spending will appear here."
-                : `No purchases were logged in ${monthOptions.find(m => m.value === selectedMonth)?.label}.`
-              }
-            </p>
-            {isCurrentMonth && (
-              <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
-            )}
-          </Card>
-        )}
-
-        {/* ── With data ── */}
+        {/* Transaction list */}
         {!loading && entries.length > 0 && (
-          <>
-            {/* Prominent summary card */}
-            <div
-              className="rounded-2xl p-7 sm:p-8 text-center mb-5 overflow-hidden"
-              style={{ background: "var(--bg-elevated)", border: "1px solid var(--accent)" }}
-            >
-              <p
-                className="text-xs sm:text-sm font-medium mb-2 uppercase tracking-widest"
-                style={{ color: "var(--text-tertiary)" }}
-              >
-                {isCurrentMonth ? "Spent this month" : "Total spent"}
-              </p>
-              <MoneyDisplay value={total} color="var(--accent-text)" size="hero" />
+          <Card>
+            <p className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
+            {entries.map((e) => (
               <div
-                className="mt-5 pt-4 grid grid-cols-2 gap-4"
-                style={{ borderTop: "1px solid var(--border-subtle)" }}
+                key={e.id}
+                className="flex items-center justify-between py-3 last:border-0 gap-3"
+                style={{ borderBottom: "1px solid var(--border-subtle)" }}
               >
-                <div>
-                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                    Purchases
+                <div className="min-w-0 flex-1">
+                  <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>
+                    {SPEND_ICONS[e.category]} {e.category}
                   </p>
-                  <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
-                    {entries.length}
+                  <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
+                    {fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                    Avg per purchase
-                  </p>
-                  <MoneyDisplay value={total / entries.length} size="medium" />
-                </div>
+                <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>
+                  ${fmt(e.amount)}
+                </span>
               </div>
-            </div>
-
-            {/* Quick action — only on current month */}
-            {isCurrentMonth && (
-              <div className="mb-5">
-                <Link href="/spending"><Btn>+ Log a Purchase</Btn></Link>
-              </div>
-            )}
-
-            {/* Transaction list */}
-            <Card>
-              <p className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>
-                All Purchases
-              </p>
-              {entries.map((e) => (
-                <div
-                  key={e.id}
-                  className="flex items-center justify-between py-3 last:border-0 gap-3"
-                  style={{ borderBottom: "1px solid var(--border-subtle)" }}
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>
-                      {SPEND_ICONS[e.category]} {e.category}
-                    </p>
-                    <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
-                      {fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}
-                    </p>
-                  </div>
-                  <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>
-                    ${fmt(e.amount)}
-                  </span>
-                </div>
-              ))}
-            </Card>
-          </>
+            ))}
+          </Card>
         )}
       </div>
     </AppShell>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AppShell from "@/components/AppShell";
-import { Btn, Card, ErrorMsg } from "@/components/UI";
+import { Btn, Card, ErrorMsg, Hero } from "@/components/UI";
 
 export default function ScamCheckPage() {
   const [text, setText] = useState("");
@@ -30,13 +30,13 @@ export default function ScamCheckPage() {
     }
   };
 
-  const verdictColor = {
-    "likely safe":     { bg: "var(--accent)",  text: "var(--text-on-accent)", icon: "✓" },
-    "suspicious":      { bg: "var(--warn)",    text: "#1a1410",               icon: "⚠️" },
-    "likely scam":     { bg: "var(--danger)",  text: "var(--text-on-accent)", icon: "🚫" },
+  // Verdict → hero accent + display label
+  const verdictMap = {
+    "likely safe":     { accent: "green",  color: "var(--accent-text)", icon: "✓",  label: "Likely Safe" },
+    "suspicious":      { accent: "warn",   color: "var(--warn)",        icon: "⚠️", label: "Suspicious" },
+    "likely scam":     { accent: "danger", color: "var(--danger)",      icon: "🚫", label: "Likely Scam" },
   };
-
-  const v = result && (verdictColor[result.verdict?.toLowerCase()] || verdictColor.suspicious);
+  const v = result && (verdictMap[result.verdict?.toLowerCase()] || verdictMap.suspicious);
 
   return (
     <AppShell>
@@ -45,9 +45,45 @@ export default function ScamCheckPage() {
           Scam Check
         </h1>
 
-        <Card>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>Check a Suspicious Message</h2>
-          <p className="text-lg mb-5" style={{ color: "var(--text-secondary)" }}>Paste a text, email, or message you received and we'll tell you if it looks like a scam.</p>
+        {/* Hero — verdict or prompt */}
+        <div className="-mx-1 mb-5">
+          {result ? (
+            <Hero
+              label="Verdict"
+              accent={v.accent}
+              support={result.reasons?.[0] || "We've analyzed the message."}
+            >
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-5xl sm:text-6xl">{v.icon}</span>
+                <span
+                  className="text-3xl sm:text-5xl font-bold"
+                  style={{ color: v.color }}
+                >
+                  {v.label}
+                </span>
+              </div>
+            </Hero>
+          ) : (
+            <Hero
+              label="Scam Detection"
+              accent="muted"
+              support="We'll analyze the message and tell you if it looks suspicious"
+            >
+              <p
+                className="text-3xl sm:text-5xl font-bold"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Paste a message
+              </p>
+            </Hero>
+          )}
+        </div>
+
+        {/* Input card */}
+        <Card className="mb-5">
+          <p className="text-base sm:text-lg mb-4" style={{ color: "var(--text-secondary)" }}>
+            Paste a text, email, or message you received and we'll tell you if it looks like a scam.
+          </p>
 
           <textarea
             value={text}
@@ -66,14 +102,9 @@ export default function ScamCheckPage() {
           {error && <div className="mt-4"><ErrorMsg>{error}</ErrorMsg></div>}
         </Card>
 
+        {/* Detailed results */}
         {result && (
-          <Card className="mt-4">
-            <div className="rounded-2xl p-5 text-center mb-4" style={{ background: v.bg }}>
-              <div className="text-5xl mb-2">{v.icon}</div>
-              <p className="text-lg font-semibold" style={{ color: v.text, opacity: 0.85 }}>This message is</p>
-              <p className="text-3xl font-bold capitalize" style={{ color: v.text }}>{result.verdict}</p>
-            </div>
-
+          <Card>
             {result.reasons?.length > 0 && (
               <>
                 <h3 className="text-xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Why we think so:</h3>

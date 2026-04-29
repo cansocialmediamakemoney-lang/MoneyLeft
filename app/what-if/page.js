@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { Btn, Card } from "@/components/UI";
+import { Btn, Card, MoneyDisplay, Hero } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt } from "@/lib/constants";
 
@@ -17,14 +17,11 @@ export default function SavingsPage() {
 
   const savingsGoal = parseFloat(profile?.savings_goal) || 0;
   const hasSavingsGoal = savingsGoal > 0;
-
-  // Slider range scales with the user's actual savings goal (or income, falling back to a reasonable default).
   const income = parseFloat(profile?.income) || 0;
   const sliderMax = Math.max(500, Math.round((income > 0 ? income : savingsGoal) * 0.25));
 
   const newMonthly = savingsGoal + extra;
   const yearlyProjection = newMonthly * 12;
-  const baselineYearly = savingsGoal * 12;
   const additionalYearly = extra * 12;
 
   return (
@@ -34,87 +31,78 @@ export default function SavingsPage() {
           Savings
         </h1>
 
-        {/* ── Empty state: no savings goal set ─────────────────────────────── */}
+        {/* Empty state */}
         {!hasSavingsGoal && (
           <>
+            <div className="-mx-1 mb-5">
+              <Hero
+                label="Savings projection"
+                accent="muted"
+                support="Add a savings goal in your Budget tab to unlock projections"
+              >
+                <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+              </Hero>
+            </div>
             <Card className="text-center">
               <div className="text-5xl mb-4">🐷</div>
-              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
-                No savings goal yet
-              </h2>
+              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>No savings goal yet</h2>
               <p className="text-base mb-6" style={{ color: "var(--text-secondary)" }}>
-                Add a savings goal in your Budget to unlock projections and see how small changes can grow your money over time.
+                Your savings goal is the amount you set aside each month before deciding what's safe to spend.
               </p>
               <Link href="/budget-edit"><Btn>Set a Savings Goal →</Btn></Link>
             </Card>
-            <p className="text-center text-sm mt-6" style={{ color: "var(--text-tertiary)" }}>
-              Your savings goal is the amount you put aside each month before deciding what's safe to spend.
-            </p>
           </>
         )}
 
-        {/* ── Main savings view ────────────────────────────────────────────── */}
+        {/* Hero + interactive view */}
         {hasSavingsGoal && (
           <>
-            {/* Current savings goal — the focal "stat" card */}
-            <div
-              className="rounded-2xl p-7 sm:p-8 text-center mb-5 overflow-hidden"
-              style={{
-                background: "var(--bg-elevated)",
-                border: "1px solid var(--accent)",
-              }}
-            >
-              <p
-                className="text-xs sm:text-sm font-medium mb-2 uppercase tracking-widest"
-                style={{ color: "var(--text-tertiary)" }}
+            <div className="-mx-1 mb-5">
+              <Hero
+                label="Savings projection"
+                accent="green"
+                support={
+                  extra > 0
+                    ? <>in 12 months if you save <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(extra)}/month</span> extra</>
+                    : "in 12 months based on your current savings goal"
+                }
+                footer={
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Monthly</p>
+                      <MoneyDisplay value={newMonthly} size="medium" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
+                        {extra > 0 ? "Extra / year" : "Goal"}
+                      </p>
+                      {extra > 0
+                        ? <MoneyDisplay value={additionalYearly} size="medium" color="var(--accent-text)" />
+                        : <MoneyDisplay value={savingsGoal} size="medium" />
+                      }
+                    </div>
+                  </div>
+                }
               >
-                Monthly Savings Goal
-              </p>
-              <p
-                className="font-bold leading-none break-words text-[2.5rem] sm:text-6xl"
-                style={{ color: "var(--accent-text)" }}
-              >
-                ${fmt(savingsGoal)}
-              </p>
-              <div
-                className="mt-6 pt-4"
-                style={{ borderTop: "1px solid var(--border-subtle)" }}
-              >
-                <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
-                  In 12 months, you'll save
-                </p>
-                <p className="text-2xl sm:text-3xl font-bold mt-1 break-words" style={{ color: "var(--text-primary)" }}>
-                  ${fmt(baselineYearly)}
-                </p>
-              </div>
+                <MoneyDisplay value={yearlyProjection} color="var(--accent-text)" size="hero" />
+              </Hero>
             </div>
 
-            {/* What If slider */}
+            {/* Slider card below */}
             <Card className="mb-5">
-              <h3 className="text-xl font-bold mb-1" style={{ color: "var(--text-primary)" }}>
-                What if you saved more?
-              </h3>
-              <p className="text-base mb-5" style={{ color: "var(--text-secondary)" }}>
-                Move the slider to see how an extra cushion would grow your savings.
-              </p>
+              <h3 className="text-xl font-bold mb-1" style={{ color: "var(--text-primary)" }}>What if you saved more?</h3>
+              <p className="text-base mb-5" style={{ color: "var(--text-secondary)" }}>Move the slider to see how an extra cushion would grow your savings.</p>
 
               <div className="text-center mb-3">
-                <span className="text-xs uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-                  Save an extra
-                </span>
+                <span className="text-xs uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>Save an extra</span>
                 <div className="mt-1">
-                  <span className="text-4xl font-bold break-words" style={{ color: "var(--accent-text)" }}>
-                    ${fmt(extra)}
-                  </span>
-                  <span className="text-lg" style={{ color: "var(--text-tertiary)" }}> / month</span>
+                  <MoneyDisplay value={extra} color="var(--accent-text)" size="large" />
+                  <span className="text-lg ml-2" style={{ color: "var(--text-tertiary)" }}>/ month</span>
                 </div>
               </div>
 
               <input
-                type="range"
-                min="0"
-                max={sliderMax}
-                step="5"
+                type="range" min="0" max={sliderMax} step="5"
                 value={extra}
                 onChange={(e) => setExtra(parseFloat(e.target.value))}
                 className="w-full h-3 rounded-full appearance-none cursor-pointer"
@@ -127,53 +115,6 @@ export default function SavingsPage() {
               </div>
             </Card>
 
-            {/* Result panel */}
-            <div
-              className="rounded-2xl p-6 mb-5 overflow-hidden"
-              style={{
-                background: extra > 0 ? "var(--accent-muted)" : "var(--bg-elevated)",
-                border: `1px solid ${extra > 0 ? "var(--accent)" : "var(--border-subtle)"}`,
-                transition: "background 0.2s, border-color 0.2s",
-              }}
-            >
-              <p className="text-base mb-3" style={{ color: "var(--text-secondary)" }}>
-                {extra > 0
-                  ? <>Saving an extra <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(extra)}/month</span> would mean…</>
-                  : "Move the slider above to project your savings."}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                    New monthly
-                  </p>
-                  <p className="text-2xl sm:text-3xl font-bold break-words" style={{ color: "var(--text-primary)" }}>
-                    ${fmt(newMonthly)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>
-                    In 12 months
-                  </p>
-                  <p className="text-2xl sm:text-3xl font-bold break-words" style={{ color: "var(--accent-text)" }}>
-                    ${fmt(yearlyProjection)}
-                  </p>
-                </div>
-              </div>
-
-              {extra > 0 && (
-                <div
-                  className="mt-5 pt-4 text-center"
-                  style={{ borderTop: "1px solid var(--border-subtle)" }}
-                >
-                  <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
-                    That's <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(additionalYearly)}</span> more than your current pace.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Edit budget link */}
             <Link href="/budget-edit" className="block">
               <div
                 className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
