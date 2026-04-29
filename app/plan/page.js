@@ -729,6 +729,15 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
 
         <BudgetComparison perMonth={perMonth} />
 
+        {perMonth > 0 && (
+          <div
+            className="rounded-2xl px-4 py-3 mb-5 text-base"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)", color: "var(--warn)" }}
+          >
+            💡 Saving this goal will reduce your monthly Money Left by <span className="font-bold">${fmt(perMonth)}</span>.
+          </div>
+        )}
+
         <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
           Estimates based on equal monthly contributions.
         </p>

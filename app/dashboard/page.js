@@ -5,10 +5,12 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
+import { usePlans } from "@/lib/usePlans";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { loading, error, profile, bills, entries, deleteEntry } = useBudgetData();
+  const { loading: plansLoading, plans } = usePlans();
 
   const today = new Date();
   const dayOfMonth = today.getDate();
@@ -20,7 +22,20 @@ export default function DashboardPage() {
     const savingsGoal = parseFloat(profile.savings_goal) || 0;
     const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
     const totalSpent = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
-    const moneyLeft = income - savingsGoal - totalBills - totalSpent;
+
+    // Sum monthly requirements from active, incomplete savings goals
+    const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    const planSavingsMonthly = plans.reduce((sum, p) => {
+      if (p.plan_type !== "saving") return sum;
+      if (p.end_date <= todayStr) return sum;
+      const remaining = Math.max(0, (parseFloat(p.amount) || 0) - (parseFloat(p.current_saved) || 0));
+      if (remaining <= 0) return sum;
+      const msLeft = new Date(p.end_date + "T00:00:00") - new Date(todayStr + "T00:00:00");
+      const months = Math.max(0, msLeft / 86400000) / 30.4375;
+      return sum + (months > 0 ? remaining / months : 0);
+    }, 0);
+
+    const moneyLeft = income - savingsGoal - totalBills - totalSpent - planSavingsMonthly;
 
     const payDate = parseInt(profile.pay_date) || 1;
     let daysLeft = payDate > dayOfMonth ? payDate - dayOfMonth : (dim - dayOfMonth) + payDate;
@@ -76,14 +91,14 @@ export default function DashboardPage() {
     }, {});
 
     return {
-      income, savingsGoal, totalBills, totalSpent, moneyLeft,
+      income, savingsGoal, totalBills, totalSpent, planSavingsMonthly, moneyLeft,
       daysLeft, safePerDay,
       paceLevel, paceTitle, paceDetail,
       upcoming, upcomingTotal, byCategory,
     };
-  }, [profile, bills, entries, dayOfMonth, dim]);
+  }, [profile, bills, entries, plans, dayOfMonth, dim]);
 
-  if (loading) return (
+  if (loading || plansLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
@@ -218,6 +233,9 @@ export default function DashboardPage() {
             <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
             <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
             <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} red />
+            {c.planSavingsMonthly > 0 && (
+              <Row label="🎯 Plan Savings Goals" val={`−$${fmt(c.planSavingsMonthly)}`} red />
+            )}
             <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
             <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
               <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(c.moneyLeft)}`} bold large green={pos} red={!pos} />
