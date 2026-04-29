@@ -66,7 +66,6 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      {/* Hero — Money Left */}
       <div className="px-4 pt-10 sm:pt-12 pb-2">
         <Hero
           label={`${MONTHS[today.getMonth()]} ${today.getFullYear()} · Money Left`}
@@ -113,7 +112,6 @@ export default function DashboardPage() {
       )}
 
       <div className="mt-5">
-        {/* Bill warnings */}
         {c.upcoming.map((b) => (
           <div
             key={b.id}
@@ -141,13 +139,11 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Primary action */}
         <div className="mx-4 space-y-3 mb-5">
           <Link href="/spending" className="block"><Btn>➕ Log a Purchase</Btn></Link>
           <Link href="/bills" className="block"><Btn variant="secondary">📋 My Bills</Btn></Link>
         </div>
 
-        {/* Secondary content */}
         <Card className="mx-4 mb-4">
           <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
@@ -184,4 +180,36 @@ export default function DashboardPage() {
               <Link href="/history" className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>See all →</Link>
             </div>
             {entries.slice(0,4).map((e) => (
-              <div key={e.id} className="flex items-center justify-between py
+              <div key={e.id} className="flex items-center justify-between py-3 last:border-0 gap-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+                <div className="min-w-0 flex-1">
+                  <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
+                  <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <span className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
+                  <button onClick={() => deleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
+                </div>
+              </div>
+            ))}
+          </Card>
+        )}
+
+        <Link href="/budget-edit" className="block mx-4 mb-4">
+          <div
+            className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
+            style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
+          >
+            <span className="text-3xl flex-shrink-0">⚙️</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Edit My Budget</p>
+              <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Income, savings goal, pay date</p>
+            </div>
+            <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
+          </div>
+        </Link>
+
+        <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
+      </div>
+    </AppShell>
+  );
+}
