@@ -5,13 +5,15 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
 import Onboarding from "@/components/Onboarding";
+import MonthEndReview from "@/components/MonthEndReview";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
+import { useMonthEnd } from "@/lib/useMonthEnd";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { loading, error, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
-  const { loading: plansLoading, plans } = usePlans();
+  const { loading: plansLoading, plans, updatePlan } = usePlans();
   const [checkAmount, setCheckAmount] = useState("");
 
   const today = new Date();
@@ -25,7 +27,6 @@ export default function DashboardPage() {
     const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
     const totalSpent = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
 
-    // Sum monthly requirements from active, incomplete savings goals
     const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split("T")[0];
     const planSavingsMonthly = plans.reduce((sum, p) => {
       if (p.plan_type !== "saving") return sum;
@@ -44,17 +45,13 @@ export default function DashboardPage() {
     if (daysLeft < 1) daysLeft = 1;
     const safePerDay = moneyLeft > 0 ? moneyLeft / daysLeft : 0;
 
-    // Spending pace
     const spendable = income - savingsGoal - totalBills;
     const periodDays = dim;
     const daysPassed = Math.max(1, dayOfMonth);
     const expectedPerDay = spendable > 0 ? spendable / periodDays : 0;
     const actualPerDay = totalSpent > 0 ? totalSpent / daysPassed : 0;
 
-    let paceLevel = "neutral";
-    let paceTitle = "";
-    let paceDetail = "";
-
+    let paceLevel = "neutral", paceTitle = "", paceDetail = "";
     if (totalSpent === 0) {
       paceLevel = "neutral";
       paceTitle = "No spending yet";
@@ -100,6 +97,9 @@ export default function DashboardPage() {
     };
   }, [profile, bills, entries, plans, dayOfMonth, dim]);
 
+  // Month-end hook must be called before any conditional returns
+  const { showReview, prevMonth, rollover, applyChoice } = useMonthEnd(calcs?.moneyLeft ?? null);
+
   if (loading || plansLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
@@ -109,13 +109,15 @@ export default function DashboardPage() {
   }
 
   const c = calcs;
-  const pos = c.moneyLeft >= 0;
-  const nearLimit = c.moneyLeft > 0 && c.moneyLeft < c.income * 0.1;
+  const effectiveMoneyLeft = c.moneyLeft + rollover;
+  const effectiveSafePerDay = effectiveMoneyLeft > 0 ? effectiveMoneyLeft / c.daysLeft : 0;
+  const pos = effectiveMoneyLeft >= 0;
+  const nearLimit = effectiveMoneyLeft > 0 && effectiveMoneyLeft < c.income * 0.1;
 
   const paceStyles = {
-    good:    { color: "var(--accent-text)",   dot: "var(--accent)" },
-    warn:    { color: "var(--warn)",          dot: "var(--warn)"   },
-    bad:     { color: "var(--danger)",        dot: "var(--danger)" },
+    good:    { color: "var(--accent-text)",    dot: "var(--accent)" },
+    warn:    { color: "var(--warn)",           dot: "var(--warn)"   },
+    bad:     { color: "var(--danger)",         dot: "var(--danger)" },
     neutral: { color: "var(--text-secondary)", dot: "var(--text-tertiary)" },
   };
   const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
@@ -123,11 +125,11 @@ export default function DashboardPage() {
   const checkAmt = parseFloat(checkAmount) || 0;
   let checkResult = null;
   if (checkAmt > 0) {
-    const newLeft = c.moneyLeft - checkAmt;
+    const newLeft   = effectiveMoneyLeft - checkAmt;
     const newPerDay = newLeft > 0 ? newLeft / c.daysLeft : 0;
     if (newLeft < 0) {
       checkResult = { text: "Not recommended — this is more than you have left.", color: "var(--danger)", dot: "var(--danger)" };
-    } else if (newPerDay < c.safePerDay * 0.5) {
+    } else if (newPerDay < effectiveSafePerDay * 0.5) {
       checkResult = { text: `Careful — this would drop you to $${fmt(newPerDay)}/day.`, color: "var(--warn)", dot: "var(--warn)" };
     } else {
       checkResult = { text: `Yes — you'd still have $${fmt(newPerDay)}/day left.`, color: "var(--accent-text)", dot: "var(--accent)" };
@@ -136,7 +138,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      {/* ── Hero card: just the money number + pace insight ── */}
+      {/* ── Hero card ── */}
       <div className="px-4 pt-10 sm:pt-12 pb-2">
         <Hero
           label={`${MONTHS[today.getMonth()]} ${today.getFullYear()}`}
@@ -154,10 +156,7 @@ export default function DashboardPage() {
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 text-base sm:text-lg font-medium" style={{ color: paceStyle.color }}>
                 {c.paceLevel !== "neutral" && (
-                  <span
-                    className="inline-block rounded-full"
-                    style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }}
-                  />
+                  <span className="inline-block rounded-full" style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }} />
                 )}
                 {c.paceTitle}
               </span>
@@ -168,7 +167,7 @@ export default function DashboardPage() {
           }
         >
           <MoneyDisplay
-            value={c.moneyLeft}
+            value={effectiveMoneyLeft}
             negative={!pos}
             color={pos ? "var(--accent-text)" : "var(--danger)"}
             size="hero"
@@ -176,11 +175,11 @@ export default function DashboardPage() {
         </Hero>
       </div>
 
-      {/* ── Secondary stats row (outside the hero card) ── */}
+      {/* ── Secondary stats row ── */}
       <div className="mx-4 mt-6 grid grid-cols-3 gap-3">
         <div className="min-w-0 text-center">
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Safe / day</p>
-          <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(c.safePerDay)}</p>
+          <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(effectiveSafePerDay)}</p>
         </div>
         <div className="min-w-0 text-center" style={{ borderLeft: "1px solid var(--border-subtle)", borderRight: "1px solid var(--border-subtle)" }}>
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Days left</p>
@@ -194,30 +193,6 @@ export default function DashboardPage() {
           >
             ${fmt(c.upcomingTotal)}
           </p>
-        </div>
-      </div>
-
-      {/* ── Can I Spend This? ── */}
-      <div className="mx-4 mt-5">
-        <div className="rounded-2xl px-4 py-4" style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}>
-          <p className="text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--text-tertiary)" }}>Can I spend this?</p>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold" style={{ color: "var(--text-tertiary)" }}>$</span>
-            <input
-              type="tel" inputMode="decimal"
-              value={checkAmount}
-              onChange={(e) => setCheckAmount(e.target.value.replace(/[^0-9.]/g, ""))}
-              placeholder="Enter amount"
-              className="w-full rounded-xl border-2 py-3 text-xl font-semibold transition-colors"
-              style={{ paddingLeft: "2.2rem" }}
-            />
-          </div>
-          {checkResult && (
-            <div className="mt-3 flex items-center gap-2">
-              <span className="inline-block rounded-full flex-shrink-0" style={{ width: "0.5rem", height: "0.5rem", background: checkResult.dot }} />
-              <p className="text-base font-medium" style={{ color: checkResult.color }}>{checkResult.text}</p>
-            </div>
-          )}
         </div>
       </div>
 
@@ -252,12 +227,36 @@ export default function DashboardPage() {
             style={{ background: "var(--warn-bg)", borderLeft: "2px solid var(--warn)" }}
           >
             <p className="text-base font-medium" style={{ color: "var(--warn)" }}>You're getting close to your limit</p>
-            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>Stay under ${fmt(c.safePerDay)}/day to stay on track</p>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>Stay under ${fmt(effectiveSafePerDay)}/day to stay on track</p>
           </div>
         )}
 
-        {/* Stacked action buttons with consistent spacing */}
-        <div className="mx-4 mt-3 space-y-3 mb-6">
+        {/* ── Quick Check (compact) ── */}
+        <div className="mx-4 mb-4">
+          <p className="text-xs font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-tertiary)" }}>
+            Quick Check
+          </p>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base font-semibold" style={{ color: "var(--text-tertiary)" }}>$</span>
+            <input
+              type="tel" inputMode="decimal"
+              value={checkAmount}
+              onChange={(e) => setCheckAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+              placeholder="Can I spend this?"
+              className="w-full rounded-xl border-2 py-2 text-base font-semibold transition-colors"
+              style={{ paddingLeft: "1.6rem" }}
+            />
+          </div>
+          {checkResult && (
+            <div className="mt-2 flex items-center gap-2">
+              <span className="inline-block rounded-full flex-shrink-0" style={{ width: "0.45rem", height: "0.45rem", background: checkResult.dot }} />
+              <p className="text-sm font-medium" style={{ color: checkResult.color }}>{checkResult.text}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="mx-4 mt-1 space-y-3 mb-6">
           <Link href="/spending?from=dashboard" className="block">
             <Btn>➕ Log a Purchase</Btn>
           </Link>
@@ -266,7 +265,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Secondary content cards */}
+        {/* How It's Calculated */}
         <Card className="mx-4 mb-4">
           <h3 className="text-xl font-medium mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
@@ -277,8 +276,11 @@ export default function DashboardPage() {
               <Row label="🎯 Plan Savings Goals" val={`−$${fmt(c.planSavingsMonthly)}`} red />
             )}
             <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
+            {rollover > 0 && (
+              <Row label="🔄 Last month rollover" val={`+$${fmt(rollover)}`} green />
+            )}
             <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
-              <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(c.moneyLeft)}`} bold large green={pos} red={!pos} />
+              <Row label="Money Left" val={`${pos ? "" : "−"}$${fmt(Math.abs(effectiveMoneyLeft))}`} bold large green={pos} red={!pos} />
             </div>
           </div>
         </Card>
@@ -336,6 +338,16 @@ export default function DashboardPage() {
 
         <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
       </div>
+
+      {/* ── Month-End Review modal ── */}
+      {showReview && (
+        <MonthEndReview
+          prevMonth={prevMonth}
+          plans={plans}
+          onChoice={applyChoice}
+          onUpdatePlan={updatePlan}
+        />
+      )}
     </AppShell>
   );
 }
