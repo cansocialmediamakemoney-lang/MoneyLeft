@@ -5,7 +5,7 @@ import { LogoMark } from "@/components/Logo";
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-base)" }}>
-      <div style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-subtle)" }} className="px-5 pt-16 pb-12 text-center" style={{ color: "var(--text-primary)" }}>
+      <div style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-subtle)", color: "var(--text-primary)" }} className="px-5 pt-16 pb-12 text-center">
         <div className="flex justify-center mb-5">
           <LogoMark size={120} />
         </div>
