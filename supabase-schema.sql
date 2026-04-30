@@ -93,5 +93,6 @@ create trigger on_auth_user_created
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- Savings tracking (added for onboarding + Savings tab)
-alter table public.profiles add column if not exists starting_savings numeric default 0;
-alter table public.profiles add column if not exists ml_savings        numeric default 0;
+-- ⚠️  Run these in your Supabase SQL Editor before deploying the Savings features.
+alter table public.profiles add column if not exists current_savings numeric default 0;
+alter table public.profiles add column if not exists ml_savings       numeric default 0;

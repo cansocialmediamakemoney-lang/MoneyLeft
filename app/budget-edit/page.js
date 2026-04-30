@@ -25,7 +25,7 @@ export default function EditBudgetPage() {
     if (profile) {
       setIncome(profile.income?.toString() || "");
       setSavings(profile.savings_goal?.toString() || "");
-      setCurrentSavings(profile.starting_savings?.toString() || "");
+      setCurrentSavings(profile.current_savings?.toString() || "");
       setPayDate(String(profile.pay_date || 1));
       setCurrency(profile.currency || "USD");
     }
@@ -40,7 +40,7 @@ export default function EditBudgetPage() {
       await updateProfile({
         income: parseFloat(income) || 0,
         savings_goal: parseFloat(savings) || 0,
-        starting_savings: parseFloat(currentSavings) || 0,
+        current_savings: parseFloat(currentSavings) || 0,
         pay_date: parseInt(payDate),
         currency,
       });

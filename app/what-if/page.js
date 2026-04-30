@@ -17,7 +17,7 @@ export default function SavingsPage() {
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>
   );
 
-  const startingSavings  = parseFloat(profile?.starting_savings) || 0;
+  const startingSavings  = parseFloat(profile?.current_savings) || 0;
   const mlSavings        = parseFloat(profile?.ml_savings) || 0;
   const totalSavings     = startingSavings + mlSavings;
   const hasAnySavings    = totalSavings > 0;
