@@ -6,13 +6,13 @@
 :root {
   /* Backgrounds */
   --bg-base:        #0a0e0c;   /* near-black, slight green tint */
-  --bg-elevated:    #141a17;   /* card background */
-  --bg-elevated-2:  #1c2420;   /* nested / hover */
+  --bg-elevated:    #1a2219;   /* card background */
+  --bg-elevated-2:  #1f2820;   /* nested / hover */
   --bg-input:       #0f1411;
 
   /* Borders */
-  --border-subtle:  #1f2a25;
-  --border-strong:  #2a3833;
+  --border-subtle:  #263028;
+  --border-strong:  #2e3d36;
 
   /* Forest green accents */
   --accent:         #1f6f4a;
@@ -22,8 +22,8 @@
 
   /* Text */
   --text-primary:   #e8ece9;   /* near-white, slightly warm */
-  --text-secondary: #8a9690;   /* muted gray-green */
-  --text-tertiary:  #5a6661;
+  --text-secondary: #96a09a;   /* muted gray-green */
+  --text-tertiary:  #6b7872;
   --text-on-accent: #ffffff;
 
   /* Semantic */

@@ -91,15 +91,15 @@ export default function BottomNav() {
               href={tab.href}
               className="flex-1 flex flex-col items-center justify-center py-2.5 px-0.5 transition-colors min-w-0"
               style={{
-                color: active ? "var(--accent-text)" : "var(--text-tertiary)",
+                color: active ? "var(--accent-text)" : "var(--text-secondary)",
               }}
               aria-current={active ? "page" : undefined}
             >
               <div
                 className="rounded-full transition-all"
                 style={{
-                  width: active ? "1.25rem" : "0",
-                  height: "3px",
+                  width: active ? "1.4rem" : "0",
+                  height: "4px",
                   background: active ? "var(--accent)" : "transparent",
                   marginBottom: active ? "0.4rem" : "calc(0.4rem + 3px)",
                 }}
