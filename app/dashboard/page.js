@@ -122,6 +122,16 @@ export default function DashboardPage() {
   };
   const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
 
+  const handleMonthEndChoice = async (choice, planId = null) => {
+    if (choice === "savings" && planId === null) {
+      try {
+        const current = parseFloat(profile?.ml_savings) || 0;
+        await updateProfile({ ml_savings: current + (prevMonth.amount || 0) });
+      } catch {}
+    }
+    applyChoice(choice);
+  };
+
   const checkAmt = parseFloat(checkAmount) || 0;
   let checkResult = null;
   if (checkAmt > 0) {
@@ -344,7 +354,7 @@ export default function DashboardPage() {
         <MonthEndReview
           prevMonth={prevMonth}
           plans={plans}
-          onChoice={applyChoice}
+          onChoice={handleMonthEndChoice}
           onUpdatePlan={updatePlan}
         />
       )}

@@ -87,3 +87,11 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- MIGRATIONS — run these if you already have the base schema deployed
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Savings tracking (added for onboarding + Savings tab)
+alter table public.profiles add column if not exists starting_savings numeric default 0;
+alter table public.profiles add column if not exists ml_savings        numeric default 0;

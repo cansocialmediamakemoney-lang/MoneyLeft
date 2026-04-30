@@ -40,7 +40,7 @@ function IntroStep({ onNext }) {
   );
 }
 
-function SetupStep({ income, setIncome, bills, setBills, savings, setSavings, onNext }) {
+function SetupStep({ income, setIncome, bills, setBills, savings, setSavings, startingSavings, setStartingSavings, onNext }) {
   const incomeNum = parseFloat(income) || 0;
   const canContinue = incomeNum > 0;
 
@@ -74,6 +74,12 @@ function SetupStep({ income, setIncome, bills, setBills, savings, setSavings, on
             hint="Optional — amount you want to set aside before spending"
             value={savings}
             onChange={setSavings}
+          />
+          <MoneyInput
+            label="Current savings"
+            hint="Optional — money you already have saved before using MoneyLeft"
+            value={startingSavings}
+            onChange={setStartingSavings}
           />
         </div>
       </div>
@@ -155,12 +161,14 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
   const [income, setIncome] = useState("");
   const [bills, setBills] = useState("");
   const [savings, setSavings] = useState("");
+  const [startingSavings, setStartingSavings] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const incomeNum = parseFloat(income) || 0;
   const billsNum = parseFloat(bills) || 0;
   const savingsNum = parseFloat(savings) || 0;
+  const startingSavingsNum = parseFloat(startingSavings) || 0;
   const moneyLeft = incomeNum - billsNum - savingsNum;
   const perDay = Math.max(0, moneyLeft) / 30;
 
@@ -168,7 +176,7 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
     setSaving(true);
     setError("");
     try {
-      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD" });
+      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD", starting_savings: startingSavingsNum, ml_savings: 0 });
       if (billsNum > 0) {
         await addBill({ name: "Monthly Bills", amount: billsNum, due_day: 1, category: "Other" });
       }
@@ -190,6 +198,7 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
               income={income} setIncome={setIncome}
               bills={bills} setBills={setBills}
               savings={savings} setSavings={setSavings}
+              startingSavings={startingSavings} setStartingSavings={setStartingSavings}
               onNext={() => setStep(2)}
             />
           )}

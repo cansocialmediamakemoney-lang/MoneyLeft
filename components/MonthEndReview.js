@@ -16,9 +16,9 @@ export default function MonthEndReview({ prevMonth, plans, onChoice, onUpdatePla
 
   const handleSavingsBtn = () => {
     if (savingPlans.length === 0) {
-      setDoneMsg("Noted! Set up a savings goal in the Plan tab to track where it goes next time.");
+      setDoneMsg("Leftover added to your MoneyLeft savings. Set up a goal in the Plan tab to track it further.");
       setScreen("done");
-      onChoice("savings");
+      onChoice("savings", null); // null = no specific goal → general ml_savings
     } else {
       setScreen("savings");
     }
@@ -33,7 +33,7 @@ export default function MonthEndReview({ prevMonth, plans, onChoice, onUpdatePla
       await onUpdatePlan(plan.id, { current_saved: newVal });
       setDoneMsg(`$${fmt(added)} added to "${plan.name}".`);
       setScreen("done");
-      onChoice("savings");
+      onChoice("savings", plan.id); // pass planId so caller knows it went to a goal
     } catch {
       setApplying(false);
     }
