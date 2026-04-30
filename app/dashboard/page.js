@@ -174,18 +174,18 @@ export default function DashboardPage() {
       {/* ── Secondary stats row (outside the hero card) ── */}
       <div className="mx-4 mt-6 grid grid-cols-3 gap-3">
         <div className="min-w-0 text-center">
-          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
-          <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-secondary)" }}>${fmt(c.safePerDay)}</p>
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Safe / day</p>
+          <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(c.safePerDay)}</p>
         </div>
         <div className="min-w-0 text-center" style={{ borderLeft: "1px solid var(--border-subtle)", borderRight: "1px solid var(--border-subtle)" }}>
-          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days left</p>
-          <p className="text-lg sm:text-xl font-semibold" style={{ color: "var(--text-secondary)" }}>{c.daysLeft}</p>
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Days left</p>
+          <p className="text-lg sm:text-xl font-semibold" style={{ color: "var(--text-primary)" }}>{c.daysLeft}</p>
         </div>
         <div className="min-w-0 text-center">
-          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Bills due</p>
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Bills due</p>
           <p
             className="text-lg sm:text-xl font-semibold break-words"
-            style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-secondary)" }}
+            style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-primary)" }}
           >
             ${fmt(c.upcomingTotal)}
           </p>
@@ -203,8 +203,8 @@ export default function DashboardPage() {
         {c.upcoming.map((b) => (
           <div
             key={b.id}
-            className="mx-4 mb-4 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
-            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+            className="mx-4 mb-4 rounded-2xl px-4 sm:px-5 py-3 flex justify-between items-center gap-3"
+            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)", borderWidth: "0.75px" }}
           >
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <span className="text-2xl flex-shrink-0">⚠️</span>
@@ -219,8 +219,8 @@ export default function DashboardPage() {
 
         {nearLimit && (
           <div
-            className="mx-4 mb-4 rounded-2xl px-4 py-3 text-center"
-            style={{ background: "var(--warn-bg)", borderLeft: "3px solid var(--warn)" }}
+            className="mx-4 mb-5 rounded-2xl px-4 py-2 text-center"
+            style={{ background: "var(--warn-bg)", borderLeft: "2px solid var(--warn)" }}
           >
             <p className="text-base font-medium" style={{ color: "var(--warn)" }}>You're getting close to your limit</p>
             <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>Stay under ${fmt(c.safePerDay)}/day to stay on track</p>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
         )}
 
         {/* Stacked action buttons with consistent spacing */}
-        <div className="mx-4 space-y-3 mb-6">
+        <div className="mx-4 mt-3 space-y-3 mb-6">
           <Link href="/spending?from=dashboard" className="block">
             <Btn>➕ Log a Purchase</Btn>
           </Link>

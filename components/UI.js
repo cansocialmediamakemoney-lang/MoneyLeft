@@ -3,9 +3,9 @@
 import { fmtCompact } from "@/lib/constants";
 
 export function Btn({ children, onClick, variant = "primary", disabled = false, small = false, type = "button", className = "" }) {
-  const base = `rounded-2xl font-medium transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none w-full ${small ? "py-3 text-lg" : "py-5 text-xl"}`;
+  const base = `rounded-2xl font-medium transition-all active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none w-full ${small ? "py-3 text-lg" : "py-5 text-xl"}`;
   const styles = {
-    primary:   { className: "text-white shadow-md hover:brightness-110", style: { background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" } },
+    primary:   { className: "text-white hover:brightness-105 active:brightness-90", style: { background: "linear-gradient(135deg,#165e40,#268960)", boxShadow: "0 0 20px rgba(90,191,138,0.18)" } },
     secondary: { className: "hover:brightness-125", style: { background: "transparent", color: "var(--text-primary)", border: "2px solid var(--border-strong)" } },
     danger:    { className: "hover:brightness-125", style: { background: "transparent", color: "var(--danger)", border: "2px solid var(--danger)" } },
   };
