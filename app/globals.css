@@ -89,6 +89,9 @@ input:focus, select:focus, textarea:focus {
 input::placeholder, textarea::placeholder {
   color: var(--text-tertiary);
 }
+.ml-quick-check::placeholder {
+  color: var(--text-secondary);
+}
 
 /* Native date inputs — force them to behave on mobile */
 input[type="date"] {

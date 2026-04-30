@@ -233,18 +233,18 @@ export default function DashboardPage() {
 
         {/* ── Quick Check (compact) ── */}
         <div className="mx-4 mb-4">
-          <p className="text-xs font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-tertiary)" }}>
+          <p className="text-xs font-medium uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>
             Quick Check
           </p>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base font-semibold" style={{ color: "var(--text-tertiary)" }}>$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base font-semibold" style={{ color: "var(--text-secondary)" }}>$</span>
             <input
               type="tel" inputMode="decimal"
               value={checkAmount}
               onChange={(e) => setCheckAmount(e.target.value.replace(/[^0-9.]/g, ""))}
               placeholder="Can I spend this?"
-              className="w-full rounded-xl border-2 py-2 text-base font-semibold transition-colors"
-              style={{ paddingLeft: "1.6rem" }}
+              className="ml-quick-check w-full rounded-xl border-2 py-2 text-base font-semibold transition-colors"
+              style={{ paddingLeft: "1.6rem", borderColor: "rgba(90,191,138,0.28)", background: "var(--bg-elevated-2)" }}
             />
           </div>
           {checkResult && (
