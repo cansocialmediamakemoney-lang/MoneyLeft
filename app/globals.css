@@ -21,9 +21,9 @@
   --accent-text:    #5abf8a;   /* readable green text on dark bg */
 
   /* Text */
-  --text-primary:   #edf1ee;   /* near-white, slightly warm */
-  --text-secondary: #aebab4;   /* clearly readable */
-  --text-tertiary:  #8a9690;   /* was old secondary — good for labels */
+  --text-primary:   #f4f7f5;   /* near-white */
+  --text-secondary: #c8d1cc;   /* bright gray — descriptions, card text, supporting messages */
+  --text-tertiary:  #8d9a93;   /* muted — labels, metadata, timestamps */
 
   /* Semantic */
   --danger:         #d05050;
