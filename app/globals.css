@@ -27,6 +27,7 @@
 
   /* Semantic */
   --danger:         #d05050;
+  --danger-muted:   #b84a4a;   /* softer red for deduction rows */
   --danger-bg:      #2a1414;
   --warn:           #ce9d52;
   --warn-bg:        #231c10;

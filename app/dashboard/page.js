@@ -270,12 +270,12 @@ export default function DashboardPage() {
           <h3 className="text-xl font-medium mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
             <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
-            <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
-            <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} red />
+            <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} softRed />
+            <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} softRed />
             {c.planSavingsMonthly > 0 && (
-              <Row label="🎯 Plan Savings Goals" val={`−$${fmt(c.planSavingsMonthly)}`} red />
+              <Row label="🎯 Plan Savings Goals" val={`−$${fmt(c.planSavingsMonthly)}`} softRed />
             )}
-            <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} red />
+            <Row label="🛒 Spent So Far" val={`−$${fmt(c.totalSpent)}`} softRed />
             {rollover > 0 && (
               <Row label="🔄 Last month rollover" val={`+$${fmt(rollover)}`} green />
             )}
@@ -336,7 +336,7 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <p className="text-center text-base px-4 pb-2" style={{ color: "var(--text-tertiary)" }}>🔒 Your data is private. We never sell it.</p>
+        <p className="text-center text-sm px-4 pb-2" style={{ color: "var(--text-tertiary)", opacity: 0.7 }}>🔒 Your data is private. We never sell it.</p>
       </div>
 
       {/* ── Month-End Review modal ── */}

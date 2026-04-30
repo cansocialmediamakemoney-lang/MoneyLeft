@@ -72,9 +72,9 @@ export function TextInput({ value, onChange, label, placeholder = "", type = "te
   );
 }
 
-export function Row({ label, val, green = false, red = false, bold = false, large = false }) {
+export function Row({ label, val, green = false, red = false, softRed = false, bold = false, large = false }) {
   const labelColor = bold ? "var(--text-primary)" : "var(--text-secondary)";
-  const valColor = green ? "var(--accent-text)" : red ? "var(--danger)" : "var(--text-primary)";
+  const valColor = green ? "var(--accent-text)" : red ? "var(--danger)" : softRed ? "var(--danger-muted)" : "var(--text-primary)";
   return (
     <div className="flex justify-between items-center gap-3">
       <span className={`${large ? "text-lg sm:text-xl" : "text-base sm:text-lg"} ${bold ? "font-medium" : ""} min-w-0`} style={{ color: labelColor }}>{label}</span>
