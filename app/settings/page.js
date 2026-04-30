@@ -87,6 +87,11 @@ export default function SettingsPage() {
           <ItemButton icon="❌" label="Delete My Account" onClick={handleDeleteAccount} danger />
         </Card>
 
+        <SectionLabel>Tools</SectionLabel>
+        <Card className="mb-6 p-0 overflow-hidden">
+          <ItemLink href="/scam-check" icon="🛡️" label="Scam Check" hint="Check if a message, call, or offer looks suspicious" />
+        </Card>
+
         <SectionLabel>Support</SectionLabel>
         <Card className="mb-6 p-0 overflow-hidden">
           <ItemLink href="/privacy" icon="🔏" label="Privacy Policy" hint="How we protect your data" />

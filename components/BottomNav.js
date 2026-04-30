@@ -38,16 +38,6 @@ const TABS = [
     ),
   },
   {
-    href: "/scam-check",
-    label: "Scam",
-    icon: () => (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    ),
-  },
-  {
     href: "/history",
     label: "History",
     icon: () => (
