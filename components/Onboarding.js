@@ -178,7 +178,7 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
     setError("");
     try {
       setLocalCurrentSavings(startingSavingsNum);
-      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD" });
+      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD", setup_complete: true });
       if (billsNum > 0) {
         await addBill({ name: "Monthly Bills", amount: billsNum, due_day: 1, category: "Other" });
       }

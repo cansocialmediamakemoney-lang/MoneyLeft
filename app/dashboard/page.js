@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
@@ -104,11 +104,25 @@ export default function DashboardPage() {
   // Month-end hook must be called before any conditional returns
   const { showReview, prevMonth, rollover, applyChoice } = useMonthEnd(calcs?.moneyLeft ?? null);
 
+  // Onboarding gate — robust check so existing users are never trapped
+  const isOnboarded = !!(
+    profile?.setup_complete ||
+    parseFloat(profile?.income) > 0 ||
+    bills.length > 0
+  );
+
+  // One-time: silently mark existing users who pass the gate but predate the flag
+  useEffect(() => {
+    if (profile && !profile.setup_complete && isOnboarded) {
+      updateProfile({ setup_complete: true }).catch(() => {});
+    }
+  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (loading || plansLoading || incomeLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
-  if (!profile || !parseFloat(profile.income)) {
+  if (!isOnboarded) {
     return <Onboarding updateProfile={updateProfile} addBill={addBill} refresh={refresh} />;
   }
 

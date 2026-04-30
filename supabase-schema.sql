@@ -97,6 +97,10 @@ create trigger on_auth_user_created
 alter table public.profiles add column if not exists current_savings numeric default 0;
 alter table public.profiles add column if not exists ml_savings       numeric default 0;
 
+-- Onboarding completion flag (added to prevent false onboarding redirects)
+-- ⚠️  Run in Supabase SQL Editor.
+alter table public.profiles add column if not exists setup_complete boolean default false;
+
 -- ─── INCOME ENTRIES ──────────────────────────────────────────────────────────
 -- One-time or irregular income a user logs during the month.
 create table public.income_entries (
