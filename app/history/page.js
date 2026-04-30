@@ -23,9 +23,9 @@ export default function HistoryPage() {
 
 function StatCell({ label, value, color }) {
   return (
-    <div className="min-w-0">
-      <p className="text-xs uppercase tracking-widest mb-1 truncate" style={{ color: "var(--text-tertiary)" }}>{label}</p>
-      <p className="text-xl sm:text-2xl font-semibold break-words" style={{ color: color || "var(--text-primary)" }}>{value}</p>
+    <div className="min-w-0 text-center">
+      <p className="text-[0.6rem] uppercase tracking-wide mb-1" style={{ color: "var(--text-tertiary)" }}>{label}</p>
+      <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: color || "var(--text-primary)" }}>{value}</p>
     </div>
   );
 }
@@ -152,8 +152,8 @@ function HistoryContent() {
               footer={
                 <div className="grid grid-cols-3 gap-3">
                   <StatCell label="Spending" value="—" />
-                  <StatCell label="Income logged" value={incomeEntries.length} />
-                  <StatCell label="Extra Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
+                  <StatCell label="Entries" value={incomeEntries.length} />
+                  <StatCell label="Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
                 </div>
               }
             >
@@ -168,11 +168,11 @@ function HistoryContent() {
               support="Based on your logged purchases"
               footer={
                 <div className="grid grid-cols-3 gap-3">
-                  <StatCell label="Total Spent" value={`$${fmt(total)}`} />
+                  <StatCell label="Spent" value={`$${fmt(total)}`} />
                   <StatCell label="Purchases" value={entries.length} />
                   {totalIncome > 0
-                    ? <StatCell label="Extra Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
-                    : <StatCell label="Avg Purchase" value={`$${fmt(total / entries.length)}`} />
+                    ? <StatCell label="Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
+                    : <StatCell label="Avg / item" value={`$${fmt(total / entries.length)}`} />
                   }
                 </div>
               }
