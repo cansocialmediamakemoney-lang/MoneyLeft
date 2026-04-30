@@ -1,6 +1,9 @@
+import { Inter } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallPrompt from "@/components/InstallPrompt";
+
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata = {
   title: "MoneyLeft — Simple Budgeting",
@@ -52,7 +55,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="MoneyLeft" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body>
+      <body className={inter.className}>
         {children}
         <ServiceWorkerRegister />
         <InstallPrompt />

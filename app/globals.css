@@ -38,7 +38,7 @@ html, body {
   padding: 0;
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: inherit;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
 }

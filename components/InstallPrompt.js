@@ -71,7 +71,6 @@ export default function InstallPrompt() {
     <div
       className="fixed bottom-4 left-4 right-4 z-40 rounded-2xl shadow-2xl p-4 max-w-md mx-auto"
       style={{
-        fontFamily: "'Georgia', 'Times New Roman', serif",
         background: "var(--bg-elevated)",
         border: "1px solid var(--accent)",
       }}

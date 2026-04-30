@@ -4,12 +4,12 @@ export default function PrivacyPage() {
   return (
     <div
       className="min-h-screen px-5 py-10 max-w-2xl mx-auto"
-      style={{ color: "var(--text-primary)", fontFamily: "Georgia, serif" }}
+      style={{ color: "var(--text-primary)" }}
     >
       <Link
         href="/settings"
         className="inline-flex items-center gap-1 text-base font-semibold mb-8"
-        style={{ color: "var(--accent-text)", fontFamily: "system-ui, sans-serif" }}
+        style={{ color: "var(--accent-text)" }}
       >
         ← Back to Settings
       </Link>
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
       <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
         Privacy Policy
       </h1>
-      <p className="text-base mb-8" style={{ color: "var(--text-tertiary)", fontFamily: "system-ui, sans-serif" }}>
+      <p className="text-base mb-8" style={{ color: "var(--text-tertiary)" }}>
         Last updated: April 29, 2026
       </p>
 
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
 
       <p
         className="text-center text-sm mt-10 pb-4"
-        style={{ color: "var(--text-tertiary)", fontFamily: "system-ui, sans-serif" }}
+        style={{ color: "var(--text-tertiary)" }}
       >
         MoneyLeft · Made with care
       </p>

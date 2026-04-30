@@ -41,7 +41,7 @@ export default function SignupPage() {
   };
 
   if (done) return (
-    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)", fontFamily: "Georgia,serif" }}>
+    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)" }}>
       <Card className="max-w-md w-full text-center">
         <div className="text-6xl mb-4">📬</div>
         <h2 className="text-2xl font-bold text-stone-800 mb-3">Check your email</h2>
@@ -52,7 +52,7 @@ export default function SignupPage() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)", fontFamily: "Georgia,serif" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)" }}>
       <div style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }} className="px-5 pt-10 pb-6 text-center">
         <div className="text-5xl mb-2">💰</div>
         <h1 className="text-3xl font-bold text-white">Create Your Account</h1>

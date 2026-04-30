@@ -24,7 +24,6 @@ export default function AppShell({
       className="min-h-screen"
       style={{
         background: "var(--bg-base)",
-        fontFamily: "'Georgia','Times New Roman',serif",
         paddingBottom: showBottomNav ? "calc(5rem + env(safe-area-inset-bottom, 0))" : 0,
       }}
     >
