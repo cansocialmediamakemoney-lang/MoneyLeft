@@ -14,6 +14,7 @@ export default function EditBudgetPage() {
 
   const [income, setIncome] = useState("");
   const [savings, setSavings] = useState("");
+  const [currentSavings, setCurrentSavings] = useState("");
   const [payDate, setPayDate] = useState("1");
   const [currency, setCurrency] = useState("USD");
   const [error, setError] = useState("");
@@ -24,6 +25,7 @@ export default function EditBudgetPage() {
     if (profile) {
       setIncome(profile.income?.toString() || "");
       setSavings(profile.savings_goal?.toString() || "");
+      setCurrentSavings(profile.starting_savings?.toString() || "");
       setPayDate(String(profile.pay_date || 1));
       setCurrency(profile.currency || "USD");
     }
@@ -38,6 +40,7 @@ export default function EditBudgetPage() {
       await updateProfile({
         income: parseFloat(income) || 0,
         savings_goal: parseFloat(savings) || 0,
+        starting_savings: parseFloat(currentSavings) || 0,
         pay_date: parseInt(payDate),
         currency,
       });
@@ -69,6 +72,7 @@ export default function EditBudgetPage() {
           <div className="space-y-5">
             <MoneyInput value={income} onChange={setIncome} label="Monthly Income (after taxes)" />
             <MoneyInput value={savings} onChange={setSavings} label="Monthly Savings Goal" hint="Enter $0 if you're not saving right now." />
+            <MoneyInput value={currentSavings} onChange={setCurrentSavings} label="Current Savings" hint="How much you already have saved — shown on your Savings tab, not subtracted from your budget." />
             <PickerInput value={payDate} onChange={setPayDate}
               label="Monthly Reset Date"
               hint="The day of the month your budget restarts (usually the day you get paid or receive Social Security)."
