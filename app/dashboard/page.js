@@ -115,13 +115,24 @@ export default function DashboardPage() {
   const pos = effectiveMoneyLeft >= 0;
   const nearLimit = effectiveMoneyLeft > 0 && effectiveMoneyLeft < c.income * 0.1;
 
+  // Override pace display when effectiveMoneyLeft is negative — pace logic
+  // can otherwise show "On track" even when the user has overspent.
+  let displayPaceLevel  = c.paceLevel;
+  let displayPaceTitle  = c.paceTitle;
+  let displayPaceDetail = c.paceDetail;
+  if (effectiveMoneyLeft < 0) {
+    displayPaceLevel  = "bad";
+    displayPaceTitle  = "Over budget";
+    displayPaceDetail = `You are $${fmt(Math.abs(effectiveMoneyLeft))} over your budget.`;
+  }
+
   const paceStyles = {
     good:    { color: "var(--accent-text)",    dot: "var(--accent)" },
     warn:    { color: "var(--warn)",           dot: "var(--warn)"   },
     bad:     { color: "var(--danger)",         dot: "var(--danger)" },
     neutral: { color: "var(--text-secondary)", dot: "var(--text-tertiary)" },
   };
-  const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
+  const paceStyle = paceStyles[displayPaceLevel] || paceStyles.neutral;
 
   const handleMonthEndChoice = (choice, planId = null) => {
     if (choice === "savings" && planId === null) {
@@ -136,7 +147,7 @@ export default function DashboardPage() {
     const newLeft   = effectiveMoneyLeft - checkAmt;
     const newPerDay = newLeft > 0 ? newLeft / c.daysLeft : 0;
     if (newLeft < 0) {
-      checkResult = { text: "Not recommended — this is more than you have left.", color: "var(--danger)", dot: "var(--danger)" };
+      checkResult = { text: `Not recommended — this would put you $${fmt(Math.abs(newLeft))} over budget.`, color: "var(--danger)", dot: "var(--danger)" };
     } else if (newPerDay < effectiveSafePerDay * 0.5) {
       checkResult = { text: `Careful — this would drop you to $${fmt(newPerDay)}/day.`, color: "var(--warn)", dot: "var(--warn)" };
     } else {
@@ -163,13 +174,13 @@ export default function DashboardPage() {
           support={
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 text-base sm:text-lg font-medium" style={{ color: paceStyle.color }}>
-                {c.paceLevel !== "neutral" && (
+                {displayPaceLevel !== "neutral" && (
                   <span className="inline-block rounded-full" style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }} />
                 )}
-                {c.paceTitle}
+                {displayPaceTitle}
               </span>
               <span className="text-sm sm:text-base" style={{ color: "var(--text-tertiary)" }}>
-                {c.paceDetail}
+                {displayPaceDetail}
               </span>
             </span>
           }
