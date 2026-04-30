@@ -21,9 +21,9 @@
   --accent-text:    #5abf8a;   /* readable green text on dark bg */
 
   /* Text */
-  --text-primary:   #f4f7f5;   /* near-white */
-  --text-secondary: #c8d1cc;   /* bright gray — descriptions, card text, supporting messages */
-  --text-tertiary:  #8d9a93;   /* muted — labels, metadata, timestamps */
+  --text-primary:   #ffffff;   /* white */
+  --text-secondary: #e2e8e4;   /* bright gray — descriptions, card text, supporting messages */
+  --text-tertiary:  #aab6af;   /* muted — labels, metadata, timestamps */
 
   /* Semantic */
   --danger:         #d05050;
