@@ -21,6 +21,15 @@ export default function HistoryPage() {
   );
 }
 
+function StatCell({ label, value, color }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-xs uppercase tracking-widest mb-1 truncate" style={{ color: "var(--text-tertiary)" }}>{label}</p>
+      <p className="text-xl sm:text-2xl font-semibold break-words" style={{ color: color || "var(--text-primary)" }}>{value}</p>
+    </div>
+  );
+}
+
 function TrashIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -140,6 +149,13 @@ function HistoryContent() {
               label={`Activity · ${selectedLabel}`}
               accent="green"
               support="Income has been logged for this month"
+              footer={
+                <div className="grid grid-cols-3 gap-3">
+                  <StatCell label="Spending" value="—" />
+                  <StatCell label="Income logged" value={incomeEntries.length} />
+                  <StatCell label="Extra Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
+                </div>
+              }
             >
               <p className="text-3xl sm:text-5xl font-medium" style={{ color: "var(--text-primary)" }}>
                 No spending yet
@@ -151,24 +167,13 @@ function HistoryContent() {
               accent="green"
               support="Based on your logged purchases"
               footer={
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Purchases</p>
-                    <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>{entries.length}</p>
-                  </div>
-                  <div className="min-w-0">
-                    {totalIncome > 0 ? (
-                      <>
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Income added</p>
-                        <MoneyDisplay value={totalIncome} size="medium" color="var(--accent-text)" />
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Avg / purchase</p>
-                        <MoneyDisplay value={total / entries.length} size="medium" />
-                      </>
-                    )}
-                  </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <StatCell label="Total Spent" value={`$${fmt(total)}`} />
+                  <StatCell label="Purchases" value={entries.length} />
+                  {totalIncome > 0
+                    ? <StatCell label="Extra Income" value={`$${fmt(totalIncome)}`} color="var(--accent-text)" />
+                    : <StatCell label="Avg Purchase" value={`$${fmt(total / entries.length)}`} />
+                  }
                 </div>
               }
             >
