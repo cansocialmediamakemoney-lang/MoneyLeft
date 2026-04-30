@@ -8,13 +8,13 @@ export default function PrivacyPage() {
     >
       <Link
         href="/settings"
-        className="inline-flex items-center gap-1 text-base font-semibold mb-8"
+        className="inline-flex items-center gap-1 text-base font-medium mb-8"
         style={{ color: "var(--accent-text)" }}
       >
         ← Back to Settings
       </Link>
 
-      <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+      <h1 className="text-3xl sm:text-4xl font-medium mb-2" style={{ color: "var(--text-primary)" }}>
         Privacy Policy
       </h1>
       <p className="text-base mb-8" style={{ color: "var(--text-tertiary)" }}>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
           <li>Improve user experience</li>
           <li>Respond to support requests</li>
         </ul>
-        <p className="mt-4 font-semibold" style={{ color: "var(--text-primary)" }}>We do not sell your data.</p>
+        <p className="mt-4 font-medium" style={{ color: "var(--text-primary)" }}>We do not sell your data.</p>
       </Section>
 
       <Section number="3" title="Data Storage">
@@ -98,7 +98,7 @@ function Section({ number, title, children }) {
   return (
     <div className="mb-8">
       <h2
-        className="text-xl sm:text-2xl font-bold mb-3"
+        className="text-xl sm:text-2xl font-medium mb-3"
         style={{ color: "var(--text-primary)" }}
       >
         {number}. {title}

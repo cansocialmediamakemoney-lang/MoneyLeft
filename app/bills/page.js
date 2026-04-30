@@ -42,7 +42,7 @@ export default function BillsPage() {
     <AppShell subtitle="My Monthly Bills">
       <div className="px-5 pt-6 pb-10">
         <Card>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>Monthly Bills</h2>
+          <h2 className="text-2xl font-medium mb-2" style={{ color: "var(--text-primary)" }}>Monthly Bills</h2>
           <p className="text-lg mb-5" style={{ color: "var(--text-secondary)" }}>MoneyLeft warns you 7 days before each bill is due.</p>
 
           {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
@@ -57,14 +57,14 @@ export default function BillsPage() {
                 style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>{b.name}</p>
+                  <p className="text-lg sm:text-xl font-medium break-words" style={{ color: "var(--text-primary)" }}>{b.name}</p>
                   <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-secondary)" }}>Due {ordinal(b.due_day)} of each month</p>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(b.amount)}</p>
+                  <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(b.amount)}</p>
                   <button
                     onClick={() => setEditing(b)}
-                    className="rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-semibold transition-colors"
+                    className="rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-medium transition-colors"
                     style={{ border: "1px solid var(--border-strong)", color: "var(--text-primary)", background: "transparent" }}
                   >Edit</button>
                   <button onClick={() => handleDelete(b.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
@@ -78,8 +78,8 @@ export default function BillsPage() {
               className="rounded-2xl px-4 sm:px-5 py-3 flex justify-between items-center mb-4 gap-3"
               style={{ background: "var(--accent-muted)", border: "1px solid var(--accent)" }}
             >
-              <span className="text-base sm:text-lg font-semibold" style={{ color: "var(--accent-text)" }}>Total each month</span>
-              <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--accent-text)" }}>${fmt(totalBills)}</span>
+              <span className="text-base sm:text-lg font-medium" style={{ color: "var(--accent-text)" }}>Total each month</span>
+              <span className="text-lg sm:text-xl font-semibold break-words flex-shrink-0" style={{ color: "var(--accent-text)" }}>${fmt(totalBills)}</span>
             </div>
           )}
 
@@ -118,7 +118,7 @@ function BillEditor({ bill, onSave, onCancel }) {
         style={{ background: "var(--bg-elevated)", borderTop: "1px solid var(--border-subtle)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>{bill.id ? "Edit Bill" : "Add a Bill"}</h3>
+        <h3 className="text-2xl font-medium mb-5" style={{ color: "var(--text-primary)" }}>{bill.id ? "Edit Bill" : "Add a Bill"}</h3>
         <div className="space-y-5">
           <PickerInput value={category} onChange={setCategory} label="Bill Type"
             options={BILL_CATS.map((c) => ({ value: c, label: c }))} />

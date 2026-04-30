@@ -29,14 +29,14 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)" }}>
       <div style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }} className="px-5 pt-10 pb-6 text-center">
         <div className="text-5xl mb-2">💰</div>
-        <h1 className="text-3xl font-bold text-white">Reset Password</h1>
+        <h1 className="text-3xl font-medium text-white">Reset Password</h1>
       </div>
       <div className="flex-1 px-5 py-6 max-w-md mx-auto w-full">
         <Card>
           {sent ? (
             <div className="text-center py-3">
               <div className="text-5xl mb-3">📬</div>
-              <h2 className="text-xl font-bold text-stone-800 mb-2">Check your email</h2>
+              <h2 className="text-xl font-medium text-stone-800 mb-2">Check your email</h2>
               <p className="text-stone-600 text-lg">If an account exists for <strong>{email}</strong>, we've sent a password reset link.</p>
             </div>
           ) : (
@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
           )}
         </Card>
         <div className="mt-5 text-center">
-          <Link href="/login" className="text-emerald-700 text-lg font-bold underline">← Back to sign in</Link>
+          <Link href="/login" className="text-emerald-700 text-lg font-medium underline">← Back to sign in</Link>
         </div>
       </div>
     </div>

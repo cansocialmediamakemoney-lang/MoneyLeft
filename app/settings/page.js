@@ -72,7 +72,7 @@ export default function SettingsPage() {
 
         <SectionLabel>Privacy & Security</SectionLabel>
         <Card className="mb-3">
-          <h3 className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>🔒 How we protect you</h3>
+          <h3 className="text-lg font-medium mb-3" style={{ color: "var(--text-primary)" }}>🔒 How we protect you</h3>
           <ul className="space-y-2 text-base" style={{ color: "var(--text-secondary)" }}>
             <li>✓ We <strong>never</strong> ask for your bank login or account numbers.</li>
             <li>✓ We <strong>do not sell</strong> your financial information.</li>
@@ -112,7 +112,7 @@ export default function SettingsPage() {
 function SectionLabel({ children }) {
   return (
     <p
-      className="text-xs font-bold uppercase tracking-widest px-2 mb-2"
+      className="text-xs font-medium uppercase tracking-widest px-2 mb-2"
       style={{ color: "var(--text-tertiary)" }}
     >
       {children}
@@ -130,7 +130,7 @@ function Item({ icon, label, value }) {
       <span className="text-2xl flex-shrink-0">{icon}</span>
       <div className="min-w-0 flex-1">
         <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>{label}</p>
-        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{value}</p>
+        <p className="text-base font-medium break-words" style={{ color: "var(--text-primary)" }}>{value}</p>
       </div>
     </div>
   );
@@ -141,7 +141,7 @@ function ItemReadonly({ icon, label, value }) {
     <div className="px-5 py-4 flex items-center gap-4">
       <span className="text-2xl flex-shrink-0">{icon}</span>
       <span className="text-base flex-1 min-w-0 break-words" style={{ color: "var(--text-primary)" }}>{label}</span>
-      <span className="text-base font-semibold flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>{value}</span>
+      <span className="text-base font-medium flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>{value}</span>
     </div>
   );
 }
@@ -151,7 +151,7 @@ function ItemLink({ href, icon, label, hint }) {
     <Link href={href} className="px-5 py-4 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90">
       <span className="text-2xl flex-shrink-0">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
+        <p className="text-base font-medium break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
         {hint && <p className="text-sm break-words" style={{ color: "var(--text-tertiary)" }}>{hint}</p>}
       </div>
       <span className="text-xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
@@ -164,7 +164,7 @@ function ItemExternal({ href, icon, label, hint }) {
     <a href={href} className="px-5 py-4 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90">
       <span className="text-2xl flex-shrink-0">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-base font-semibold break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
+        <p className="text-base font-medium break-words" style={{ color: "var(--text-primary)" }}>{label}</p>
         {hint && <p className="text-sm break-words" style={{ color: "var(--text-tertiary)" }}>{hint}</p>}
       </div>
       <span className="text-xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
@@ -180,7 +180,7 @@ function ItemButton({ icon, label, onClick, danger = false }) {
       className="w-full px-5 py-4 flex items-center gap-4 text-left transition-colors hover:brightness-125 active:brightness-90"
     >
       <span className="text-2xl flex-shrink-0">{icon}</span>
-      <span className="text-base font-semibold flex-1 min-w-0 break-words" style={{ color }}>{label}</span>
+      <span className="text-base font-medium flex-1 min-w-0 break-words" style={{ color }}>{label}</span>
     </button>
   );
 }

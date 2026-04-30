@@ -105,7 +105,7 @@ export default function BottomNav() {
                 }}
               />
               {tab.icon()}
-              <span className="text-[0.6rem] sm:text-xs font-semibold mt-1 tracking-tight whitespace-nowrap">{tab.label}</span>
+              <span className="text-[0.6rem] sm:text-xs font-medium mt-1 tracking-tight whitespace-nowrap">{tab.label}</span>
             </Link>
           );
         })}

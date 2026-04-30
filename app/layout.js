@@ -3,7 +3,7 @@ import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallPrompt from "@/components/InstallPrompt";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const inter = Inter({ subsets: ["latin"], display: "swap", weight: ["400", "500", "600"] });
 
 export const metadata = {
   title: "MoneyLeft — Simple Budgeting",

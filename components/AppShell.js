@@ -35,12 +35,12 @@ export default function AppShell({
           }}
         >
           <div className="flex items-center justify-between px-5 pt-10 pb-4 gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold truncate" style={{ color: "var(--text-primary)" }}>
+            <h1 className="text-2xl sm:text-3xl font-medium truncate" style={{ color: "var(--text-primary)" }}>
               Settings
             </h1>
             <button
               onClick={signOut}
-              className="rounded-xl px-4 py-2 text-sm sm:text-base font-semibold whitespace-nowrap transition-colors"
+              className="rounded-xl px-4 py-2 text-sm sm:text-base font-medium whitespace-nowrap transition-colors"
               style={{ background: "var(--bg-elevated-2)", color: "var(--text-primary)" }}
             >
               Sign Out

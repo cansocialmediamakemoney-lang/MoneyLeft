@@ -56,12 +56,12 @@ export default function EditBudgetPage() {
     <AppShell subtitle="Edit My Budget">
       <div className="px-5 pt-6 pb-10">
         <Card>
-          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--text-primary)" }}>Your Budget</h2>
+          <h2 className="text-2xl font-medium mb-5" style={{ color: "var(--text-primary)" }}>Your Budget</h2>
 
           {error && <div className="mb-4"><ErrorMsg>{error}</ErrorMsg></div>}
           {savedMsg && (
             <div
-              className="mb-4 rounded-2xl px-4 py-3 font-bold text-base"
+              className="mb-4 rounded-2xl px-4 py-3 font-medium text-base"
               style={{ background: "var(--accent-muted)", border: "1px solid var(--accent)", color: "var(--accent-text)" }}
             >{savedMsg}</div>
           )}

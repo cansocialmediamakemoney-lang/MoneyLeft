@@ -35,7 +35,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(150deg,#f0ede8 0%,#e8f0ec 100%)" }}>
       <div style={{ background: "linear-gradient(135deg,#1a6b4a,#2d9e6b)" }} className="px-5 pt-10 pb-6 text-center">
         <div className="text-5xl mb-2">💰</div>
-        <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+        <h1 className="text-3xl font-medium text-white">Welcome Back</h1>
       </div>
       <div className="flex-1 px-5 py-6 max-w-md mx-auto w-full">
         <Card>
@@ -48,12 +48,12 @@ export default function LoginPage() {
             </Btn>
           </form>
           <div className="mt-4 text-center">
-            <Link href="/forgot-password" className="text-emerald-700 text-base font-semibold underline">Forgot your password?</Link>
+            <Link href="/forgot-password" className="text-emerald-700 text-base font-medium underline">Forgot your password?</Link>
           </div>
         </Card>
         <div className="mt-5 text-center">
           <p className="text-stone-600 text-lg">New to MoneyLeft?</p>
-          <Link href="/signup" className="text-emerald-700 text-lg font-bold underline">Create an account</Link>
+          <Link href="/signup" className="text-emerald-700 text-lg font-medium underline">Create an account</Link>
         </div>
       </div>
     </div>

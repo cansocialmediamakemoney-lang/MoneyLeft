@@ -60,7 +60,7 @@ function SpendingContent() {
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           Log a Purchase
         </h1>
 
@@ -71,7 +71,7 @@ function SpendingContent() {
               options={SPEND_CATS.map((c) => ({ value: c, label: `${SPEND_ICONS[c]}  ${c}` }))} />
             <TextInput value={note} onChange={setNote} label="Note (optional)" placeholder="e.g. Walmart, Doctor visit…" />
             <div>
-              <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Date</p>
+              <p className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>Date</p>
               <input
                 type="date"
                 value={date}

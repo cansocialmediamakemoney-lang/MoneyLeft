@@ -108,7 +108,7 @@ export default function DashboardPage() {
         <div className="px-5 pt-12">
           <Card className="text-center">
             <div className="text-6xl mb-4">👋</div>
-            <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
+            <h2 className="text-2xl font-medium mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
             <p className="text-lg mb-6" style={{ color: "var(--text-secondary)" }}>Tell MoneyLeft about your income, bills, and savings goal so we can show you exactly how much you can safely spend.</p>
             <Link href="/budget-edit"><Btn>Set Up My Budget →</Btn></Link>
           </Card>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           accent={pos ? "green" : "danger"}
           support={
             <span className="inline-flex flex-col items-center gap-1">
-              <span className="inline-flex items-center gap-2 text-base sm:text-lg font-semibold" style={{ color: paceStyle.color }}>
+              <span className="inline-flex items-center gap-2 text-base sm:text-lg font-medium" style={{ color: paceStyle.color }}>
                 <span
                   className="inline-block rounded-full"
                   style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }}
@@ -164,16 +164,16 @@ export default function DashboardPage() {
       <div className="mx-4 mt-4 grid grid-cols-3 gap-3">
         <div className="min-w-0 text-center">
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
-          <p className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-secondary)" }}>${fmt(c.safePerDay)}</p>
+          <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-secondary)" }}>${fmt(c.safePerDay)}</p>
         </div>
         <div className="min-w-0 text-center" style={{ borderLeft: "1px solid var(--border-subtle)", borderRight: "1px solid var(--border-subtle)" }}>
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days left</p>
-          <p className="text-lg sm:text-xl font-bold" style={{ color: "var(--text-secondary)" }}>{c.daysLeft}</p>
+          <p className="text-lg sm:text-xl font-semibold" style={{ color: "var(--text-secondary)" }}>{c.daysLeft}</p>
         </div>
         <div className="min-w-0 text-center">
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Bills due</p>
           <p
-            className="text-lg sm:text-xl font-bold break-words"
+            className="text-lg sm:text-xl font-semibold break-words"
             style={{ color: c.upcoming.length > 0 ? "var(--warn)" : "var(--text-secondary)" }}
           >
             ${fmt(c.upcomingTotal)}
@@ -198,11 +198,11 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <span className="text-2xl flex-shrink-0">⚠️</span>
               <div className="min-w-0 flex-1">
-                <p className="text-base sm:text-lg font-bold break-words" style={{ color: "var(--warn)" }}>{b.name} due soon</p>
+                <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--warn)" }}>{b.name} due soon</p>
                 <p className="text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>Due on the {ordinal(b.due_day)}</p>
               </div>
             </div>
-            <p className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--warn)" }}>${fmt(b.amount)}</p>
+            <p className="text-lg sm:text-xl font-semibold break-words flex-shrink-0" style={{ color: "var(--warn)" }}>${fmt(b.amount)}</p>
           </div>
         ))}
 
@@ -211,7 +211,7 @@ export default function DashboardPage() {
             className="mx-4 mb-3 rounded-2xl px-5 py-4 text-center"
             style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
           >
-            <p className="text-xl font-bold" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
+            <p className="text-xl font-medium" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
             <p className="text-lg mt-1" style={{ color: "var(--text-secondary)" }}>Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
           </div>
         )}
@@ -228,7 +228,7 @@ export default function DashboardPage() {
 
         {/* Secondary content cards */}
         <Card className="mx-4 mb-4">
-          <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
+          <h3 className="text-xl font-medium mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
             <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
             <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} red />
@@ -245,14 +245,14 @@ export default function DashboardPage() {
 
         {c.totalSpent > 0 && (
           <Card className="mx-4 mb-4">
-            <h3 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
+            <h3 className="text-xl font-medium mb-4" style={{ color: "var(--text-primary)" }}>Spending This Month</h3>
             {SPEND_CATS.map((cat) => {
               const amt = c.byCategory[cat];
               if (!amt) return null;
               return (
                 <div key={cat} className="flex justify-between items-center mb-3 last:mb-0 gap-3">
                   <span className="text-base sm:text-lg min-w-0 break-words" style={{ color: "var(--text-secondary)" }}>{SPEND_ICONS[cat]} {cat}</span>
-                  <span className="text-lg sm:text-xl font-bold flex-shrink-0 break-words" style={{ color: "var(--text-primary)" }}>${fmt(amt)}</span>
+                  <span className="text-lg sm:text-xl font-semibold flex-shrink-0 break-words" style={{ color: "var(--text-primary)" }}>${fmt(amt)}</span>
                 </div>
               );
             })}
@@ -262,17 +262,17 @@ export default function DashboardPage() {
         {entries.length > 0 && (
           <Card className="mx-4 mb-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
-              <Link href="/history" className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>See all →</Link>
+              <h3 className="text-xl font-medium" style={{ color: "var(--text-primary)" }}>Recent Purchases</h3>
+              <Link href="/history" className="text-base font-medium" style={{ color: "var(--accent-text)" }}>See all →</Link>
             </div>
             {entries.slice(0,4).map((e) => (
               <div key={e.id} className="flex items-center justify-between py-3 last:border-0 gap-3" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
                 <div className="min-w-0 flex-1">
-                  <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
+                  <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--text-primary)" }}>{SPEND_ICONS[e.category]} {e.category}</p>
                   <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>{fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}</p>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <span className="text-lg sm:text-xl font-bold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
+                  <span className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
                   <button onClick={() => deleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
                 </div>
               </div>
@@ -287,7 +287,7 @@ export default function DashboardPage() {
           >
             <span className="text-3xl flex-shrink-0">⚙️</span>
             <div className="min-w-0 flex-1">
-              <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Edit My Budget</p>
+              <p className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>Edit My Budget</p>
               <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Income, savings goal, pay date</p>
             </div>
             <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>

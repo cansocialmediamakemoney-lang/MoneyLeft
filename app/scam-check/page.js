@@ -41,7 +41,7 @@ export default function ScamCheckPage() {
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           Scam Check
         </h1>
 
@@ -56,7 +56,7 @@ export default function ScamCheckPage() {
               <div className="flex flex-col items-center gap-2">
                 <span className="text-5xl sm:text-6xl">{v.icon}</span>
                 <span
-                  className="text-3xl sm:text-5xl font-bold"
+                  className="text-3xl sm:text-5xl font-medium"
                   style={{ color: v.color }}
                 >
                   {v.label}
@@ -70,7 +70,7 @@ export default function ScamCheckPage() {
               support="We'll analyze the message and tell you if it looks suspicious"
             >
               <p
-                className="text-3xl sm:text-5xl font-bold"
+                className="text-3xl sm:text-5xl font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
                 Paste a message
@@ -107,7 +107,7 @@ export default function ScamCheckPage() {
           <Card>
             {result.reasons?.length > 0 && (
               <>
-                <h3 className="text-xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Why we think so:</h3>
+                <h3 className="text-xl font-medium mb-3" style={{ color: "var(--text-primary)" }}>Why we think so:</h3>
                 <ul className="space-y-2 mb-4">
                   {result.reasons.map((r, i) => (
                     <li key={i} className="flex gap-2 text-lg" style={{ color: "var(--text-secondary)" }}>
@@ -123,7 +123,7 @@ export default function ScamCheckPage() {
                 className="rounded-2xl p-4 mb-4"
                 style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
               >
-                <p className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>What to do:</p>
+                <p className="font-medium mb-1" style={{ color: "var(--text-primary)" }}>What to do:</p>
                 <p className="text-lg" style={{ color: "var(--text-secondary)" }}>{result.advice}</p>
               </div>
             )}

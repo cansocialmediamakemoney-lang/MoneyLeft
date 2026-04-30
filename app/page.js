@@ -9,19 +9,19 @@ export default function HomePage() {
         <div className="flex justify-center mb-5">
           <LogoMark size={120} />
         </div>
-        <h1 className="text-5xl font-bold mb-1 tracking-tight" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-5xl font-semibold mb-1 tracking-tight" style={{ color: "var(--text-primary)" }}>
           MONEY<span style={{ color: "var(--accent-text)" }}>LEFT</span>
         </h1>
         <p className="text-base mb-6" style={{ color: "var(--text-tertiary)", letterSpacing: "0.15em" }}>MAKE EVERY DOLLAR COUNT</p>
         <p className="text-xl max-w-md mx-auto leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           Simple budgeting that answers one question:
         </p>
-        <p className="text-2xl font-bold mt-3" style={{ color: "var(--accent-text)" }}>"How much can I safely spend?"</p>
+        <p className="text-2xl font-medium mt-3" style={{ color: "var(--accent-text)" }}>"How much can I safely spend?"</p>
       </div>
 
       <div className="flex-1 px-5 py-8 max-w-md mx-auto w-full">
         <Card className="text-center mb-5">
-          <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>Built for clarity</h2>
+          <h2 className="text-2xl font-medium mb-3" style={{ color: "var(--text-primary)" }}>Built for clarity</h2>
           <p className="text-lg mb-4" style={{ color: "var(--text-secondary)" }}>Big numbers. No clutter. No confusing finance jargon.</p>
           <ul className="text-lg space-y-2 text-left mt-4" style={{ color: "var(--text-secondary)" }}>
             <li>✓ Big "money left" number on every screen</li>

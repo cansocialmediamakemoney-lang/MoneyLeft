@@ -125,7 +125,7 @@ function PlanPageContent() {
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           Plan
         </h1>
 
@@ -142,7 +142,7 @@ function PlanPageContent() {
                 : "Create a spend plan or set a savings goal"
             }
           >
-            <p className="text-3xl sm:text-5xl font-bold" style={{ color: "var(--text-primary)" }}>
+            <p className="text-3xl sm:text-5xl font-medium" style={{ color: "var(--text-primary)" }}>
               {plans.length === 0 ? "No plans yet" : `${plans.length} ${plans.length === 1 ? "plan" : "plans"}`}
             </p>
           </Hero>
@@ -158,7 +158,7 @@ function PlanPageContent() {
         {plans.length === 0 && (
           <Card className="text-center">
             <div className="text-5xl mb-3">🗺️</div>
-            <p className="text-lg mb-2 font-bold" style={{ color: "var(--text-primary)" }}>Plan ahead with confidence</p>
+            <p className="text-lg mb-2 font-medium" style={{ color: "var(--text-primary)" }}>Plan ahead with confidence</p>
             <p className="text-base" style={{ color: "var(--text-secondary)" }}>
               Spend Plans spread a fixed amount across a trip or stretch of days. Savings Goals help you reach a target amount by a deadline.
             </p>
@@ -168,7 +168,7 @@ function PlanPageContent() {
         {/* Savings Goals section */}
         {savingsGoals.length > 0 && (
           <div className="mb-5">
-            <p className="text-xs uppercase tracking-widest mb-3 font-semibold" style={{ color: "var(--text-tertiary)" }}>
+            <p className="text-xs uppercase tracking-widest mb-3 font-medium" style={{ color: "var(--text-tertiary)" }}>
               Savings Goals
             </p>
             <div className="space-y-3">
@@ -182,7 +182,7 @@ function PlanPageContent() {
         {/* Spend Plans section */}
         {spendPlans.length > 0 && (
           <div className="mb-5">
-            <p className="text-xs uppercase tracking-widest mb-3 font-semibold" style={{ color: "var(--text-tertiary)" }}>
+            <p className="text-xs uppercase tracking-widest mb-3 font-medium" style={{ color: "var(--text-tertiary)" }}>
               Spend Plans
             </p>
             <div className="space-y-3">
@@ -218,11 +218,11 @@ function SpendPlanCard({ plan, onClick }) {
       <div className="flex items-start gap-3 mb-2">
         <span className="text-3xl flex-shrink-0">{planTypeIcon(plan.plan_type)}</span>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold break-words mb-1" style={{ color: "var(--text-primary)" }}>
+          <p className="text-lg font-medium break-words mb-1" style={{ color: "var(--text-primary)" }}>
             {plan.name}
           </p>
           <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            className="text-xs font-medium px-2 py-0.5 rounded-full"
             style={{ background: "var(--bg-elevated-2)", color: "var(--text-tertiary)" }}
           >
             Spend Plan
@@ -261,11 +261,11 @@ function SavingsGoalCard({ plan, onClick }) {
       <div className="flex items-start gap-3 mb-3">
         <span className="text-3xl flex-shrink-0">🎯</span>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold break-words mb-1" style={{ color: "var(--text-primary)" }}>
+          <p className="text-lg font-medium break-words mb-1" style={{ color: "var(--text-primary)" }}>
             {plan.name}
           </p>
           <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            className="text-xs font-medium px-2 py-0.5 rounded-full"
             style={{ background: "var(--bg-elevated-2)", color: "var(--text-tertiary)" }}
           >
             Savings Goal
@@ -275,7 +275,7 @@ function SavingsGoalCard({ plan, onClick }) {
       </div>
 
       {isComplete ? (
-        <p className="text-lg font-bold mb-3" style={{ color: "var(--accent-text)" }}>Goal reached!</p>
+        <p className="text-lg font-medium mb-3" style={{ color: "var(--accent-text)" }}>Goal reached!</p>
       ) : perMonth > 0 ? (
         <div className="flex items-baseline gap-1 mb-3">
           <MoneyDisplay value={perMonth} size="medium" color="var(--accent-text)" />
@@ -294,7 +294,7 @@ function SavingsGoalCard({ plan, onClick }) {
         />
       </div>
       <div className="flex justify-between text-sm">
-        <span style={{ color: "var(--accent-text)" }} className="font-semibold">${fmt(saved)} saved</span>
+        <span style={{ color: "var(--accent-text)" }} className="font-medium">${fmt(saved)} saved</span>
         <span style={{ color: "var(--text-tertiary)" }}>${fmt(goal)} goal · {fmtDate(plan.end_date)}</span>
       </div>
     </button>
@@ -347,17 +347,17 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
     if (reserve > 0) {
       const label = reserveLabel.trim() || "later";
       return <>
-        <span className="font-bold" style={{ color: "var(--warn)" }}>${fmt(reserve)} set aside for {label}</span>
+        <span className="font-semibold" style={{ color: "var(--warn)" }}>${fmt(reserve)} set aside for {label}</span>
         {" · "}${fmt(spendable)} to spend over {days} {days === 1 ? "day" : "days"}
       </>;
     }
-    return <>Based on <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(total)}</span> over {days} {days === 1 ? "day" : "days"}</>;
+    return <>Based on <span className="font-semibold" style={{ color: "var(--text-primary)" }}>${fmt(total)}</span> over {days} {days === 1 ? "day" : "days"}</>;
   };
 
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           New Spend Plan
         </h1>
 
@@ -370,7 +370,7 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
           >
             {perDay > 0
               ? <MoneyDisplay value={perDay} color="var(--accent-text)" size="hero" />
-              : <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+              : <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--text-tertiary)" }}>—</p>
             }
           </Hero>
         </div>
@@ -401,7 +401,7 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
             />
 
             <div className="min-w-0">
-              <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Start date</p>
+              <p className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>Start date</p>
               <input
                 type="date"
                 value={startDate}
@@ -411,7 +411,7 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
             </div>
 
             <div className="min-w-0">
-              <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>End date</p>
+              <p className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>End date</p>
               <input
                 type="date"
                 value={endDate}
@@ -426,7 +426,7 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
 
             {/* Optional: set aside section */}
             <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "1.25rem" }}>
-              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              <p className="text-lg font-medium mb-1" style={{ color: "var(--text-primary)" }}>
                 Set aside for later{" "}
                 <span className="text-base font-normal" style={{ color: "var(--text-tertiary)" }}>(optional)</span>
               </p>
@@ -489,7 +489,7 @@ function PlanDetail({ plan, onBack, onDelete }) {
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
         <button
           onClick={onBack}
-          className="text-base font-semibold mb-4 flex items-center gap-1"
+          className="text-base font-medium mb-4 flex items-center gap-1"
           style={{ color: "var(--accent-text)" }}
         >
           ← Back to Plans
@@ -497,7 +497,7 @@ function PlanDetail({ plan, onBack, onDelete }) {
 
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">{planTypeIcon(plan.plan_type)}</span>
-          <h1 className="text-3xl sm:text-4xl font-bold break-words" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-3xl sm:text-4xl font-medium break-words" style={{ color: "var(--text-primary)" }}>
             {plan.name}
           </h1>
         </div>
@@ -507,7 +507,7 @@ function PlanDetail({ plan, onBack, onDelete }) {
             label={`Daily allowance · ${statusLabel}`}
             accent="green"
             support={
-              <>From <span className="font-bold" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.start_date)}</span> to <span className="font-bold" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.end_date)}</span></>
+              <>From <span className="font-medium" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.start_date)}</span> to <span className="font-medium" style={{ color: "var(--text-primary)" }}>{fmtDate(plan.end_date)}</span></>
             }
             footer={
               <div className="grid grid-cols-2 gap-4">
@@ -519,23 +519,23 @@ function PlanDetail({ plan, onBack, onDelete }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Days</p>
-                  <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{days}</p>
+                  <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>{days}</p>
                 </div>
               </div>
             }
           >
             <MoneyDisplay value={perDay} color="var(--accent-text)" size="hero" />
-            <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/day</span>
+            <span className="text-2xl sm:text-3xl font-semibold ml-1" style={{ color: "var(--text-secondary)" }}>/day</span>
           </Hero>
         </div>
 
         <Card className="mb-5">
           <p className="text-base sm:text-lg mb-3" style={{ color: "var(--text-secondary)" }}>
-            Spend up to <span className="font-bold" style={{ color: "var(--accent-text)" }}>${fmt(perDay)}/day</span> to make ${fmt(reserve > 0 ? spendable : total)} last from {fmtDate(plan.start_date)} through {fmtDate(plan.end_date)}.
+            Spend up to <span className="font-semibold" style={{ color: "var(--accent-text)" }}>${fmt(perDay)}/day</span> to make ${fmt(reserve > 0 ? spendable : total)} last from {fmtDate(plan.start_date)} through {fmtDate(plan.end_date)}.
           </p>
           {reserve > 0 && (
             <p className="text-base sm:text-lg mb-3" style={{ color: "var(--warn)" }}>
-              🔒 <span className="font-bold">${fmt(reserve)}</span> is set aside for {reserveLabel}.
+              🔒 <span className="font-semibold">${fmt(reserve)}</span> is set aside for {reserveLabel}.
             </p>
           )}
           <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
@@ -568,22 +568,22 @@ function BudgetComparison({ perMonth }) {
         <div className="space-y-3">
           <div className="flex justify-between items-baseline">
             <span className="text-base" style={{ color: "var(--text-secondary)" }}>You need</span>
-            <span className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>${fmt(perMonth)}/mo</span>
+            <span className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>${fmt(perMonth)}/mo</span>
           </div>
           <div className="flex justify-between items-baseline">
             <span className="text-base" style={{ color: "var(--text-secondary)" }}>Monthly available</span>
-            <span className="text-lg font-bold" style={{ color: onTrack ? "var(--accent-text)" : "var(--warn)" }}>
+            <span className="text-lg font-semibold" style={{ color: onTrack ? "var(--accent-text)" : "var(--warn)" }}>
               ${fmt(monthlyFree)}/mo
             </span>
           </div>
           <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "0.75rem" }}>
             {onTrack ? (
-              <p className="text-base font-semibold" style={{ color: "var(--accent-text)" }}>
+              <p className="text-base font-medium" style={{ color: "var(--accent-text)" }}>
                 ✓ You have enough room in your budget.
               </p>
             ) : (
-              <p className="text-base font-semibold" style={{ color: "var(--warn)" }}>
-                Reduce spending by <span className="font-bold">${fmt(shortfall)}/month</span> to reach your goal.
+              <p className="text-base font-medium" style={{ color: "var(--warn)" }}>
+                Reduce spending by <span className="font-semibold">${fmt(shortfall)}/month</span> to reach your goal.
               </p>
             )}
           </div>
@@ -637,13 +637,13 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
   };
 
   const heroSupport = perMonth > 0
-    ? <>To reach <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(goal)}</span> by {fmtDate(targetDate)}</>
+    ? <>To reach <span className="font-semibold" style={{ color: "var(--text-primary)" }}>${fmt(goal)}</span> by {fmtDate(targetDate)}</>
     : "Fill in your goal and target date";
 
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           New Savings Goal
         </h1>
 
@@ -661,7 +661,7 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Months left</p>
-                  <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
+                  <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>
                     {months >= 1 ? months.toFixed(1) : `${days}d`}
                   </p>
                 </div>
@@ -671,9 +671,9 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
             {perMonth > 0
               ? <>
                   <MoneyDisplay value={perMonth} color="var(--accent-text)" size="hero" />
-                  <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/mo</span>
+                  <span className="text-2xl sm:text-3xl font-semibold ml-1" style={{ color: "var(--text-secondary)" }}>/mo</span>
                 </>
-              : <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+              : <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--text-tertiary)" }}>—</p>
             }
           </Hero>
         </div>
@@ -695,7 +695,7 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
               large
             />
             <div className="min-w-0">
-              <p className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>Target date</p>
+              <p className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>Target date</p>
               <input
                 type="date"
                 value={targetDate}
@@ -707,7 +707,7 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
               <p className="text-sm" style={{ color: "var(--danger)" }}>Target date must be in the future.</p>
             )}
             <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "1.25rem" }}>
-              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+              <p className="text-lg font-medium mb-1" style={{ color: "var(--text-primary)" }}>
                 Already saved{" "}
                 <span className="text-base font-normal" style={{ color: "var(--text-tertiary)" }}>(optional)</span>
               </p>
@@ -734,7 +734,7 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
             className="rounded-2xl px-4 py-3 mb-5 text-base"
             style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)", color: "var(--warn)" }}
           >
-            💡 Saving this goal will reduce your monthly Money Left by <span className="font-bold">${fmt(perMonth)}</span>.
+            💡 Saving this goal will reduce your monthly Money Left by <span className="font-semibold">${fmt(perMonth)}</span>.
           </div>
         )}
 
@@ -763,7 +763,7 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
         <button
           onClick={onBack}
-          className="text-base font-semibold mb-4 flex items-center gap-1"
+          className="text-base font-medium mb-4 flex items-center gap-1"
           style={{ color: "var(--accent-text)" }}
         >
           ← Back to Plans
@@ -771,7 +771,7 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
 
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">🎯</span>
-          <h1 className="text-3xl sm:text-4xl font-bold break-words" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-3xl sm:text-4xl font-medium break-words" style={{ color: "var(--text-primary)" }}>
             {plan.name}
           </h1>
         </div>
@@ -785,7 +785,7 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
               isComplete
                 ? `You've saved $${fmt(goal)} — congratulations!`
                 : perMonth > 0
-                  ? <>To reach <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(goal)}</span> by {fmtDate(plan.end_date)}</>
+                  ? <>To reach <span className="font-semibold" style={{ color: "var(--text-primary)" }}>${fmt(goal)}</span> by {fmtDate(plan.end_date)}</>
                   : fmtDate(plan.end_date)
             }
             footer={!isComplete && perMonth > 0 ? (
@@ -796,7 +796,7 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Months left</p>
-                  <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
+                  <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>
                     {months >= 1 ? months.toFixed(1) : `${days}d`}
                   </p>
                 </div>
@@ -804,10 +804,10 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
             ) : null}
           >
             {isComplete
-              ? <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--accent-text)" }}>Done!</p>
+              ? <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--accent-text)" }}>Done!</p>
               : <>
                   <MoneyDisplay value={perMonth} color="var(--accent-text)" size="hero" />
-                  <span className="text-2xl sm:text-3xl font-bold ml-1" style={{ color: "var(--text-secondary)" }}>/mo</span>
+                  <span className="text-2xl sm:text-3xl font-semibold ml-1" style={{ color: "var(--text-secondary)" }}>/mo</span>
                 </>
             }
           </Hero>
@@ -816,8 +816,8 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
         {/* Progress card */}
         <Card className="mb-5">
           <div className="flex justify-between items-baseline mb-3">
-            <span className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>Progress</span>
-            <span className="text-lg font-bold" style={{ color: "var(--accent-text)" }}>{Math.round(progress)}%</span>
+            <span className="text-base font-medium" style={{ color: "var(--text-primary)" }}>Progress</span>
+            <span className="text-lg font-semibold" style={{ color: "var(--accent-text)" }}>{Math.round(progress)}%</span>
           </div>
           <div
             className="rounded-full overflow-hidden mb-3"

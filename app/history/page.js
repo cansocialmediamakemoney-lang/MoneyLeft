@@ -78,14 +78,14 @@ function HistoryContent() {
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           History
         </h1>
 
         <div className="-mx-1 mb-5">
           {loading ? (
             <Hero label="Spending history" accent="muted" support="Loading…">
-              <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+              <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--text-tertiary)" }}>—</p>
             </Hero>
           ) : entries.length === 0 ? (
             <Hero
@@ -93,7 +93,7 @@ function HistoryContent() {
               accent="muted"
               support={isCurrentMonth ? "Start by logging your first purchase" : `No purchases logged in ${selectedLabel}`}
             >
-              <p className="text-3xl sm:text-5xl font-bold" style={{ color: "var(--text-primary)" }}>
+              <p className="text-3xl sm:text-5xl font-medium" style={{ color: "var(--text-primary)" }}>
                 No activity yet
               </p>
             </Hero>
@@ -106,7 +106,7 @@ function HistoryContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Purchases</p>
-                    <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{entries.length}</p>
+                    <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>{entries.length}</p>
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Avg / purchase</p>
@@ -138,7 +138,7 @@ function HistoryContent() {
 
         {!loading && entries.length > 0 && (
           <Card>
-            <p className="text-lg font-bold mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
+            <p className="text-lg font-medium mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
             {entries.map((e) => (
               <div
                 key={e.id}
@@ -146,14 +146,14 @@ function HistoryContent() {
                 style={{ borderBottom: "1px solid var(--border-subtle)" }}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-base sm:text-lg font-semibold break-words" style={{ color: "var(--text-primary)" }}>
+                  <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--text-primary)" }}>
                     {SPEND_ICONS[e.category]} {e.category}
                   </p>
                   <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
                     {fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}
                   </p>
                 </div>
-                <span className="text-lg sm:text-xl font-bold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>
+                <span className="text-lg sm:text-xl font-semibold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>
                   ${fmt(e.amount)}
                 </span>
               </div>
@@ -164,7 +164,7 @@ function HistoryContent() {
 
       {showToast && (
         <div
-          className="fixed left-1/2 -translate-x-1/2 z-40 rounded-full px-5 py-3 shadow-lg flex items-center gap-2 text-base font-semibold"
+          className="fixed left-1/2 -translate-x-1/2 z-40 rounded-full px-5 py-3 shadow-lg flex items-center gap-2 text-base font-medium"
           style={{
             bottom: "calc(5.5rem + env(safe-area-inset-bottom, 0))",
             background: "var(--accent)",

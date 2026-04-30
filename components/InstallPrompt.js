@@ -78,7 +78,7 @@ export default function InstallPrompt() {
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0"><LogoMark size={40} /></div>
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold mb-1" style={{ color: "var(--text-primary)" }}>Add MoneyLeft to your phone</p>
+          <p className="text-lg font-medium mb-1" style={{ color: "var(--text-primary)" }}>Add MoneyLeft to your phone</p>
 
           {installEvent ? (
             <p className="text-base mb-3" style={{ color: "var(--text-secondary)" }}>
@@ -94,7 +94,7 @@ export default function InstallPrompt() {
             {installEvent && (
               <button
                 onClick={install}
-                className="flex-1 py-2 px-4 rounded-xl font-bold text-base transition-colors"
+                className="flex-1 py-2 px-4 rounded-xl font-medium text-base transition-colors"
                 style={{ background: "var(--accent)", color: "var(--text-on-accent)" }}
               >
                 Install
@@ -102,7 +102,7 @@ export default function InstallPrompt() {
             )}
             <button
               onClick={dismiss}
-              className="px-4 py-2 rounded-xl font-semibold text-base"
+              className="px-4 py-2 rounded-xl font-medium text-base"
               style={{ border: "1px solid var(--border-strong)", color: "var(--text-secondary)", background: "transparent" }}
             >
               {installEvent ? "Not Now" : "Got It"}

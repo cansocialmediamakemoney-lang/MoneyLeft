@@ -27,7 +27,7 @@ export default function SavingsPage() {
   return (
     <AppShell>
       <div className="px-5 pt-10 sm:pt-12 pb-10 max-w-md mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-3xl sm:text-4xl font-medium mb-6" style={{ color: "var(--text-primary)" }}>
           Savings
         </h1>
 
@@ -40,12 +40,12 @@ export default function SavingsPage() {
                 accent="muted"
                 support="Add a savings goal in your Budget tab to unlock projections"
               >
-                <p className="text-[3rem] sm:text-6xl font-bold" style={{ color: "var(--text-tertiary)" }}>—</p>
+                <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--text-tertiary)" }}>—</p>
               </Hero>
             </div>
             <Card className="text-center">
               <div className="text-5xl mb-4">🐷</div>
-              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>No savings goal yet</h2>
+              <h2 className="text-xl font-medium mb-2" style={{ color: "var(--text-primary)" }}>No savings goal yet</h2>
               <p className="text-base mb-6" style={{ color: "var(--text-secondary)" }}>
                 Your savings goal is the amount you set aside each month before deciding what's safe to spend.
               </p>
@@ -63,7 +63,7 @@ export default function SavingsPage() {
                 accent="green"
                 support={
                   extra > 0
-                    ? <>in 12 months if you save <span className="font-bold" style={{ color: "var(--text-primary)" }}>${fmt(extra)}/month</span> extra</>
+                    ? <>in 12 months if you save <span className="font-medium" style={{ color: "var(--text-primary)" }}>${fmt(extra)}/month</span> extra</>
                     : "in 12 months based on your current savings goal"
                 }
                 footer={
@@ -90,7 +90,7 @@ export default function SavingsPage() {
 
             {/* Slider card below */}
             <Card className="mb-5">
-              <h3 className="text-xl font-bold mb-1" style={{ color: "var(--text-primary)" }}>What if you saved more?</h3>
+              <h3 className="text-xl font-medium mb-1" style={{ color: "var(--text-primary)" }}>What if you saved more?</h3>
               <p className="text-base mb-5" style={{ color: "var(--text-secondary)" }}>Move the slider to see how an extra cushion would grow your savings.</p>
 
               <div className="text-center mb-3">
@@ -122,7 +122,7 @@ export default function SavingsPage() {
               >
                 <span className="text-3xl flex-shrink-0">📊</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Edit Budget</p>
+                  <p className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>Edit Budget</p>
                   <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>Update your savings goal or income</p>
                 </div>
                 <span className="text-2xl flex-shrink-0" style={{ color: "var(--text-tertiary)" }}>›</span>
