@@ -77,7 +77,7 @@ export default function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-30"
       style={{
         background: "var(--bg-elevated)",
-        borderTop: "1px solid var(--border-subtle)",
+        borderTop: "1px solid var(--border-strong)",
         paddingBottom: "env(safe-area-inset-bottom, 0)",
       }}
       aria-label="Main navigation"
@@ -98,10 +98,11 @@ export default function BottomNav() {
               <div
                 className="rounded-full transition-all"
                 style={{
-                  width: active ? "1.4rem" : "0",
-                  height: "4px",
-                  background: active ? "var(--accent)" : "transparent",
+                  width: active ? "1.75rem" : "0",
+                  height: "3px",
+                  background: active ? "var(--accent-text)" : "transparent",
                   marginBottom: active ? "0.4rem" : "calc(0.4rem + 3px)",
+                  boxShadow: active ? "0 0 8px rgba(90, 191, 138, 0.6)" : "none",
                 }}
               />
               {tab.icon()}

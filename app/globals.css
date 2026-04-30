@@ -6,31 +6,32 @@
 :root {
   /* Backgrounds */
   --bg-base:        #0a0e0c;   /* near-black, slight green tint */
-  --bg-elevated:    #1a2219;   /* card background */
-  --bg-elevated-2:  #1f2820;   /* nested / hover */
-  --bg-input:       #0f1411;
+  --bg-elevated:    #212d26;   /* card background — clearly lifted from base */
+  --bg-elevated-2:  #26332a;   /* nested / hover */
+  --bg-input:       #131a16;
 
   /* Borders */
-  --border-subtle:  #263028;
-  --border-strong:  #2e3d36;
+  --border-subtle:  #324038;
+  --border-strong:  #3d5046;
 
   /* Forest green accents */
   --accent:         #1f6f4a;
   --accent-hover:   #2a8a5d;
   --accent-muted:   #163d2c;
-  --accent-text:    #4ea87e;   /* readable green text on dark bg */
+  --accent-text:    #5abf8a;   /* readable green text on dark bg */
 
   /* Text */
-  --text-primary:   #e8ece9;   /* near-white, slightly warm */
-  --text-secondary: #96a09a;   /* muted gray-green */
-  --text-tertiary:  #6b7872;
-  --text-on-accent: #ffffff;
+  --text-primary:   #edf1ee;   /* near-white, slightly warm */
+  --text-secondary: #aebab4;   /* clearly readable */
+  --text-tertiary:  #8a9690;   /* was old secondary — good for labels */
 
   /* Semantic */
-  --danger:         #c44848;
+  --danger:         #d05050;
   --danger-bg:      #2a1414;
-  --warn:           #c4944a;
-  --warn-bg:        #2a2014;
+  --warn:           #ce9d52;
+  --warn-bg:        #231c10;
+
+  --text-on-accent: #ffffff;
 }
 
 html, body {

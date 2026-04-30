@@ -137,7 +137,14 @@ export default function DashboardPage() {
           label={`${MONTHS[today.getMonth()]} ${today.getFullYear()}`}
           labelStyle={{ textTransform: "none", fontSize: "0.7rem", opacity: 0.55 }}
           accent={pos ? "green" : "danger"}
-          style={{ boxShadow: pos ? "0 4px 28px rgba(31, 111, 74, 0.14)" : "0 4px 28px rgba(196, 72, 72, 0.12)" }}
+          style={{
+            background: pos
+              ? "linear-gradient(170deg, #2a3f32 0%, #1c2c22 100%)"
+              : "linear-gradient(170deg, #33201e 0%, #1e1313 100%)",
+            boxShadow: pos
+              ? "0 6px 36px rgba(31, 111, 74, 0.24)"
+              : "0 6px 36px rgba(208, 80, 80, 0.22)",
+          }}
           support={
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 text-base sm:text-lg font-medium" style={{ color: paceStyle.color }}>
