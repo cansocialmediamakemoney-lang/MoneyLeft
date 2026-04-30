@@ -4,12 +4,13 @@ import { useMemo } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
+import Onboarding from "@/components/Onboarding";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
-  const { loading, error, profile, bills, entries, deleteEntry } = useBudgetData();
+  const { loading, error, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans } = usePlans();
 
   const today = new Date();
@@ -103,18 +104,7 @@ export default function DashboardPage() {
   );
 
   if (!profile || !parseFloat(profile.income)) {
-    return (
-      <AppShell>
-        <div className="px-5 pt-12">
-          <Card className="text-center">
-            <div className="text-6xl mb-4">👋</div>
-            <h2 className="text-2xl font-medium mb-3" style={{ color: "var(--text-primary)" }}>Let's set up your budget</h2>
-            <p className="text-lg mb-6" style={{ color: "var(--text-secondary)" }}>Tell MoneyLeft about your income, bills, and savings goal so we can show you exactly how much you can safely spend.</p>
-            <Link href="/budget-edit"><Btn>Set Up My Budget →</Btn></Link>
-          </Card>
-        </div>
-      </AppShell>
-    );
+    return <Onboarding updateProfile={updateProfile} addBill={addBill} refresh={refresh} />;
   }
 
   const c = calcs;
