@@ -56,7 +56,7 @@ export default function DashboardPage() {
     if (totalSpent === 0) {
       paceLevel = "neutral";
       paceTitle = "No spending yet";
-      paceDetail = "Start tracking to see your spending pace.";
+      paceDetail = "Log your first purchase to track your pace";
     } else if (expectedPerDay <= 0) {
       paceLevel = "neutral";
       paceTitle = "Set a budget to see your pace";
@@ -134,15 +134,18 @@ export default function DashboardPage() {
       {/* ── Hero card: just the money number + pace insight ── */}
       <div className="px-4 pt-10 sm:pt-12 pb-2">
         <Hero
-          label={`${MONTHS[today.getMonth()]} ${today.getFullYear()} · Money Left`}
+          label={`${MONTHS[today.getMonth()]} ${today.getFullYear()}`}
+          labelStyle={{ textTransform: "none", fontSize: "0.7rem", opacity: 0.55 }}
           accent={pos ? "green" : "danger"}
           support={
             <span className="inline-flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 text-base sm:text-lg font-medium" style={{ color: paceStyle.color }}>
-                <span
-                  className="inline-block rounded-full"
-                  style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }}
-                />
+                {c.paceLevel !== "neutral" && (
+                  <span
+                    className="inline-block rounded-full"
+                    style={{ width: "0.6rem", height: "0.6rem", background: paceStyle.dot }}
+                  />
+                )}
                 {c.paceTitle}
               </span>
               <span className="text-sm sm:text-base" style={{ color: "var(--text-tertiary)" }}>
@@ -161,7 +164,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Secondary stats row (outside the hero card) ── */}
-      <div className="mx-4 mt-4 grid grid-cols-3 gap-3">
+      <div className="mx-4 mt-6 grid grid-cols-3 gap-3">
         <div className="min-w-0 text-center">
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Safe / day</p>
           <p className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-secondary)" }}>${fmt(c.safePerDay)}</p>
@@ -187,12 +190,12 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="mt-6">
+      <div className="mt-8">
         {/* Bill warnings */}
         {c.upcoming.map((b) => (
           <div
             key={b.id}
-            className="mx-4 mb-3 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
+            className="mx-4 mb-4 rounded-2xl px-4 sm:px-5 py-4 flex justify-between items-center gap-3"
             style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
           >
             <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -208,11 +211,11 @@ export default function DashboardPage() {
 
         {nearLimit && (
           <div
-            className="mx-4 mb-3 rounded-2xl px-5 py-4 text-center"
-            style={{ background: "var(--warn-bg)", border: "1px solid var(--warn)" }}
+            className="mx-4 mb-4 rounded-2xl px-4 py-3 text-center"
+            style={{ background: "var(--warn-bg)", borderLeft: "3px solid var(--warn)" }}
           >
-            <p className="text-xl font-medium" style={{ color: "var(--warn)" }}>⚠️ You're close to your limit!</p>
-            <p className="text-lg mt-1" style={{ color: "var(--text-secondary)" }}>Only ${fmt(c.moneyLeft)} left. Try to keep spending under ${fmt(c.safePerDay)}/day.</p>
+            <p className="text-base font-medium" style={{ color: "var(--warn)" }}>You're getting close to your limit</p>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>Stay under ${fmt(c.safePerDay)}/day to stay on track</p>
           </div>
         )}
 

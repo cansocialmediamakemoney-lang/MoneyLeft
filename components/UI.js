@@ -142,7 +142,7 @@ export function MoneyDisplay({ value, negative = false, color, size = "hero", cl
  *   accent      — "green" (default) | "danger" | "warn" | "muted" — controls the border + glow
  *   className   — extra classes
  */
-export function Hero({ label, children, support, footer, accent = "green", className = "" }) {
+export function Hero({ label, children, support, footer, accent = "green", className = "", labelStyle = {} }) {
   const accentColors = {
     green:  "var(--accent)",
     danger: "var(--danger)",
@@ -160,7 +160,7 @@ export function Hero({ label, children, support, footer, accent = "green", class
       }}
     >
       {label && (
-        <p className="text-xs sm:text-sm font-medium mb-3 uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
+        <p className="text-xs font-medium mb-3 uppercase tracking-widest" style={{ color: "var(--text-tertiary)", ...labelStyle }}>
           {label}
         </p>
       )}
