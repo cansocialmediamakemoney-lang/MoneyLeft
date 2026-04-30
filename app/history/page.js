@@ -21,6 +21,17 @@ export default function HistoryPage() {
   );
 }
 
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14H6L5 6" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M9 6V4h6v2" />
+    </svg>
+  );
+}
+
 function HistoryContent() {
   const { user, loading: profileLoading } = useBudgetData();
   const supabase = createClient();
@@ -36,6 +47,8 @@ function HistoryContent() {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("Purchase logged");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState(null); // { id, type: "spend"|"income" }
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!justLogged && !justLoggedIncome) return;
@@ -67,6 +80,21 @@ function HistoryContent() {
     });
     return () => { cancelled = true; };
   }, [user, selectedMonth, supabase, refreshKey]);
+
+  const handleDeleteConfirm = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    const { id, type } = confirmDelete;
+    if (type === "spend") {
+      await supabase.from("spending_entries").delete().eq("id", id);
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } else {
+      await supabase.from("income_entries").delete().eq("id", id);
+      setIncomeEntries((prev) => prev.filter((e) => e.id !== id));
+    }
+    setDeleting(false);
+    setConfirmDelete(null);
+  };
 
   const total = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
   const totalIncome = incomeEntries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
@@ -192,12 +220,22 @@ function HistoryContent() {
                       </>
                     )}
                   </div>
-                  <span
-                    className="text-lg sm:text-xl font-semibold break-words flex-shrink-0"
-                    style={{ color: e._type === "income" ? "var(--accent-text)" : "var(--text-primary)" }}
-                  >
-                    {e._type === "income" ? "+" : ""}${fmt(e.amount)}
-                  </span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span
+                      className="text-lg sm:text-xl font-semibold break-words"
+                      style={{ color: e._type === "income" ? "var(--accent-text)" : "var(--text-primary)" }}
+                    >
+                      {e._type === "income" ? "+" : ""}${fmt(e.amount)}
+                    </span>
+                    <button
+                      onClick={() => setConfirmDelete({ id: e.id, type: e._type })}
+                      className="p-1 flex-shrink-0"
+                      style={{ color: "var(--text-tertiary)" }}
+                      aria-label="Delete"
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
                 </div>
               ))}
             </Card>
@@ -217,6 +255,41 @@ function HistoryContent() {
         >
           <span>✓</span>
           <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          <div
+            className="absolute inset-0"
+            style={{ background: "rgba(0,0,0,0.55)" }}
+            onClick={() => !deleting && setConfirmDelete(null)}
+          />
+          <div
+            className="relative rounded-t-3xl px-6 pt-6 pb-10 max-w-md mx-auto w-full space-y-2"
+            style={{ background: "var(--bg-elevated)" }}
+          >
+            <h3 className="text-xl font-medium" style={{ color: "var(--text-primary)" }}>Delete this entry?</h3>
+            <p className="text-base pb-4" style={{ color: "var(--text-secondary)" }}>This cannot be undone.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                className="flex-1 rounded-2xl py-4 text-lg font-medium transition-colors"
+                style={{ background: "var(--bg-elevated-2)", color: "var(--text-primary)" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={deleting}
+                className="flex-1 rounded-2xl py-4 text-lg font-medium transition-colors"
+                style={{ background: "var(--danger)", color: "#fff" }}
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
