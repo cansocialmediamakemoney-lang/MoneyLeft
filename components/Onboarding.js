@@ -178,13 +178,24 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
     setError("");
     try {
       setLocalCurrentSavings(startingSavingsNum);
-      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD", setup_complete: true });
+      await updateProfile({
+        income: incomeNum,
+        savings_goal: savingsNum,
+        pay_date: 1,
+        currency: "USD",
+        setup_complete: true,
+      });
       if (billsNum > 0) {
-        await addBill({ name: "Monthly Bills", amount: billsNum, due_day: 1, category: "Other" });
+        try {
+          await addBill({ name: "Monthly Bills", amount: billsNum, due_day: 1, category: "Other Bill" });
+        } catch (billErr) {
+          console.error("[Onboarding] addBill failed (non-fatal):", billErr);
+        }
       }
       await refresh();
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error("[Onboarding] setup failed:", err);
+      setError(err?.message || "Something went wrong. Please try again.");
       setSaving(false);
     }
   };
