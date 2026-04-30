@@ -183,7 +183,6 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
         savings_goal: savingsNum,
         pay_date: 1,
         currency: "USD",
-        setup_complete: true,
       });
       if (billsNum > 0) {
         try {

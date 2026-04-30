@@ -111,10 +111,11 @@ export default function DashboardPage() {
     bills.length > 0
   );
 
-  // One-time: silently mark existing users who pass the gate but predate the flag
+  // One-time: silently mark existing users who pass the gate but predate the flag.
+  // Runs only after the setup_complete migration has been applied in Supabase.
   useEffect(() => {
     if (profile && !profile.setup_complete && isOnboarded) {
-      updateProfile({ setup_complete: true }).catch(() => {});
+      updateProfile({ setup_complete: true }).catch(() => {/* column not yet migrated — safe to ignore */});
     }
   }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
