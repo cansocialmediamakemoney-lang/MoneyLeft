@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
@@ -106,18 +106,9 @@ export default function DashboardPage() {
 
   // Onboarding gate — robust check so existing users are never trapped
   const isOnboarded = !!(
-    profile?.setup_complete ||
     parseFloat(profile?.income) > 0 ||
     bills.length > 0
   );
-
-  // One-time: silently mark existing users who pass the gate but predate the flag.
-  // Runs only after the setup_complete migration has been applied in Supabase.
-  useEffect(() => {
-    if (profile && !profile.setup_complete && isOnboarded) {
-      updateProfile({ setup_complete: true }).catch(() => {/* column not yet migrated — safe to ignore */});
-    }
-  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading || plansLoading || incomeLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
