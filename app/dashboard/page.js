@@ -9,6 +9,7 @@ import MonthEndReview from "@/components/MonthEndReview";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
+import { addToLocalMlSavings } from "@/lib/localSavings";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
@@ -122,12 +123,9 @@ export default function DashboardPage() {
   };
   const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
 
-  const handleMonthEndChoice = async (choice, planId = null) => {
+  const handleMonthEndChoice = (choice, planId = null) => {
     if (choice === "savings" && planId === null) {
-      try {
-        const current = parseFloat(profile?.ml_savings) || 0;
-        await updateProfile({ ml_savings: current + (prevMonth.amount || 0) });
-      } catch {}
+      addToLocalMlSavings(prevMonth.amount || 0);
     }
     applyChoice(choice);
   };
@@ -332,7 +330,7 @@ export default function DashboardPage() {
           </Card>
         )}
 
-        <Link href="/budget-edit" className="block mx-4 mb-4">
+        <Link href="/budget-edit?from=dashboard" className="block mx-4 mb-4">
           <div
             className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
             style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}

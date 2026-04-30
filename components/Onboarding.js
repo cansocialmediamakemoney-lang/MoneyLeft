@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import { Btn, MoneyInput, MoneyDisplay, Hero } from "@/components/UI";
+import { setLocalCurrentSavings } from "@/lib/localSavings";
 import { fmt } from "@/lib/constants";
 
 function Dots({ step }) {
@@ -176,7 +177,8 @@ export default function Onboarding({ updateProfile, addBill, refresh }) {
     setSaving(true);
     setError("");
     try {
-      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD", current_savings: startingSavingsNum, ml_savings: 0 });
+      setLocalCurrentSavings(startingSavingsNum);
+      await updateProfile({ income: incomeNum, savings_goal: savingsNum, pay_date: 1, currency: "USD" });
       if (billsNum > 0) {
         await addBill({ name: "Monthly Bills", amount: billsNum, due_day: 1, category: "Other" });
       }

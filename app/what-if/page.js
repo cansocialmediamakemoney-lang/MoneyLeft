@@ -1,24 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyDisplay, Hero } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
+import { getLocalCurrentSavings, getLocalMlSavings } from "@/lib/localSavings";
 import { fmt } from "@/lib/constants";
 
 export default function SavingsPage() {
   const { loading, profile } = useBudgetData();
   const { loading: plansLoading, plans } = usePlans();
   const [extra, setExtra] = useState(0);
+  const [startingSavings, setStartingSavings] = useState(0);
+  const [mlSavings, setMlSavings] = useState(0);
+
+  useEffect(() => {
+    const cs = getLocalCurrentSavings();
+    const ml = getLocalMlSavings();
+    setStartingSavings(cs);
+    setMlSavings(ml);
+    console.log("[Savings tab] currentSavings from localStorage:", cs);
+    console.log("[Savings tab] mlSavings from localStorage:", ml);
+  }, []);
 
   if (loading || plansLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>
   );
-
-  const startingSavings  = parseFloat(profile?.current_savings) || 0;
-  const mlSavings        = parseFloat(profile?.ml_savings) || 0;
   const totalSavings     = startingSavings + mlSavings;
   const hasAnySavings    = totalSavings > 0;
 
@@ -80,7 +89,7 @@ export default function SavingsPage() {
             <p className="text-base mb-5" style={{ color: "var(--text-secondary)" }}>
               Add your current savings in Budget Setup, or apply leftover money at the end of the month to start tracking progress.
             </p>
-            <Link href="/budget-edit"><Btn>Edit Budget →</Btn></Link>
+            <Link href="/budget-edit?from=what-if"><Btn>Edit Budget →</Btn></Link>
           </Card>
         )}
 
@@ -180,7 +189,7 @@ export default function SavingsPage() {
         )}
 
         {/* ── Edit Budget link ── */}
-        <Link href="/budget-edit" className="block mb-5">
+        <Link href="/budget-edit?from=what-if" className="block mb-5">
           <div
             className="rounded-2xl p-5 flex items-center gap-4 transition-colors hover:brightness-125 active:brightness-90"
             style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}

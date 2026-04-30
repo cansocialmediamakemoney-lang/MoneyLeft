@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyInput, PickerInput, Row, ErrorMsg } from "@/components/UI";
 import { useBudgetData } from "@/lib/useBudgetData";
+import { getLocalCurrentSavings, setLocalCurrentSavings } from "@/lib/localSavings";
 import { fmt, ordinal } from "@/lib/constants";
 
 export default function EditBudgetPage() {
@@ -20,15 +21,26 @@ export default function EditBudgetPage() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
+  const [returnPath, setReturnPath] = useState("/dashboard");
+
+  // Read returnTo from ?from= query param (client-side only, avoids Suspense)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+    if (from) setReturnPath("/" + from);
+  }, []);
 
   useEffect(() => {
     if (profile) {
       setIncome(profile.income?.toString() || "");
       setSavings(profile.savings_goal?.toString() || "");
-      setCurrentSavings(profile.current_savings?.toString() || "");
       setPayDate(String(profile.pay_date || 1));
       setCurrency(profile.currency || "USD");
     }
+    // Load current savings from localStorage (reliable, no Supabase column needed)
+    const stored = getLocalCurrentSavings();
+    setCurrentSavings(stored > 0 ? stored.toString() : "");
+    console.log("[EditBudget] loaded currentSavings from localStorage:", stored);
   }, [profile]);
 
   const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
@@ -36,16 +48,26 @@ export default function EditBudgetPage() {
 
   const handleSave = async () => {
     setError(""); setSavedMsg(""); setSaving(true);
+    const currentSavingsNum = parseFloat(currentSavings) || 0;
+
+    // Save currentSavings to localStorage — this is the reliable storage layer
+    setLocalCurrentSavings(currentSavingsNum);
+    console.log("[EditBudget] saved currentSavings to localStorage:", currentSavingsNum);
+
     try {
       await updateProfile({
         income: parseFloat(income) || 0,
         savings_goal: parseFloat(savings) || 0,
-        current_savings: parseFloat(currentSavings) || 0,
         pay_date: parseInt(payDate),
         currency,
+        // Note: current_savings intentionally not sent to Supabase —
+        // the column may not exist. localSavings.js is the source of truth.
       });
       setSavedMsg("✓ Saved!");
-      setTimeout(() => setSavedMsg(""), 2500);
+      setTimeout(() => {
+        setSavedMsg("");
+        router.push(returnPath);
+      }, 800);
     } catch (e) {
       setError(e.message || "Couldn't save your changes.");
     } finally {
@@ -72,7 +94,12 @@ export default function EditBudgetPage() {
           <div className="space-y-5">
             <MoneyInput value={income} onChange={setIncome} label="Monthly Income (after taxes)" />
             <MoneyInput value={savings} onChange={setSavings} label="Monthly Savings Goal" hint="Enter $0 if you're not saving right now." />
-            <MoneyInput value={currentSavings} onChange={setCurrentSavings} label="Current Savings" hint="How much you already have saved — shown on your Savings tab, not subtracted from your budget." />
+            <MoneyInput
+              value={currentSavings}
+              onChange={setCurrentSavings}
+              label="Current Savings"
+              hint="How much you already have saved — shown on your Savings tab, not subtracted from your budget."
+            />
             <PickerInput value={payDate} onChange={setPayDate}
               label="Monthly Reset Date"
               hint="The day of the month your budget restarts (usually the day you get paid or receive Social Security)."
@@ -91,8 +118,8 @@ export default function EditBudgetPage() {
             style={{ background: "var(--bg-elevated-2)", border: "1px solid var(--border-subtle)" }}
           >
             <Row label="Income" val={`$${fmt(income)}`} />
-            <Row label="− Savings" val={`$${fmt(savings)}`} red />
-            <Row label="− Bills" val={`$${fmt(totalBills)}`} red />
+            <Row label="− Savings Goal" val={`$${fmt(savings)}`} softRed />
+            <Row label="− Bills" val={`$${fmt(totalBills)}`} softRed />
             <div className="pt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
               <Row label="Available to Spend" val={`$${fmt(available)}`} bold green={available >= 0} red={available < 0} large />
             </div>
@@ -107,7 +134,17 @@ export default function EditBudgetPage() {
           </div>
         </Card>
 
-        <Link href="/dashboard" className="block mt-4"><Btn variant="secondary">← Back to Budget</Btn></Link>
+        <button
+          onClick={() => router.push(returnPath)}
+          className="block w-full mt-4"
+        >
+          <div
+            className="rounded-2xl py-4 text-center text-xl font-medium transition-colors hover:brightness-125"
+            style={{ background: "transparent", border: "2px solid var(--border-strong)", color: "var(--text-primary)" }}
+          >
+            ← Back
+          </div>
+        </button>
       </div>
     </AppShell>
   );
