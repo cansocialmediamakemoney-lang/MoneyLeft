@@ -9,12 +9,14 @@ import MonthEndReview from "@/components/MonthEndReview";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
+import { useIncomeEntries } from "@/lib/useIncomeEntries";
 import { addToLocalMlSavings } from "@/lib/localSavings";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { loading, error, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans, updatePlan } = usePlans();
+  const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
   const [checkAmount, setCheckAmount] = useState("");
 
   const today = new Date();
@@ -27,6 +29,7 @@ export default function DashboardPage() {
     const savingsGoal = parseFloat(profile.savings_goal) || 0;
     const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
     const totalSpent = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
+    const addlIncome = totalAdditionalIncome;
 
     const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split("T")[0];
     const planSavingsMonthly = plans.reduce((sum, p) => {
@@ -39,7 +42,7 @@ export default function DashboardPage() {
       return sum + (months > 0 ? remaining / months : 0);
     }, 0);
 
-    const moneyLeft = income - savingsGoal - totalBills - totalSpent - planSavingsMonthly;
+    const moneyLeft = income + addlIncome - savingsGoal - totalBills - totalSpent - planSavingsMonthly;
 
     const payDate = parseInt(profile.pay_date) || 1;
     let daysLeft = payDate > dayOfMonth ? payDate - dayOfMonth : (dim - dayOfMonth) + payDate;
@@ -91,17 +94,17 @@ export default function DashboardPage() {
     }, {});
 
     return {
-      income, savingsGoal, totalBills, totalSpent, planSavingsMonthly, moneyLeft,
+      income, addlIncome, savingsGoal, totalBills, totalSpent, planSavingsMonthly, moneyLeft,
       daysLeft, safePerDay,
       paceLevel, paceTitle, paceDetail,
       upcoming, upcomingTotal, byCategory,
     };
-  }, [profile, bills, entries, plans, dayOfMonth, dim]);
+  }, [profile, bills, entries, plans, dayOfMonth, dim, totalAdditionalIncome]);
 
   // Month-end hook must be called before any conditional returns
   const { showReview, prevMonth, rollover, applyChoice } = useMonthEnd(calcs?.moneyLeft ?? null);
 
-  if (loading || plansLoading) return (
+  if (loading || plansLoading || incomeLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading your dashboard…</div></AppShell>
   );
 
@@ -279,6 +282,9 @@ export default function DashboardPage() {
           <Link href="/spending?from=dashboard" className="block">
             <Btn>➕ Log a Purchase</Btn>
           </Link>
+          <Link href="/add-income?from=dashboard" className="block">
+            <Btn variant="secondary">💰 Add Income</Btn>
+          </Link>
           <Link href="/bills" className="block">
             <Btn variant="secondary">📋 My Bills</Btn>
           </Link>
@@ -289,6 +295,9 @@ export default function DashboardPage() {
           <h3 className="text-xl font-medium mb-4" style={{ color: "var(--text-primary)" }}>How It's Calculated</h3>
           <div className="space-y-3">
             <Row label="💵 Monthly Income" val={`$${fmt(c.income)}`} />
+            {c.addlIncome > 0 && (
+              <Row label="💰 Additional Income" val={`+$${fmt(c.addlIncome)}`} green />
+            )}
             <Row label="🏦 Savings Goal" val={`−$${fmt(c.savingsGoal)}`} softRed />
             <Row label="📋 Fixed Bills" val={`−$${fmt(c.totalBills)}`} softRed />
             {c.planSavingsMonthly > 0 && (

@@ -96,3 +96,21 @@ create trigger on_auth_user_created
 -- ⚠️  Run these in your Supabase SQL Editor before deploying the Savings features.
 alter table public.profiles add column if not exists current_savings numeric default 0;
 alter table public.profiles add column if not exists ml_savings       numeric default 0;
+
+-- ─── INCOME ENTRIES ──────────────────────────────────────────────────────────
+-- One-time or irregular income a user logs during the month.
+create table public.income_entries (
+  id              uuid        primary key default gen_random_uuid(),
+  user_id         uuid        not null references auth.users(id) on delete cascade,
+  received_on     date        not null default current_date,
+  amount          numeric     not null,
+  source          text,
+  created_at      timestamptz default now()
+);
+create index income_user_date_idx on public.income_entries (user_id, received_on desc);
+
+alter table public.income_entries enable row level security;
+create policy "Users see own income"    on public.income_entries for select using (auth.uid() = user_id);
+create policy "Users insert own income" on public.income_entries for insert with check (auth.uid() = user_id);
+create policy "Users update own income" on public.income_entries for update using (auth.uid() = user_id);
+create policy "Users delete own income" on public.income_entries for delete using (auth.uid() = user_id);

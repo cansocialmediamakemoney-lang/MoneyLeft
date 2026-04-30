@@ -27,39 +27,49 @@ function HistoryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justLogged = searchParams.get("logged") === "1";
+  const justLoggedIncome = searchParams.get("logged_income") === "1";
 
   const [selectedMonth, setSelectedMonth] = useState(currentMonthKey());
   const [entries, setEntries] = useState([]);
+  const [incomeEntries, setIncomeEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("Purchase logged");
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    if (!justLogged) return;
+    if (!justLogged && !justLoggedIncome) return;
+    setToastMsg(justLoggedIncome ? "Income added" : "Purchase logged");
     setShowToast(true);
     setRefreshKey((k) => k + 1);
     router.replace("/history", { scroll: false });
     const t = setTimeout(() => setShowToast(false), 2500);
     return () => clearTimeout(t);
-  }, [justLogged, router]);
+  }, [justLogged, justLoggedIncome, router]);
 
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
     setLoading(true);
     const { start, end } = monthRange(selectedMonth);
-    supabase.from("spending_entries").select("*")
-      .eq("user_id", user.id).gte("spent_on", start).lte("spent_on", end)
-      .order("spent_on", { ascending: false })
-      .then(({ data }) => {
-        if (cancelled) return;
-        setEntries(data || []);
-        setLoading(false);
-      });
+    Promise.all([
+      supabase.from("spending_entries").select("*")
+        .eq("user_id", user.id).gte("spent_on", start).lte("spent_on", end)
+        .order("spent_on", { ascending: false }),
+      supabase.from("income_entries").select("*")
+        .eq("user_id", user.id).gte("received_on", start).lte("received_on", end)
+        .order("received_on", { ascending: false }),
+    ]).then(([{ data: spend }, { data: income }]) => {
+      if (cancelled) return;
+      setEntries(spend || []);
+      setIncomeEntries(income || []);
+      setLoading(false);
+    });
     return () => { cancelled = true; };
   }, [user, selectedMonth, supabase, refreshKey]);
 
   const total = entries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
+  const totalIncome = incomeEntries.reduce((s,e) => s + (parseFloat(e.amount) || 0), 0);
   const isCurrentMonth = selectedMonth === currentMonthKey();
 
   const today = new Date();
@@ -109,8 +119,17 @@ function HistoryContent() {
                     <p className="text-2xl sm:text-3xl font-semibold" style={{ color: "var(--text-primary)" }}>{entries.length}</p>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Avg / purchase</p>
-                    <MoneyDisplay value={total / entries.length} size="medium" />
+                    {totalIncome > 0 ? (
+                      <>
+                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Income added</p>
+                        <MoneyDisplay value={totalIncome} size="medium" color="var(--accent-text)" />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-tertiary)" }}>Avg / purchase</p>
+                        <MoneyDisplay value={total / entries.length} size="medium" />
+                      </>
+                    )}
                   </div>
                 </div>
               }
@@ -120,9 +139,10 @@ function HistoryContent() {
           )}
         </div>
 
-        {!loading && entries.length === 0 && isCurrentMonth && (
-          <div className="mb-5">
+        {!loading && entries.length === 0 && incomeEntries.length === 0 && isCurrentMonth && (
+          <div className="mb-5 space-y-3">
             <Link href="/spending?from=history"><Btn>+ Log a Purchase</Btn></Link>
+            <Link href="/add-income?from=history"><Btn variant="secondary">💰 Add Income</Btn></Link>
           </div>
         )}
 
@@ -130,36 +150,59 @@ function HistoryContent() {
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
         </Card>
 
-        {!loading && entries.length > 0 && isCurrentMonth && (
-          <div className="mb-5">
-            <Link href="/spending?from=history"><Btn>+ Log a Purchase</Btn></Link>
+        {!loading && (entries.length > 0 || incomeEntries.length > 0) && isCurrentMonth && (
+          <div className="mb-5 flex gap-3">
+            <Link href="/spending?from=history" className="flex-1"><Btn>+ Purchase</Btn></Link>
+            <Link href="/add-income?from=history" className="flex-1"><Btn variant="secondary">💰 Income</Btn></Link>
           </div>
         )}
 
-        {!loading && entries.length > 0 && (
-          <Card>
-            <p className="text-lg font-medium mb-3" style={{ color: "var(--text-primary)" }}>All Purchases</p>
-            {entries.map((e) => (
-              <div
-                key={e.id}
-                className="flex items-center justify-between py-3 last:border-0 gap-3"
-                style={{ borderBottom: "1px solid var(--border-subtle)" }}
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--text-primary)" }}>
-                    {SPEND_ICONS[e.category]} {e.category}
-                  </p>
-                  <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
-                    {fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}
-                  </p>
+        {!loading && (entries.length > 0 || incomeEntries.length > 0) && (() => {
+          const combined = [
+            ...entries.map((e) => ({ ...e, _type: "spend", _date: e.spent_on })),
+            ...incomeEntries.map((e) => ({ ...e, _type: "income", _date: e.received_on })),
+          ].sort((a, b) => b._date.localeCompare(a._date));
+          return (
+            <Card>
+              <p className="text-lg font-medium mb-3" style={{ color: "var(--text-primary)" }}>All Activity</p>
+              {combined.map((e) => (
+                <div
+                  key={`${e._type}-${e.id}`}
+                  className="flex items-center justify-between py-3 last:border-0 gap-3"
+                  style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                >
+                  <div className="min-w-0 flex-1">
+                    {e._type === "income" ? (
+                      <>
+                        <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--accent-text)" }}>
+                          💰 {e.source || "Income"}
+                        </p>
+                        <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
+                          {fmtDate(e.received_on)}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-base sm:text-lg font-medium break-words" style={{ color: "var(--text-primary)" }}>
+                          {SPEND_ICONS[e.category]} {e.category}
+                        </p>
+                        <p className="text-sm sm:text-base break-words" style={{ color: "var(--text-tertiary)" }}>
+                          {fmtDate(e.spent_on)}{e.note ? ` · ${e.note}` : ""}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <span
+                    className="text-lg sm:text-xl font-semibold break-words flex-shrink-0"
+                    style={{ color: e._type === "income" ? "var(--accent-text)" : "var(--text-primary)" }}
+                  >
+                    {e._type === "income" ? "+" : ""}${fmt(e.amount)}
+                  </span>
                 </div>
-                <span className="text-lg sm:text-xl font-semibold break-words flex-shrink-0" style={{ color: "var(--text-primary)" }}>
-                  ${fmt(e.amount)}
-                </span>
-              </div>
-            ))}
-          </Card>
-        )}
+              ))}
+            </Card>
+          );
+        })()}
       </div>
 
       {showToast && (
@@ -173,7 +216,7 @@ function HistoryContent() {
           }}
         >
           <span>✓</span>
-          <span>Purchase logged</span>
+          <span>{toastMsg}</span>
         </div>
       )}
 
