@@ -167,21 +167,14 @@ function HistoryContent() {
           )}
         </div>
 
-        {!loading && entries.length === 0 && incomeEntries.length === 0 && isCurrentMonth && (
-          <div className="mb-5 space-y-3">
-            <Link href="/spending?from=history"><Btn>+ Log a Purchase</Btn></Link>
-            <Link href="/add-income?from=history"><Btn variant="secondary">💰 Add Income</Btn></Link>
-          </div>
-        )}
-
         <Card className="mb-5">
           <PickerInput value={selectedMonth} onChange={setSelectedMonth} label="Select Month" options={monthOptions} />
         </Card>
 
-        {!loading && (entries.length > 0 || incomeEntries.length > 0) && isCurrentMonth && (
-          <div className="mb-5 flex gap-3">
-            <Link href="/spending?from=history" className="flex-1"><Btn>+ Purchase</Btn></Link>
-            <Link href="/add-income?from=history" className="flex-1"><Btn variant="secondary">💰 Income</Btn></Link>
+        {!loading && isCurrentMonth && (
+          <div className="mb-5 space-y-3">
+            <Link href="/spending?from=history" className="block"><Btn>+ Log a Purchase</Btn></Link>
+            <Link href="/add-income?from=history" className="block"><Btn variant="secondary">💰 Add Income</Btn></Link>
           </div>
         )}
 
