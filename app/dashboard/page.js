@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
@@ -12,6 +12,7 @@ import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/co
 export default function DashboardPage() {
   const { loading, error, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans } = usePlans();
+  const [checkAmount, setCheckAmount] = useState("");
 
   const today = new Date();
   const dayOfMonth = today.getDate();
@@ -119,6 +120,20 @@ export default function DashboardPage() {
   };
   const paceStyle = paceStyles[c.paceLevel] || paceStyles.neutral;
 
+  const checkAmt = parseFloat(checkAmount) || 0;
+  let checkResult = null;
+  if (checkAmt > 0) {
+    const newLeft = c.moneyLeft - checkAmt;
+    const newPerDay = newLeft > 0 ? newLeft / c.daysLeft : 0;
+    if (newLeft < 0) {
+      checkResult = { text: "Not recommended — this is more than you have left.", color: "var(--danger)", dot: "var(--danger)" };
+    } else if (newPerDay < c.safePerDay * 0.5) {
+      checkResult = { text: `Careful — this would drop you to $${fmt(newPerDay)}/day.`, color: "var(--warn)", dot: "var(--warn)" };
+    } else {
+      checkResult = { text: `Yes — you'd still have $${fmt(newPerDay)}/day left.`, color: "var(--accent-text)", dot: "var(--accent)" };
+    }
+  }
+
   return (
     <AppShell>
       {/* ── Hero card: just the money number + pace insight ── */}
@@ -179,6 +194,30 @@ export default function DashboardPage() {
           >
             ${fmt(c.upcomingTotal)}
           </p>
+        </div>
+      </div>
+
+      {/* ── Can I Spend This? ── */}
+      <div className="mx-4 mt-5">
+        <div className="rounded-2xl px-4 py-4" style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--text-tertiary)" }}>Can I spend this?</p>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold" style={{ color: "var(--text-tertiary)" }}>$</span>
+            <input
+              type="tel" inputMode="decimal"
+              value={checkAmount}
+              onChange={(e) => setCheckAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+              placeholder="Enter amount"
+              className="w-full rounded-xl border-2 py-3 text-xl font-semibold transition-colors"
+              style={{ paddingLeft: "2.2rem" }}
+            />
+          </div>
+          {checkResult && (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="inline-block rounded-full flex-shrink-0" style={{ width: "0.5rem", height: "0.5rem", background: checkResult.dot }} />
+              <p className="text-base font-medium" style={{ color: checkResult.color }}>{checkResult.text}</p>
+            </div>
+          )}
         </div>
       </div>
 
