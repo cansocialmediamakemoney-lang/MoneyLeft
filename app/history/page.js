@@ -125,14 +125,24 @@ function HistoryContent() {
             <Hero label="Spending history" accent="muted" support="Loading…">
               <p className="text-[3rem] sm:text-6xl font-semibold" style={{ color: "var(--text-tertiary)" }}>—</p>
             </Hero>
-          ) : entries.length === 0 ? (
+          ) : entries.length === 0 && incomeEntries.length === 0 ? (
             <Hero
               label="Spending history"
               accent="muted"
-              support={isCurrentMonth ? "Start by logging your first purchase" : `No purchases logged in ${selectedLabel}`}
+              support={isCurrentMonth ? "Start by logging your first purchase" : `No activity in ${selectedLabel}`}
             >
               <p className="text-3xl sm:text-5xl font-medium" style={{ color: "var(--text-primary)" }}>
                 No activity yet
+              </p>
+            </Hero>
+          ) : entries.length === 0 ? (
+            <Hero
+              label={`Activity · ${selectedLabel}`}
+              accent="green"
+              support="Income has been logged for this month"
+            >
+              <p className="text-3xl sm:text-5xl font-medium" style={{ color: "var(--text-primary)" }}>
+                No spending yet
               </p>
             </Hero>
           ) : (
