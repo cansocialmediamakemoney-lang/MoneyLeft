@@ -101,6 +101,29 @@ alter table public.profiles add column if not exists ml_savings       numeric de
 -- ⚠️  Run in Supabase SQL Editor.
 alter table public.profiles add column if not exists setup_complete boolean default false;
 
+-- ─── GOAL CONTRIBUTIONS ──────────────────────────────────────────────────────
+-- Tracks which monthly savings contributions have been applied to each savings
+-- goal. The unique(user_id, goal_id, contribution_month) constraint makes the
+-- month-end logic idempotent: even if the user opens the app multiple times in
+-- the same month, each goal only ever receives one contribution per month.
+-- ⚠️  Run in Supabase SQL Editor before deploying the month-end goal logic.
+create table if not exists public.goal_contributions (
+  id                  uuid        primary key default gen_random_uuid(),
+  user_id             uuid        not null references auth.users(id) on delete cascade,
+  goal_id             uuid        not null references public.plans(id) on delete cascade,
+  contribution_month  text        not null,  -- "YYYY-MM"
+  amount              numeric     not null default 0,
+  created_at          timestamptz default now(),
+  unique(user_id, goal_id, contribution_month)
+);
+create index if not exists goal_contributions_user_idx on public.goal_contributions (user_id);
+
+alter table public.goal_contributions enable row level security;
+create policy "Users see own goal contributions"    on public.goal_contributions for select using (auth.uid() = user_id);
+create policy "Users insert own goal contributions" on public.goal_contributions for insert with check (auth.uid() = user_id);
+create policy "Users update own goal contributions" on public.goal_contributions for update using (auth.uid() = user_id);
+create policy "Users delete own goal contributions" on public.goal_contributions for delete using (auth.uid() = user_id);
+
 -- ─── INCOME ENTRIES ──────────────────────────────────────────────────────────
 -- One-time or irregular income a user logs during the month.
 create table public.income_entries (

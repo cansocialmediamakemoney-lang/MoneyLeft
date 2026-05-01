@@ -10,13 +10,15 @@ import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
 import { useIncomeEntries } from "@/lib/useIncomeEntries";
+import { useGoalContributions } from "@/lib/useGoalContributions";
 import { addToLocalMlSavings } from "@/lib/localSavings";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
-  const { loading, error, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
+  const { loading, error, user, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans, updatePlan } = usePlans();
   const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
+  useGoalContributions({ user, plans, updatePlan });
   const [checkAmount, setCheckAmount] = useState("");
 
   const today = new Date();
