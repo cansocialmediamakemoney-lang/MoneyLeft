@@ -37,10 +37,8 @@ export default function EditBudgetPage() {
       setPayDate(String(profile.pay_date || 1));
       setCurrency(profile.currency || "USD");
     }
-    // Load current savings from localStorage (reliable, no Supabase column needed)
     const stored = getLocalCurrentSavings();
     setCurrentSavings(stored > 0 ? stored.toString() : "");
-    console.log("[EditBudget] loaded currentSavings from localStorage:", stored);
   }, [profile]);
 
   const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
@@ -50,9 +48,7 @@ export default function EditBudgetPage() {
     setError(""); setSavedMsg(""); setSaving(true);
     const currentSavingsNum = parseFloat(currentSavings) || 0;
 
-    // Save currentSavings to localStorage — this is the reliable storage layer
     setLocalCurrentSavings(currentSavingsNum);
-    console.log("[EditBudget] saved currentSavings to localStorage:", currentSavingsNum);
 
     try {
       await updateProfile({

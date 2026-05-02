@@ -51,7 +51,7 @@ export default function DashboardPage() {
     if (daysLeft < 1) daysLeft = 1;
     const safePerDay = moneyLeft > 0 ? moneyLeft / daysLeft : 0;
 
-    const spendable = income - savingsGoal - totalBills;
+    const spendable = income + addlIncome - savingsGoal - totalBills - planSavingsMonthly;
     const periodDays = dim;
     const daysPassed = Math.max(1, dayOfMonth);
     const expectedPerDay = spendable > 0 ? spendable / periodDays : 0;

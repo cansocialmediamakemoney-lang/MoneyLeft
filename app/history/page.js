@@ -43,7 +43,6 @@ function TrashIcon() {
 
 function HistoryContent() {
   const { user, loading: profileLoading } = useBudgetData();
-  const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const justLogged = searchParams.get("logged") === "1";
@@ -73,6 +72,7 @@ function HistoryContent() {
     if (!user) return;
     let cancelled = false;
     setLoading(true);
+    const supabase = createClient();
     const { start, end } = monthRange(selectedMonth);
     Promise.all([
       supabase.from("spending_entries").select("*")
@@ -88,12 +88,13 @@ function HistoryContent() {
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [user, selectedMonth, supabase, refreshKey]);
+  }, [user, selectedMonth, refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteConfirm = async () => {
     if (!confirmDelete) return;
     setDeleting(true);
     const { id, type } = confirmDelete;
+    const supabase = createClient();
     if (type === "spend") {
       await supabase.from("spending_entries").delete().eq("id", id);
       setEntries((prev) => prev.filter((e) => e.id !== id));

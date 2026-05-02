@@ -27,7 +27,7 @@ export default function HomePage() {
             <li>✓ Big "money left" number on every screen</li>
             <li>✓ Bills with due-date warnings</li>
             <li>✓ Daily safe-to-spend amount</li>
-            <li>✓ Print or save your monthly summary</li>
+            <li>✓ Track spending history month by month</li>
             <li>✓ Your data is yours — never sold</li>
           </ul>
         </Card>

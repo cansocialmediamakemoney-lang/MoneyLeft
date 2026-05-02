@@ -17,12 +17,8 @@ export default function SavingsPage() {
   const [mlSavings, setMlSavings] = useState(0);
 
   useEffect(() => {
-    const cs = getLocalCurrentSavings();
-    const ml = getLocalMlSavings();
-    setStartingSavings(cs);
-    setMlSavings(ml);
-    console.log("[Savings tab] currentSavings from localStorage:", cs);
-    console.log("[Savings tab] mlSavings from localStorage:", ml);
+    setStartingSavings(getLocalCurrentSavings());
+    setMlSavings(getLocalMlSavings());
   }, []);
 
   if (loading || plansLoading) return (

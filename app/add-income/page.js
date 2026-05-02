@@ -80,7 +80,7 @@ function AddIncomeContent() {
                 className="w-full rounded-2xl border-2 px-4 py-3 text-xl"
               />
             </div>
-            <ErrorMsg>{error}</ErrorMsg>
+            {error && <ErrorMsg>{error}</ErrorMsg>}
             <div className="flex gap-3 pt-2">
               <Btn variant="secondary" onClick={() => router.push(returnTo)} className="flex-1">← Cancel</Btn>
               <Btn type="submit" disabled={!parseFloat(amount) || saving} className="flex-1">

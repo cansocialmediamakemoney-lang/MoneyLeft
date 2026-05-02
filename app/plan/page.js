@@ -194,7 +194,7 @@ function PlanPageContent() {
         )}
 
         <p className="text-center text-sm mt-2" style={{ color: "var(--text-tertiary)" }}>
-          Plans are separate from your monthly Money Left.
+          Spend Plans don't affect your monthly Money Left. Savings Goals do — each goal reduces Money Left by the monthly amount needed to reach it.
         </p>
       </div>
     </AppShell>
