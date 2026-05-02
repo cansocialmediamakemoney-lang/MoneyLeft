@@ -56,8 +56,7 @@ export default function EditBudgetPage() {
         savings_goal: parseFloat(savings) || 0,
         pay_date: parseInt(payDate),
         currency,
-        // Note: current_savings intentionally not sent to Supabase —
-        // the column may not exist. localSavings.js is the source of truth.
+        current_savings: currentSavingsNum,
       });
       setSavedMsg("✓ Saved!");
       setTimeout(() => {

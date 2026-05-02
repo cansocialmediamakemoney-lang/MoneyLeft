@@ -10,20 +10,37 @@ import { getLocalCurrentSavings, getLocalMlSavings } from "@/lib/localSavings";
 import { fmt } from "@/lib/constants";
 
 export default function SavingsPage() {
-  const { loading, profile } = useBudgetData();
+  const { loading, profile, updateProfile } = useBudgetData();
   const { loading: plansLoading, plans } = usePlans();
   const [extra, setExtra] = useState(0);
-  const [startingSavings, setStartingSavings] = useState(0);
-  const [mlSavings, setMlSavings] = useState(0);
 
+  // Migrate localStorage → DB once on first load for users who had savings
+  // stored before DB sync was added. Safe to re-run; only writes if DB is 0.
   useEffect(() => {
-    setStartingSavings(getLocalCurrentSavings());
-    setMlSavings(getLocalMlSavings());
-  }, []);
+    if (!profile) return;
+    const dbCurrent = parseFloat(profile.current_savings) || 0;
+    const dbMl      = parseFloat(profile.ml_savings)      || 0;
+    const patch = {};
+    if (dbCurrent === 0) {
+      const local = getLocalCurrentSavings();
+      if (local > 0) patch.current_savings = local;
+    }
+    if (dbMl === 0) {
+      const local = getLocalMlSavings();
+      if (local > 0) patch.ml_savings = local;
+    }
+    if (Object.keys(patch).length > 0) {
+      updateProfile(patch).catch(() => {});
+    }
+  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading || plansLoading) return (
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>
   );
+
+  // Read savings from DB (cross-device). Fall back to 0 if columns not yet set.
+  const startingSavings = parseFloat(profile?.current_savings) || 0;
+  const mlSavings       = parseFloat(profile?.ml_savings)      || 0;
   const totalSavings     = startingSavings + mlSavings;
   const hasAnySavings    = totalSavings > 0;
 

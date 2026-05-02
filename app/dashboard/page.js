@@ -11,7 +11,7 @@ import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
 import { useIncomeEntries } from "@/lib/useIncomeEntries";
 import { useGoalContributions } from "@/lib/useGoalContributions";
-import { addToLocalMlSavings } from "@/lib/localSavings";
+import { addToLocalMlSavings, getLocalMlSavings } from "@/lib/localSavings";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
 export default function DashboardPage() {
@@ -148,6 +148,9 @@ export default function DashboardPage() {
   const handleMonthEndChoice = (choice, planId = null) => {
     if (choice === "savings" && planId === null) {
       addToLocalMlSavings(prevMonth.amount || 0);
+      // Persist updated total to DB so it syncs across devices.
+      // addToLocalMlSavings already wrote to localStorage; read it back for the new total.
+      updateProfile({ ml_savings: getLocalMlSavings() }).catch(() => {});
     }
     applyChoice(choice);
   };
