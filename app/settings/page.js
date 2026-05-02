@@ -5,45 +5,69 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Card, ErrorMsg } from "@/components/UI";
+import ConfirmSheet from "@/components/ConfirmSheet";
 import { createClient } from "@/lib/supabase-browser";
 import { useBudgetData } from "@/lib/useBudgetData";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const supabase = createClient();
   const { loading, user, profile, updateProfile } = useBudgetData();
 
   const [error, setError] = useState("");
+  // "erase-data" | "delete-account" | null
+  const [sheet, setSheet] = useState(null);
+  const [deleteTyped, setDeleteTyped] = useState("");
+  const [acting, setActing] = useState(false);
 
-  const handleDeleteAllData = async () => {
-    if (!window.confirm("This will erase ALL your bills and spending history but keep your account. Continue?")) return;
+  // ── Erase all data (keep account) ─────────────────────────────────────────
+  const handleEraseData = async () => {
+    setActing(true);
+    setError("");
     try {
-      await supabase.from("bills").delete().eq("user_id", user.id);
-      await supabase.from("spending_entries").delete().eq("user_id", user.id);
+      const supabase = createClient();
+      const uid = user.id;
+      await supabase.from("goal_contributions").delete().eq("user_id", uid);
+      await supabase.from("income_entries").delete().eq("user_id", uid);
+      await supabase.from("spending_entries").delete().eq("user_id", uid);
+      await supabase.from("bills").delete().eq("user_id", uid);
+      await supabase.from("plans").delete().eq("user_id", uid);
       await updateProfile({ income: 0, savings_goal: 0, pay_date: 1 });
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("ml_"))
+        .forEach((k) => localStorage.removeItem(k));
+      setSheet(null);
       router.push("/dashboard");
       router.refresh();
     } catch (e) {
-      setError(e.message || "Couldn't delete your data.");
+      setError(e.message || "Couldn't erase your data. Please try again.");
+      setActing(false);
     }
   };
 
+  // ── Delete account + all data ──────────────────────────────────────────────
   const handleDeleteAccount = async () => {
-    if (!window.confirm("This will permanently delete your account and ALL your data. This cannot be undone. Are you absolutely sure?")) return;
-    if (!window.confirm("Last chance. Type yes to confirm in the next prompt — you'll be signed out and your account will be gone.")) return;
-    const conf = window.prompt("Type DELETE to confirm:");
-    if (conf !== "DELETE") { alert("Cancelled."); return; }
-
+    setActing(true);
+    setError("");
     try {
-      await supabase.from("bills").delete().eq("user_id", user.id);
-      await supabase.from("spending_entries").delete().eq("user_id", user.id);
-      await supabase.from("profiles").delete().eq("id", user.id);
+      const res = await fetch("/api/delete-account", { method: "POST" });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Deletion failed");
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("ml_"))
+        .forEach((k) => localStorage.removeItem(k));
+      const supabase = createClient();
       await supabase.auth.signOut();
-      alert("Your data has been deleted. To fully remove your account login, please contact support.");
       router.push("/");
     } catch (e) {
-      setError(e.message || "Couldn't delete your account.");
+      setError(e.message || "Couldn't delete your account. Please try again.");
+      setActing(false);
     }
+  };
+
+  const closeSheet = () => {
+    if (acting) return;
+    setSheet(null);
+    setDeleteTyped("");
   };
 
   if (loading) return <AppShell showHeader><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>;
@@ -82,9 +106,9 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="mb-6 p-0 overflow-hidden">
-          <ItemButton icon="🗑️" label="Erase My Budget Data" onClick={handleDeleteAllData} danger />
+          <ItemButton icon="🗑️" label="Erase My Budget Data" onClick={() => setSheet("erase-data")} danger />
           <Divider />
-          <ItemButton icon="❌" label="Delete My Account" onClick={handleDeleteAccount} danger />
+          <ItemButton icon="❌" label="Delete My Account" onClick={() => setSheet("delete-account")} danger />
         </Card>
 
         <SectionLabel>Tools</SectionLabel>
@@ -105,11 +129,46 @@ export default function SettingsPage() {
           <Divider />
           <ItemReadonly icon="ℹ️" label="App Version" value="1.0" />
         </Card>
-        
+
         <p className="text-center text-sm mt-8" style={{ color: "var(--text-tertiary)" }}>
           MoneyLeft · Made with care
         </p>
       </div>
+
+      {/* ── Erase Data confirmation ── */}
+      {sheet === "erase-data" && (
+        <ConfirmSheet
+          title="Erase all your data?"
+          message="This deletes your bills, spending history, plans, and savings goals. Your account stays. This cannot be undone."
+          confirmLabel="Erase Everything"
+          onConfirm={handleEraseData}
+          onCancel={closeSheet}
+          busy={acting}
+        />
+      )}
+
+      {/* ── Delete Account confirmation ── */}
+      {sheet === "delete-account" && (
+        <ConfirmSheet
+          title="Delete your account?"
+          message="This permanently deletes your account and all your data. Type DELETE below to confirm."
+          confirmLabel="Delete My Account"
+          onConfirm={handleDeleteAccount}
+          onCancel={closeSheet}
+          busy={acting}
+          confirmDisabled={deleteTyped !== "DELETE"}
+        >
+          <input
+            type="text"
+            value={deleteTyped}
+            onChange={(e) => setDeleteTyped(e.target.value)}
+            placeholder="Type DELETE to confirm"
+            autoCapitalize="characters"
+            className="w-full rounded-2xl border-2 px-4 py-3 text-lg mb-2"
+            style={{ background: "var(--bg-input)", color: "var(--text-primary)", borderColor: "var(--border-strong)" }}
+          />
+        </ConfirmSheet>
+      )}
     </AppShell>
   );
 }

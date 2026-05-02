@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyInput, PickerInput, TextInput, ErrorMsg } from "@/components/UI";
+import ConfirmSheet from "@/components/ConfirmSheet";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, ordinal, BILL_CATS } from "@/lib/constants";
 
@@ -11,6 +12,8 @@ export default function BillsPage() {
   const { loading, bills, addBill, updateBill, deleteBill } = useBudgetData();
   const [editing, setEditing] = useState(null);
   const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(null); // bill id to delete
+  const [deleting, setDeleting] = useState(false);
 
   const handleSave = async (bill) => {
     setError("");
@@ -28,10 +31,16 @@ export default function BillsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this bill?")) return;
-    try { await deleteBill(id); }
-    catch (e) { setError(e.message || "Couldn't delete the bill."); }
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
+    try {
+      await deleteBill(confirmDelete);
+      setConfirmDelete(null);
+    } catch (e) {
+      setError(e.message || "Couldn't delete the bill.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
@@ -67,7 +76,7 @@ export default function BillsPage() {
                     className="rounded-xl px-2 sm:px-3 py-2 text-sm sm:text-base font-medium transition-colors"
                     style={{ border: "1px solid var(--border-strong)", color: "var(--text-primary)", background: "transparent" }}
                   >Edit</button>
-                  <button onClick={() => handleDelete(b.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
+                  <button onClick={() => setConfirmDelete(b.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
                 </div>
               </div>
             ))
@@ -92,6 +101,17 @@ export default function BillsPage() {
       </div>
 
       {editing && <BillEditor bill={editing} onSave={handleSave} onCancel={() => setEditing(null)} />}
+
+      {confirmDelete && (
+        <ConfirmSheet
+          title="Delete this bill?"
+          message="It will be removed from your monthly budget."
+          confirmLabel="Delete Bill"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setConfirmDelete(null)}
+          busy={deleting}
+        />
+      )}
     </AppShell>
   );
 }

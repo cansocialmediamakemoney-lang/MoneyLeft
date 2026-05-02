@@ -4,6 +4,7 @@ import { useState, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { Btn, Card, MoneyInput, TextInput, PickerInput, ErrorMsg, MoneyDisplay, Hero } from "@/components/UI";
+import ConfirmSheet from "@/components/ConfirmSheet";
 import { usePlans } from "@/lib/usePlans";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { fmt, fmtDate } from "@/lib/constants";
@@ -98,7 +99,6 @@ function PlanPageContent() {
       );
     }
     const handleDelete = async () => {
-      if (!window.confirm(`Delete "${plan.name}"? This can't be undone.`)) return;
       await deletePlan(plan.id);
       goList();
     };
@@ -467,6 +467,14 @@ function PlanCreate({ onCancel, onCreated, addPlan }) {
 
 // ─── Spend Plan detail view ──────────────────────────────────────────────────
 function PlanDetail({ plan, onBack, onDelete }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try { await onDelete(); } finally { setDeleting(false); }
+  };
+
   const days = daysBetween(plan.start_date, plan.end_date);
   const total = parseFloat(plan.amount) || 0;
   const reserve = parseFloat(plan.reserve_amount) || 0;
@@ -543,8 +551,19 @@ function PlanDetail({ plan, onBack, onDelete }) {
           </p>
         </Card>
 
-        <Btn variant="danger" small onClick={onDelete}>🗑️ Delete Plan</Btn>
+        <Btn variant="danger" small onClick={() => setConfirmDelete(true)}>🗑️ Delete Plan</Btn>
       </div>
+
+      {confirmDelete && (
+        <ConfirmSheet
+          title={`Delete "${plan.name}"?`}
+          message="This cannot be undone."
+          confirmLabel="Delete Plan"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmDelete(false)}
+          busy={deleting}
+        />
+      )}
     </AppShell>
   );
 }
@@ -748,6 +767,14 @@ function SavingsGoalCreate({ onCancel, onCreated, addPlan }) {
 
 // ─── Savings Goal detail view ────────────────────────────────────────────────
 function SavingsGoalDetail({ plan, onBack, onDelete }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try { await onDelete(); } finally { setDeleting(false); }
+  };
+
   const goal      = parseFloat(plan.amount)        || 0;
   const saved     = parseFloat(plan.current_saved) || 0;
   const remaining = Math.max(0, goal - saved);
@@ -846,8 +873,19 @@ function SavingsGoalDetail({ plan, onBack, onDelete }) {
 
         {!isComplete && <BudgetComparison perMonth={perMonth} />}
 
-        <Btn variant="danger" small onClick={onDelete}>🗑️ Delete Goal</Btn>
+        <Btn variant="danger" small onClick={() => setConfirmDelete(true)}>🗑️ Delete Goal</Btn>
       </div>
+
+      {confirmDelete && (
+        <ConfirmSheet
+          title={`Delete "${plan.name}"?`}
+          message="This cannot be undone."
+          confirmLabel="Delete Goal"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmDelete(false)}
+          busy={deleting}
+        />
+      )}
     </AppShell>
   );
 }
