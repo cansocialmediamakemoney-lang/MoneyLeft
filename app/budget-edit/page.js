@@ -36,9 +36,10 @@ export default function EditBudgetPage() {
       setSavings(profile.savings_goal?.toString() || "");
       setPayDate(String(profile.pay_date || 1));
       setCurrency(profile.currency || "USD");
+      const dbVal = parseFloat(profile.current_savings) || 0;
+      const resolved = dbVal > 0 ? dbVal : getLocalCurrentSavings();
+      setCurrentSavings(resolved > 0 ? resolved.toString() : "");
     }
-    const stored = getLocalCurrentSavings();
-    setCurrentSavings(stored > 0 ? stored.toString() : "");
   }, [profile]);
 
   const totalBills = bills.reduce((s,b) => s + (parseFloat(b.amount) || 0), 0);
