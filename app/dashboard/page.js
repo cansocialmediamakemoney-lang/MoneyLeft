@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const { loading, error, user, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans, updatePlan } = usePlans();
   const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
-  const { debugLog: gcDebug } = useGoalContributions({ user, plans, updatePlan });
+  const { debugLog: gcDebug, appliedGoalIds } = useGoalContributions({ user, plans, updatePlan });
   const [checkAmount, setCheckAmount] = useState("");
   const [confirmDeleteEntry, setConfirmDeleteEntry] = useState(null); // entry id
   const [deleting, setDeleting] = useState(false);
@@ -51,6 +51,9 @@ export default function DashboardPage() {
     const planSavingsMonthly = plans.reduce((sum, p) => {
       if (p.plan_type !== "saving") return sum;
       if (p.end_date <= todayStr) return sum;
+      // Skip goals whose current-month contribution is already recorded in DB.
+      // The amount is accounted for in current_saved; no further deduction needed.
+      if (appliedGoalIds.has(p.id)) return sum;
       const remaining = Math.max(0, (parseFloat(p.amount) || 0) - (parseFloat(p.current_saved) || 0));
       if (remaining <= 0) return sum;
       const msLeft = new Date(p.end_date + "T00:00:00") - new Date(todayStr + "T00:00:00");
@@ -115,7 +118,7 @@ export default function DashboardPage() {
       paceLevel, paceTitle, paceDetail,
       upcoming, upcomingTotal, byCategory,
     };
-  }, [profile, bills, entries, plans, dayOfMonth, dim, totalAdditionalIncome]);
+  }, [profile, bills, entries, plans, dayOfMonth, dim, totalAdditionalIncome, appliedGoalIds]);
 
   // Month-end hook must be called before any conditional returns
   const { showReview, prevMonth, rollover, applyChoice } = useMonthEnd(calcs?.moneyLeft ?? null);
