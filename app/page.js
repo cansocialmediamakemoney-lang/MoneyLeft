@@ -1,13 +1,20 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Btn, Card } from "@/components/UI";
-import { LogoMark } from "@/components/Logo";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-base)" }}>
       <div style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-subtle)", color: "var(--text-primary)" }} className="px-5 pt-16 pb-12 text-center">
         <div className="flex justify-center mb-5">
-          <LogoMark size={120} />
+          <Image
+            src="/icons/icon-512.png"
+            alt="MoneyLeft"
+            width={120}
+            height={120}
+            className="rounded-2xl"
+            priority
+          />
         </div>
         <h1 className="text-5xl font-semibold mb-1 tracking-tight" style={{ color: "var(--text-primary)" }}>
           MONEY<span style={{ color: "var(--accent-text)" }}>LEFT</span>
