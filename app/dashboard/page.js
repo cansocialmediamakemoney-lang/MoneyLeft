@@ -13,13 +13,13 @@ import { useMonthEnd } from "@/lib/useMonthEnd";
 import { useIncomeEntries } from "@/lib/useIncomeEntries";
 import { useGoalContributions } from "@/lib/useGoalContributions";
 import { addToLocalMlSavings, getLocalMlSavings } from "@/lib/localSavings";
-import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
+import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS, currentMonthKey } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { loading, error, user, profile, bills, entries, deleteEntry, updateProfile, addBill, refresh } = useBudgetData();
   const { loading: plansLoading, plans, updatePlan } = usePlans();
   const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
-  useGoalContributions({ user, plans, updatePlan });
+  const { debugLog: gcDebug } = useGoalContributions({ user, plans, updatePlan });
   const [checkAmount, setCheckAmount] = useState("");
   const [confirmDeleteEntry, setConfirmDeleteEntry] = useState(null); // entry id
   const [deleting, setDeleting] = useState(false);
@@ -391,6 +391,29 @@ export default function DashboardPage() {
 
         <p className="text-center text-sm px-4 pb-2" style={{ color: "var(--text-tertiary)", opacity: 0.7 }}>🔒 Your data is private. We never sell it.</p>
       </div>
+
+      {/* ── [TEMP DEBUG] Goal Contribution trace — remove after confirming fix ── */}
+      {gcDebug && (
+        <div className="mx-4 mb-6 rounded-2xl p-4 text-xs" style={{ background: "#1a1a1a", border: "2px solid var(--warn)", fontFamily: "monospace" }}>
+          <p className="font-bold mb-2" style={{ color: "var(--warn)" }}>[DEBUG] Goal Contributions — user: {user?.id?.slice(0,8)}… | month: {currentMonthKey()}</p>
+          {gcDebug.map((entry, i) =>
+            entry.type === "info"
+              ? <p key={i} style={{ color: "var(--text-tertiary)" }}>{entry.msg}</p>
+              : (
+                <div key={i} className="mb-3">
+                  <p className="font-semibold" style={{ color: entry.status === "success" ? "var(--accent-text)" : entry.status.includes("failed") || entry.status === "verify-mismatch" ? "var(--danger)" : "var(--text-secondary)" }}>
+                    {entry.goalName} → {entry.status}
+                  </p>
+                  {entry.steps?.map((s, j) => (
+                    <p key={j} style={{ color: s.includes("FAILED") || s.includes("MISMATCH") || s.includes("STALE") ? "var(--danger)" : s.includes("✓") || s.includes("succeeded") ? "var(--accent-text)" : "var(--text-tertiary)" }}>
+                      &nbsp;&nbsp;{s}
+                    </p>
+                  ))}
+                </div>
+              )
+          )}
+        </div>
+      )}
 
       {confirmDeleteEntry && (
         <ConfirmSheet

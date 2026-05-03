@@ -157,6 +157,12 @@ create table if not exists public.goal_contributions (
 );
 create index if not exists goal_contributions_user_idx on public.goal_contributions (user_id);
 
+-- Stores the expected plans.current_saved value after the contribution is applied.
+-- Used to detect stale rows: if a row exists but plans.current_saved < planned_current_saved,
+-- the plans UPDATE never completed and the row should be deleted so it can be retried.
+-- ⚠️  Run in Supabase SQL Editor:
+alter table public.goal_contributions add column if not exists planned_current_saved numeric;
+
 alter table public.goal_contributions enable row level security;
 create policy "Users see own goal contributions"    on public.goal_contributions for select using (auth.uid() = user_id);
 create policy "Users insert own goal contributions" on public.goal_contributions for insert with check (auth.uid() = user_id);
