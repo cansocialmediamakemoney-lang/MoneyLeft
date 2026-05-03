@@ -3,7 +3,7 @@
   "appName": "MoneyLeft",
   "webDir": "public",
   "server": {
-    "url": "https://project-lw506.vercel.app",
+    "url": "https://moneyleft.app",
     "cleartext": true
   }
 }
