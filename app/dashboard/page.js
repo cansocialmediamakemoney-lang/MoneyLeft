@@ -6,6 +6,7 @@ import AppShell from "@/components/AppShell";
 import { Btn, Card, Row, MoneyDisplay, Hero } from "@/components/UI";
 import Onboarding from "@/components/Onboarding";
 import MonthEndReview from "@/components/MonthEndReview";
+import ConfirmSheet from "@/components/ConfirmSheet";
 import { useBudgetData } from "@/lib/useBudgetData";
 import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
@@ -20,6 +21,19 @@ export default function DashboardPage() {
   const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
   useGoalContributions({ user, plans, updatePlan });
   const [checkAmount, setCheckAmount] = useState("");
+  const [confirmDeleteEntry, setConfirmDeleteEntry] = useState(null); // entry id
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    if (!confirmDeleteEntry) return;
+    setDeleting(true);
+    try {
+      await deleteEntry(confirmDeleteEntry);
+      setConfirmDeleteEntry(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const today = new Date();
   const dayOfMonth = today.getDate();
@@ -354,7 +368,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                   <span className="text-lg sm:text-xl font-semibold break-words" style={{ color: "var(--text-primary)" }}>${fmt(e.amount)}</span>
-                  <button onClick={() => deleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
+                  <button onClick={() => setConfirmDeleteEntry(e.id)} className="text-2xl" style={{ color: "var(--text-tertiary)" }}>✕</button>
                 </div>
               </div>
             ))}
@@ -377,6 +391,17 @@ export default function DashboardPage() {
 
         <p className="text-center text-sm px-4 pb-2" style={{ color: "var(--text-tertiary)", opacity: 0.7 }}>🔒 Your data is private. We never sell it.</p>
       </div>
+
+      {confirmDeleteEntry && (
+        <ConfirmSheet
+          title="Delete this purchase?"
+          message="It will be removed from your spending history."
+          confirmLabel="Delete"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setConfirmDeleteEntry(null)}
+          busy={deleting}
+        />
+      )}
 
       {/* ── Month-End Review modal ── */}
       {showReview && (
