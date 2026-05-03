@@ -38,9 +38,10 @@ export default function SavingsPage() {
     <AppShell><div className="p-10 text-center text-xl" style={{ color: "var(--text-tertiary)" }}>Loading…</div></AppShell>
   );
 
-  // Read savings from DB (cross-device). Fall back to 0 if columns not yet set.
-  const startingSavings = parseFloat(profile?.current_savings) || 0;
-  const mlSavings       = parseFloat(profile?.ml_savings)      || 0;
+  // DB is authoritative when non-zero (cross-device). Fall back to localStorage
+  // so this device still shows data if the DB columns haven't been migrated yet.
+  const startingSavings = parseFloat(profile?.current_savings) || getLocalCurrentSavings();
+  const mlSavings       = parseFloat(profile?.ml_savings)      || getLocalMlSavings();
   const totalSavings     = startingSavings + mlSavings;
   const hasAnySavings    = totalSavings > 0;
 
