@@ -42,7 +42,14 @@ export default function SavingsPage() {
   // so this device still shows data if the DB columns haven't been migrated yet.
   const startingSavings = parseFloat(profile?.current_savings) || getLocalCurrentSavings();
   const mlSavings       = parseFloat(profile?.ml_savings)      || getLocalMlSavings();
-  const totalSavings     = startingSavings + mlSavings;
+  const goalsSaved      = plans
+    .filter((p) => p.plan_type === "saving")
+    .reduce((sum, p) => {
+      const saved   = parseFloat(p.current_saved) || 0;
+      const target  = parseFloat(p.amount)        || 0;
+      return sum + (target > 0 ? Math.min(saved, target) : saved);
+    }, 0);
+  const totalSavings     = startingSavings + mlSavings + goalsSaved;
   const hasAnySavings    = totalSavings > 0;
 
   const savingsGoal      = parseFloat(profile?.savings_goal) || 0;
@@ -82,6 +89,10 @@ export default function SavingsPage() {
                   {startingSavings > 0 && mlSavings > 0 && "  ·  "}
                   {mlSavings > 0 && (
                     <>Saved through MoneyLeft <span className="font-medium" style={{ color: "var(--accent-text)" }}>${fmt(mlSavings)}</span></>
+                  )}
+                  {(startingSavings > 0 || mlSavings > 0) && goalsSaved > 0 && "  ·  "}
+                  {goalsSaved > 0 && (
+                    <>Saved to goals <span className="font-medium" style={{ color: "var(--accent-text)" }}>${fmt(goalsSaved)}</span></>
                   )}
                 </span>
               ) : undefined
