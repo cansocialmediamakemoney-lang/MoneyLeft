@@ -101,6 +101,45 @@ alter table public.profiles add column if not exists ml_savings       numeric de
 -- ⚠️  Run in Supabase SQL Editor.
 alter table public.profiles add column if not exists setup_complete boolean default false;
 
+-- ─── PLANS ───────────────────────────────────────────────────────────────────
+-- Spend plans (plan_type: trip/weekend/custom) and Savings Goals (plan_type: saving).
+-- This table was created directly in Supabase before the schema file was written.
+-- CREATE TABLE IF NOT EXISTS makes this file safe to re-run on existing instances.
+-- NOTE: This block must appear before goal_contributions — the FK goal_id references plans(id).
+create table if not exists public.plans (
+  id              uuid        primary key default gen_random_uuid(),
+  user_id         uuid        not null references auth.users(id) on delete cascade,
+  name            text        not null,
+  plan_type       text        not null default 'custom',  -- 'trip'|'weekend'|'custom'|'saving'
+  amount          numeric     not null default 0,          -- total budget or savings target
+  start_date      date,                                    -- spend plans; savings goals use today
+  end_date        date,                                    -- deadline for both types
+  current_saved   numeric     default 0,                  -- savings goals: amount saved so far
+  reserve_amount  numeric,                                 -- spend plans: amount set aside
+  reserve_label   text,                                    -- spend plans: label for the reserve
+  created_at      timestamptz default now()
+);
+create index if not exists plans_user_id_idx on public.plans (user_id);
+
+alter table public.plans enable row level security;
+
+-- Policies use DO blocks so re-running this file on an existing DB does not fail.
+do $$ begin
+  create policy "Users see own plans"    on public.plans for select using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users insert own plans" on public.plans for insert with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users update own plans" on public.plans for update using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users delete own plans" on public.plans for delete using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
 -- ─── GOAL CONTRIBUTIONS ──────────────────────────────────────────────────────
 -- Tracks which monthly savings contributions have been applied to each savings
 -- goal. The unique(user_id, goal_id, contribution_month) constraint makes the
