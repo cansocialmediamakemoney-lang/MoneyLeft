@@ -25,8 +25,13 @@ export async function middleware(request) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
+
+  // If the auth check itself errored (network issue, Supabase timeout, token
+  // refresh race on mobile), do NOT redirect — the error may be transient.
+  // Let the request through; client-side data hooks will handle the auth state.
+  if (authError) return response;
 
   if (!user && PROTECTED_ROUTES.some(r => path.startsWith(r))) {
     const url = request.nextUrl.clone();
