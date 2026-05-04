@@ -169,6 +169,44 @@ create policy "Users insert own goal contributions" on public.goal_contributions
 create policy "Users update own goal contributions" on public.goal_contributions for update using (auth.uid() = user_id);
 create policy "Users delete own goal contributions" on public.goal_contributions for delete using (auth.uid() = user_id);
 
+-- ─── BASE SAVINGS CONTRIBUTIONS ─────────────────────────────────────────────
+-- Tracks that the base monthly savings goal (profile.savings_goal) has been
+-- credited to profile.ml_savings for a given month. One row per user per month.
+-- The unique(user_id, contribution_month) constraint makes the month-end logic
+-- idempotent — two devices racing will both try to INSERT; one gets 23505 and skips.
+-- ⚠️  Run in Supabase SQL Editor before deploying this feature.
+create table if not exists public.base_savings_contributions (
+  id                  uuid        primary key default gen_random_uuid(),
+  user_id             uuid        not null references auth.users(id) on delete cascade,
+  contribution_month  text        not null,  -- "YYYY-MM"
+  amount              numeric     not null default 0,
+  created_at          timestamptz default now(),
+  unique(user_id, contribution_month)
+);
+create index if not exists base_savings_contributions_user_idx on public.base_savings_contributions (user_id);
+
+alter table public.base_savings_contributions enable row level security;
+
+do $$ begin
+  create policy "Users see own base savings contributions"
+    on public.base_savings_contributions for select using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users insert own base savings contributions"
+    on public.base_savings_contributions for insert with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users update own base savings contributions"
+    on public.base_savings_contributions for update using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Users delete own base savings contributions"
+    on public.base_savings_contributions for delete using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
 -- ─── INCOME ENTRIES ──────────────────────────────────────────────────────────
 -- One-time or irregular income a user logs during the month.
 create table public.income_entries (

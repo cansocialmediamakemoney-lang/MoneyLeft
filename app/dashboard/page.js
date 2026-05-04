@@ -12,6 +12,7 @@ import { usePlans } from "@/lib/usePlans";
 import { useMonthEnd } from "@/lib/useMonthEnd";
 import { useIncomeEntries } from "@/lib/useIncomeEntries";
 import { useGoalContributions } from "@/lib/useGoalContributions";
+import { useBaseSavingsContribution } from "@/lib/useBaseSavingsContribution";
 import { addToLocalMlSavings, getLocalMlSavings } from "@/lib/localSavings";
 import { fmt, fmtDate, ordinal, MONTHS, SPEND_CATS, SPEND_ICONS } from "@/lib/constants";
 
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   const { loading: plansLoading, plans, updatePlan } = usePlans();
   const { loading: incomeLoading, entries: incomeEntries, totalAdditionalIncome, deleteEntry: deleteIncomeEntry } = useIncomeEntries();
   useGoalContributions({ user, plans, updatePlan });
+  useBaseSavingsContribution({ user, profile, updateProfile });
   const [checkAmount, setCheckAmount] = useState("");
   const [confirmDeleteEntry, setConfirmDeleteEntry] = useState(null); // entry id
   const [deleting, setDeleting] = useState(false);
