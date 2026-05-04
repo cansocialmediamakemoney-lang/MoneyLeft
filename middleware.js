@@ -39,7 +39,7 @@ export async function middleware(request) {
     return NextResponse.redirect(url);
   }
 
-  if (user && AUTH_ROUTES.some(r => path.startsWith(r))) {
+  if (user && (path === "/" || AUTH_ROUTES.some(r => path.startsWith(r)))) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
